@@ -60,4 +60,23 @@ class easystack::role::controller inherits ::easystack::role {
         ensure => installed,
         name   => 'python-memcached',
     }
+
+    # Configure keystone mySQL database
+    mysql::db { 'keystone':
+        user     => 'keystone',
+        password => $::easystack::config::database_keystone_password_hash,
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql_user { 'keystone@%':
+        ensure        => 'present',
+        password_hash => $::easystack::config::database_keystone_password_hash,
+    }
+    -> mysql_grant { 'keystone@%/keystone.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'keystone.*',
+        user       => 'keystone@%',
+    }
 }
