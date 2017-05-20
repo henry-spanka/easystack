@@ -50,4 +50,14 @@ class easystack::role::controller inherits ::easystack::role {
         read_permission      => '.*',
         write_permission     => '.*',
     }
+
+    # Install and configure Memcached
+    class { 'memcached':
+        listen_ip  => "127.0.0.1,::1,${management_ip}",
+        max_memory => '20%',
+    }
+    package { 'python-memcached':
+        ensure => installed,
+        name   => 'python-memcached',
+    }
 }
