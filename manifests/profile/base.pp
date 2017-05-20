@@ -31,4 +31,10 @@ class easystack::profile::base {
         ensure => installed,
         name   => 'openstack-selinux'
     }
+
+    # Set Selinux to enforcing modules
+    class { 'selinux':
+        mode => 'enforcing',
+        type => 'targeted',
+    }
 }

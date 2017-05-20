@@ -46,19 +46,31 @@ class easystack (
     $database_root_password           = $easystack::params::database_root_password,
     $management_network               = $easystack::params::management_network,
     $rabbitmq_user_openstack_password = $easystack::params::rabbitmq_user_openstack_password,
+    $database_keystone_password       = $easystack::params::database_keystone_password,
     $database_keystone_password_hash  = $easystack::params::database_keystone_password_hash,
+    $keystone_admin_token             = $easystack::params::keystone_admin_token,
+    $keystone_admin_password          = $easystack::params::keystone_admin_password,
+    $keystone_admin_email             = $easystack::params::keystone_admin_email,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
     validate_string($management_network)
     validate_string($rabbitmq_user_openstack_password)
+    validate_string($database_keystone_password)
     validate_string($database_keystone_password_hash)
+    validate_string($keystone_admin_token)
+    validate_string($keystone_admin_password)
+    validate_string($keystone_admin_email)
 
     # Instaniate config class
     class { '::easystack::config':
         database_root_password           => $database_root_password,
         management_network               => $management_network,
         rabbitmq_user_openstack_password => $rabbitmq_user_openstack_password,
+        database_keystone_password       => $database_keystone_password,
         database_keystone_password_hash  => $database_keystone_password_hash,
+        keystone_admin_token             => $keystone_admin_token,
+        keystone_admin_password          => $keystone_admin_password,
+        keystone_admin_email             => $keystone_admin_email,
     }
 }

@@ -79,4 +79,63 @@ class easystack::role::controller inherits ::easystack::role {
         table      => 'keystone.*',
         user       => 'keystone@%',
     }
+
+    $keystone_db_password = $::easystack::config::database_keystone_password
+
+    class { 'keystone':
+        catalog_type        => 'sql',
+        admin_token         => $::easystack::config::keystone_admin_token,
+        database_connection => "mysql://keystone:${keystone_db_password}@localhost/keystone",
+        token_provider      => 'fernet',
+        service_name        => 'httpd',
+    }
+
+    class { 'apache':
+        default_vhost => false,
+        servername    => $::fqdn,
+    }
+
+    apache::mod { 'wsgi': }
+
+    -> selinux::port { 'allow-keystone-httpd-5000':
+        seltype  => 'http_port_t',
+        port     => 5000,
+        protocol => 'tcp',
+    }
+    -> selinux::port { 'allow-keystone-httpd-35357':
+        seltype  => 'http_port_t',
+        port     => 35357,
+        protocol => 'tcp',
+    }
+    -> selinux::boolean { 'httpd_can_network_connect_db':
+        ensure => 'on',
+    }
+    -> file { '/etc/httpd/conf.d/wsgi-keystone.conf':
+        ensure  => 'link',
+        target  => '/usr/share/keystone/wsgi-keystone.conf',
+        notify  => Class['apache::service'],
+        require => Class['apache'],
+    }
+
+    # Installs the service user endpoint.
+    class { 'keystone::endpoint':
+        public_url   => "http://${::fqdn}:5000/v3/",
+        admin_url    => "http://${::fqdn}:35357/v3/",
+        internal_url => "http://${::fqdn}:5000/v3/",
+        region       => 'RegionOne',
+        require      => [
+            Class['apache::service'],
+            Class['::mysql::server'],
+        ],
+    }
+    -> class { 'keystone::roles::admin':
+        email    => $::easystack::config::keystone_admin_email,
+        password => $::easystack::config::keystone_admin_password,
+    }
+
+    # Remove the admin_token_auth paste pipeline.
+    # After the first puppet run this requires setting keystone v3
+    # admin credentials via /root/openrc or as environment variables.
+    include keystone::disable_admin_token_auth
+
 }
