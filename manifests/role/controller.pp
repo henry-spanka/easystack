@@ -36,4 +36,18 @@ class easystack::role::controller inherits ::easystack::role {
         ensure => installed,
         name   => 'python2-PyMySQL'
     }
+
+    # Install and configure RabbitMQ
+    class { '::rabbitmq':
+        delete_guest_user => true,
+    }
+    rabbitmq_user { 'openstack':
+        admin    => false,
+        password => $::easystack::config::rabbitmq_user_openstack_password,
+    }
+    rabbitmq_user_permissions { 'openstack@/':
+        configure_permission => '.*',
+        read_permission      => '.*',
+        write_permission     => '.*',
+    }
 }

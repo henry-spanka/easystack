@@ -43,16 +43,19 @@
 # Copyright 2017 Henry Spanka, unless otherwise noted.
 #
 class easystack (
-    $database_root_password = $easystack::params::database_root_password,
-    $management_network     = $easystack::params::management_network,
+    $database_root_password           = $easystack::params::database_root_password,
+    $management_network               = $easystack::params::management_network,
+    $rabbitmq_user_openstack_password = $easystack::params::rabbitmq_user_openstack_password,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
     validate_string($management_network)
+    validate_string($rabbitmq_user_openstack_password)
 
     # Instaniate config class
     class { '::easystack::config':
-        database_root_password => $database_root_password,
-        management_network     => $management_network,
+        database_root_password           => $database_root_password,
+        management_network               => $management_network,
+        rabbitmq_user_openstack_password => $rabbitmq_user_openstack_password,
     }
 }
