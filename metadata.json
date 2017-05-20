@@ -1,0 +1,28 @@
+{
+  "name": "henryspanka-easystack",
+  "version": "0.1.0",
+  "author": "Henry Spanka",
+  "summary": "Configure OpenStack using Puppet with ease.",
+  "license": "Apache-2.0",
+  "source": "https://git.rack.ffm.internal.myvirtualserver.de/puppet/easystack",
+  "project_page": "https://git.rack.ffm.internal.myvirtualserver.de/puppet/easystack",
+  "issues_url": "https://git.rack.ffm.internal.myvirtualserver.de/puppet/easystack/issues",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ],
+  "data_provider": null,
+  "operatingsystem_support": [
+    {
+        "operatingsystem": "RedHat",
+        "operatingsystemrelease": [
+            "7"
+        ]
+    }
+  ],
+  "requirements": [
+    {
+        "name": "puppet",
+        "version_requirement": "4.x"
+    }
+  ]
+}
