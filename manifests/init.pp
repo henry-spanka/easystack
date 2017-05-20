@@ -42,6 +42,17 @@
 #
 # Copyright 2017 Henry Spanka, unless otherwise noted.
 #
-class easystack {
-    
+class easystack (
+    $database_root_password = $easystack::params::database_root_password,
+    $management_network     = $easystack::params::management_network,
+) inherits easystack::params {
+    # Validate the parameters
+    validate_string($database_root_password)
+    validate_string($management_network)
+
+    # Instaniate config class
+    class { '::easystack::config':
+        database_root_password => $database_root_password,
+        management_network     => $management_network,
+    }
 }
