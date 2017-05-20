@@ -43,5 +43,5 @@
 # Copyright 2017 Henry Spanka, unless otherwise noted.
 #
 class easystack {
-
+    
 }

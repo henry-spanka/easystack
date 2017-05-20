@@ -8,7 +8,8 @@
   "project_page": "https://git.rack.ffm.internal.myvirtualserver.de/puppet/easystack",
   "issues_url": "https://git.rack.ffm.internal.myvirtualserver.de/puppet/easystack/issues",
   "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"},
+    {"name": "drzewiec-chrony","version_requirement":">= 1.0.0 < 2.0.0"}
   ],
   "data_provider": null,
   "operatingsystem_support": [
