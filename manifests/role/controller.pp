@@ -449,6 +449,7 @@ class easystack::role::controller inherits ::easystack::role {
             'enable_fip_topology_check' => false,
             'timezone'                  => 'UTC',
         },
+        default_theme                => 'material',
     }
 
 }
