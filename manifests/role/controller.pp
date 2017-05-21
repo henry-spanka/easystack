@@ -56,10 +56,6 @@ class easystack::role::controller inherits ::easystack::role {
         listen_ip  => "127.0.0.1,::1,${management_ip}",
         max_memory => '20%',
     }
-    package { 'python-memcached':
-        ensure => installed,
-        name   => 'python-memcached',
-    }
 
     # Configure keystone mySQL database
     mysql::db { 'keystone':
@@ -152,6 +148,14 @@ class easystack::role::controller inherits ::easystack::role {
         group     => 'root',
         mode      => '0600', # Only root should be able to read the credentials
         require   => [
+            Class['keystone::endpoint'],
+            Class['keystone::roles::admin'],
+        ],
+    }
+
+    keystone_role { 'user':
+        ensure  => present,
+        require => [
             Class['keystone::endpoint'],
             Class['keystone::roles::admin'],
         ],
@@ -402,5 +406,38 @@ class easystack::role::controller inherits ::easystack::role {
 
     # Only on Primary Controller?
     include ::nova::cell_v2::simple_setup
+
+    # Configure Horizon dashboard on controller
+    class { '::horizon':
+        cache_backend                => 'django.core.cache.backends.memcached.MemcachedCache',
+        cache_server_ip              => '127.0.0.1',
+        cache_server_port            => 11211,
+        secret_key                   => $::easystack::config::horizon_secret_key,
+        django_debug                 => false,
+        api_result_limit             => 1000,
+        allowed_hosts                => '*',
+        servername                   => $::fqdn,
+        django_session_engine        => 'django.contrib.sessions.backends.cache',
+        keystone_url                 => "http://${::fqdn}:5000/v3",
+        keystone_multidomain_support => true,
+        keystone_default_domain      => 'Default',
+        keystone_default_role        => 'user',
+        api_versions                 => {
+            'identity' => 3,
+            'image'    => 2,
+            'volume'   => 2,
+        },
+        neutron_options              => {
+            'enable_router'             => false,
+            'enable_quotas'             => false,
+            'enable_distributed_router' => false,
+            'enable_ha_router'          => false,
+            'enable_lb'                 => false,
+            'enable_firewall'           => false,
+            'enable_vpn'                => false,
+            'enable_fip_topology_check' => false,
+            'timezone'                  => 'UTC',
+        },
+    }
 
 }
