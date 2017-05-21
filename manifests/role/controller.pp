@@ -160,4 +160,82 @@ class easystack::role::controller inherits ::easystack::role {
         ],
     }
 
+    # Configure glance mySQL database
+    mysql::db { 'glance':
+        user     => 'glance',
+        password => $::easystack::config::database_glance_password_hash,
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql_user { 'glance@%':
+        ensure        => 'present',
+        password_hash => $::easystack::config::database_glance_password_hash,
+    }
+    -> mysql_grant { 'glance@%/glance.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'glance.*',
+        user       => 'glance@%',
+    }
+
+    $glance_db_password = $::easystack::config::database_glance_password
+
+    class { '::glance': }
+
+    glance_api_config {
+        'paste_deploy/flavor':
+            ensure => present,
+            value  => 'keystone',
+    }
+
+    class { '::glance::api::db':
+        database_connection => "mysql+pymysql://glance:${glance_db_password}@localhost/glance",
+    }
+
+    class { '::glance::api::authtoken':
+        project_name        => 'services',
+        project_domain_name => 'default',
+        user_domain_name    => 'default',
+        memcached_servers   => ['127.0.0.1:11211'],
+        username            => 'glance',
+        password            => $::easystack::config::keystone_glance_password,
+    }
+
+    glance_registry_config {
+        'paste_deploy/flavor':
+            ensure => present,
+            value  => 'keystone',
+    }
+
+    class { '::glance::registry::db':
+        database_connection => "mysql+pymysql://glance:${glance_db_password}@localhost/glance",
+    }
+
+    class { '::glance::registry::authtoken':
+        project_name        => 'services',
+        project_domain_name => 'default',
+        user_domain_name    => 'default',
+        memcached_servers   => ['127.0.0.1:11211'],
+        username            => 'glance',
+        password            => $::easystack::config::keystone_glance_password,
+    }
+
+    class { 'glance::backend::file': }
+
+    class { '::glance::keystone::auth':
+        password            => $::easystack::config::keystone_glance_password,
+        auth_name           => 'glance',
+        configure_endpoint  => true,
+        configure_user      => true,
+        configure_user_role => true,
+        service_name        => 'glance',
+        public_url          => "http://${::fqdn}:9292",
+        internal_url        => "http://${::fqdn}:9292",
+        admin_url           => "http://${::fqdn}:9292",
+        region              => $::easystack::config::keystone_region,
+        tenant              => 'services',
+        require             => Class['keystone::endpoint'],
+    }
+
 }

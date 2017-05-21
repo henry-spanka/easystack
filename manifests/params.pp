@@ -9,4 +9,7 @@ class easystack::params {
     $keystone_admin_password = undef
     $keystone_admin_email = undef
     $keystone_region = undef
+    $database_glance_password = undef
+    $database_glance_password_hash = undef
+    $keystone_glance_password = undef
 }

@@ -52,6 +52,9 @@ class easystack (
     $keystone_admin_password          = $easystack::params::keystone_admin_password,
     $keystone_admin_email             = $easystack::params::keystone_admin_email,
     $keystone_region                  = $easystack::params::keystone_region,
+    $database_glance_password         = $easystack::params::database_glance_password,
+    $database_glance_password_hash    = $easystack::params::database_glance_password_hash,
+    $keystone_glance_password         = $easystack::params::keystone_glance_password,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
@@ -63,6 +66,9 @@ class easystack (
     validate_string($keystone_admin_password)
     validate_string($keystone_admin_email)
     validate_string($keystone_region)
+    validate_string($database_glance_password)
+    validate_string($database_glance_password_hash)
+    validate_string($keystone_glance_password)
 
     # Instaniate config class
     class { '::easystack::config':
@@ -75,5 +81,8 @@ class easystack (
         keystone_admin_password          => $keystone_admin_password,
         keystone_admin_email             => $keystone_admin_email,
         keystone_region                  => $keystone_region,
+        database_glance_password         => $database_glance_password,
+        database_glance_password_hash    => $database_glance_password_hash,
+        keystone_glance_password         => $keystone_glance_password,
     }
 }
