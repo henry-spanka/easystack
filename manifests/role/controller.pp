@@ -153,6 +153,7 @@ class easystack::role::controller inherits ::easystack::role {
         show_diff => false,
         owner     => 'root',
         group     => 'root',
+        mode      => '0600', # Only root should be able to read the credentials
         require   => [
             Class['keystone::endpoint'],
             Class['keystone::roles::admin'],
