@@ -191,6 +191,7 @@ class easystack::role::controller inherits ::easystack::role {
 
     class { '::glance::api::db':
         database_connection => "mysql+pymysql://glance:${glance_db_password}@localhost/glance",
+        notify              => Service['glance-api'],
     }
 
     class { '::glance::api::authtoken':
@@ -200,6 +201,7 @@ class easystack::role::controller inherits ::easystack::role {
         memcached_servers   => ['127.0.0.1:11211'],
         username            => 'glance',
         password            => $::easystack::config::keystone_glance_password,
+        notify              => Service['glance-api'],
     }
 
     glance_registry_config {
@@ -210,6 +212,7 @@ class easystack::role::controller inherits ::easystack::role {
 
     class { '::glance::registry::db':
         database_connection => "mysql+pymysql://glance:${glance_db_password}@localhost/glance",
+        notify              => Service['glance-registry'],
     }
 
     class { '::glance::registry::authtoken':
@@ -219,6 +222,7 @@ class easystack::role::controller inherits ::easystack::role {
         memcached_servers   => ['127.0.0.1:11211'],
         username            => 'glance',
         password            => $::easystack::config::keystone_glance_password,
+        notify              => Service['glance-registry'],
     }
 
     class { 'glance::backend::file': }
@@ -236,6 +240,24 @@ class easystack::role::controller inherits ::easystack::role {
         region              => $::easystack::config::keystone_region,
         tenant              => 'services',
         require             => Class['keystone::endpoint'],
+    }
+
+    service { 'glance-api':
+        ensure     => 'running',
+        name       => 'openstack-glance-api',
+        enable     => true,
+        hasstatus  => true,
+        hasrestart => true,
+        tag        => 'glance-service',
+    }
+
+    service { 'glance-registry':
+        ensure     => 'running',
+        name       => 'openstack-glance-registry',
+        enable     => true,
+        hasstatus  => true,
+        hasrestart => true,
+        tag        => 'glance-service',
     }
 
 }
