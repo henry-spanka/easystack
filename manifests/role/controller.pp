@@ -21,7 +21,7 @@ class easystack::role::controller inherits ::easystack::role {
         remove_default_accounts => true,
         override_options        => {
             'mysqld' => {
-                'bind-address'           => $management_ip,
+                'bind-address'           => '0.0.0.0',
                 'default-storage-engine' => 'innodb',
                 'innodb_file_per_table'  => true,
                 'max_connections'        => 4096,
