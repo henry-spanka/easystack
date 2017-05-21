@@ -113,7 +113,7 @@ class easystack::role::controller inherits ::easystack::role {
     class { 'keystone':
         catalog_type        => 'sql',
         admin_token         => $::easystack::config::keystone_admin_token,
-        database_connection => "mysql://keystone:${keystone_db_password}@localhost/keystone",
+        database_connection => "mysql+pymysql://keystone:${keystone_db_password}@localhost/keystone",
         token_provider      => 'fernet',
         service_name        => 'httpd',
         require             => Class['::mysql::server'],
