@@ -12,4 +12,8 @@ class easystack::params {
     $database_glance_password = undef
     $database_glance_password_hash = undef
     $keystone_glance_password = undef
+    $keystone_nova_password = undef
+    $database_nova_password = undef
+    $database_nova_password_hash = undef
+    $keystone_nova_placement_password = undef
 }

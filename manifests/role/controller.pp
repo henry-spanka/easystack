@@ -85,7 +85,10 @@ class easystack::role::controller inherits ::easystack::role {
         servername    => $::fqdn,
     }
 
-    apache::mod { 'wsgi': }
+    class { 'keystone::wsgi::apache':
+        servername => $::fqdn,
+        ssl        => false,
+    }
 
     -> selinux::port { 'allow-keystone-httpd-5000':
         seltype  => 'http_port_t',
@@ -99,12 +102,6 @@ class easystack::role::controller inherits ::easystack::role {
     }
     -> selinux::boolean { 'httpd_can_network_connect_db':
         ensure => 'on',
-    }
-    -> file { '/etc/httpd/conf.d/wsgi-keystone.conf':
-        ensure  => 'link',
-        target  => '/usr/share/keystone/wsgi-keystone.conf',
-        notify  => Class['apache::service'],
-        require => Class['apache'],
     }
 
     $keystone_db_password = $::easystack::config::database_keystone_password
@@ -259,5 +256,151 @@ class easystack::role::controller inherits ::easystack::role {
         hasrestart => true,
         tag        => 'glance-service',
     }
+
+    # Configure Compute service Nova on controller node
+
+    # Configure nova mySQL databases
+    mysql::db { 'nova_api':
+        user     => 'nova',
+        password => $::easystack::config::database_nova_password,
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql::db { 'nova':
+        user     => 'nova',
+        password => $::easystack::config::database_nova_password,
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql::db { 'nova_cell0':
+        user     => 'nova',
+        password => $::easystack::config::database_nova_password,
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql_user { 'nova@%':
+        ensure        => 'present',
+        password_hash => $::easystack::config::database_nova_password_hash,
+    }
+    -> mysql_grant { 'nova@%/nova_api.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'nova_api.*',
+        user       => 'nova@%',
+    }
+    -> mysql_grant { 'nova@%/nova.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'nova.*',
+        user       => 'nova@%',
+    }
+    -> mysql_grant { 'nova@%/nova_cell0.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'nova_cell0.*',
+        user       => 'nova@%',
+    }
+
+    $nova_db_password = $::easystack::config::database_nova_password
+    $rabbit_password = $::easystack::rabbitmq_user_openstack_password
+
+    class { 'nova':
+        database_connection     => "mysql+pymysql://nova:${nova_db_password}@localhost/nova?charset=utf8",
+        api_database_connection => "mysql+pymysql://nova:${nova_db_password}@localhost/nova_api?charset=utf8",
+        default_transport_url   => "rabbit://openstack:${rabbit_password}@localhost",
+        image_service           => 'nova.image.glance.GlanceImageService',
+        glance_api_servers      => 'http://localhost:9292',
+        auth_strategy           => 'keystone',
+        lock_path               => '/var/lib/nova/tmp',
+    }
+
+    class { '::nova::keystone::authtoken':
+        project_name        => 'services',
+        project_domain_name => 'default',
+        user_domain_name    => 'default',
+        memcached_servers   => ['127.0.0.1:11211'],
+        username            => 'nova',
+        password            => $::easystack::config::keystone_nova_password,
+    }
+
+    class { '::nova::keystone::auth':
+        password            => $::easystack::config::keystone_nova_password,
+        auth_name           => 'nova',
+        configure_endpoint  => true,
+        configure_user      => true,
+        configure_user_role => true,
+        service_name        => 'nova',
+        public_url          => "http://${::fqdn}:8774/v2.1",
+        internal_url        => "http://${::fqdn}:8774/v2.1",
+        admin_url           => "http://${::fqdn}:8774/v2.1",
+        region              => $::easystack::config::keystone_region,
+        tenant              => 'services',
+        require             => Class['keystone::endpoint'],
+    }
+
+    class { '::nova::keystone::auth_placement':
+        password            => $::easystack::config::keystone_nova_placement_password,
+        auth_name           => 'placement',
+        configure_endpoint  => true,
+        configure_user      => true,
+        configure_user_role => true,
+        service_name        => 'placement',
+        public_url          => "http://${::fqdn}:8778",
+        internal_url        => "http://${::fqdn}:8778",
+        admin_url           => "http://${::fqdn}:8778",
+        region              => $::easystack::config::keystone_region,
+        tenant              => 'services',
+        require             => Class['keystone::endpoint'],
+    }
+
+    class { 'nova::api':
+        enabled_apis => ['osapi_compute', 'metadata']
+    }
+
+    class { 'nova::conductor': }
+    class { 'nova::consoleauth': }
+    class { 'nova::vncproxy': }
+    class { 'nova::scheduler': }
+
+    class { 'nova::placement':
+        os_region_name      => $::easystack::config::keystone_region,
+        project_domain_name => 'default',
+        project_name        => 'services',
+        auth_type           => 'password',
+        auth_url            => "http://${::fqdn}:35357/v3",
+        username            => 'placement',
+        password            => $::easystack::config::keystone_nova_placement_password,
+    }
+
+    selinux::port { 'allow-keystone-httpd-8778':
+        seltype  => 'http_port_t',
+        port     => 8778,
+        protocol => 'tcp',
+        notify   => Class['apache::service'],
+        require  => Class['apache'],
+    }
+
+    class { 'nova::wsgi::apache_placement':
+        servername => $::fqdn,
+        api_port   => 8778,
+        ssl        => false,
+    }
+
+    # lint:ignore:duplicate_params
+    nova_config {
+        'DEFAULT/my_ip':                     value => $management_ip;
+        'DEFAULT/use_neutron':               value => true;
+        'DEFAULT/firewall_driver':           value => 'nova.virt.firewall.NoopFirewallDriver';
+        'vnc/enabled':                       value => true;
+        'vnc/vncserver_listen':              value => $management_ip;
+        'vnc/vncserver_proxyclient_address': value => $management_ip;
+    }
+    # lint:endignore
+
+    # Only on Primary Controller?
+    include ::nova::cell_v2::simple_setup
 
 }

@@ -55,6 +55,10 @@ class easystack (
     $database_glance_password         = $easystack::params::database_glance_password,
     $database_glance_password_hash    = $easystack::params::database_glance_password_hash,
     $keystone_glance_password         = $easystack::params::keystone_glance_password,
+    $keystone_nova_password           = $easystack::params::keystone_nova_password,
+    $database_nova_password           = $easystack::params::database_nova_password,
+    $database_nova_password_hash      = $easystack::params::database_nova_password_hash,
+    $keystone_nova_placement_password = $easystack::params::keystone_nova_placement_password,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
@@ -69,6 +73,10 @@ class easystack (
     validate_string($database_glance_password)
     validate_string($database_glance_password_hash)
     validate_string($keystone_glance_password)
+    validate_string($keystone_nova_password)
+    validate_string($database_nova_password)
+    validate_string($database_nova_password_hash)
+    validate_string($keystone_nova_placement_password)
 
     # Instaniate config class
     class { '::easystack::config':
@@ -84,5 +92,9 @@ class easystack (
         database_glance_password         => $database_glance_password,
         database_glance_password_hash    => $database_glance_password_hash,
         keystone_glance_password         => $keystone_glance_password,
+        keystone_nova_password           => $keystone_nova_password,
+        database_nova_password           => $database_nova_password,
+        database_nova_password_hash      => $database_nova_password_hash,
+        keystone_nova_placement_password => $keystone_nova_placement_password,
     }
 }
