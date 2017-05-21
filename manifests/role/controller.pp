@@ -247,6 +247,13 @@ class easystack::role::controller inherits ::easystack::role {
         require             => Class['keystone::endpoint'],
     }
 
+    class { '::glance::db::sync':
+        before => [
+            Service['glance-api'],
+            Service['glance-registry'],
+        ],
+    }
+
     service { 'glance-api':
         ensure     => 'running',
         name       => 'openstack-glance-api',
