@@ -8,4 +8,5 @@ class easystack::params {
     $keystone_admin_token = undef
     $keystone_admin_password = undef
     $keystone_admin_email = undef
+    $keystone_region = undef
 }

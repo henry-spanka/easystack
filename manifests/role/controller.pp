@@ -80,16 +80,6 @@ class easystack::role::controller inherits ::easystack::role {
         user       => 'keystone@%',
     }
 
-    $keystone_db_password = $::easystack::config::database_keystone_password
-
-    class { 'keystone':
-        catalog_type        => 'sql',
-        admin_token         => $::easystack::config::keystone_admin_token,
-        database_connection => "mysql://keystone:${keystone_db_password}@localhost/keystone",
-        token_provider      => 'fernet',
-        service_name        => 'httpd',
-    }
-
     class { 'apache':
         default_vhost => false,
         servername    => $::fqdn,
@@ -117,25 +107,56 @@ class easystack::role::controller inherits ::easystack::role {
         require => Class['apache'],
     }
 
+    $keystone_db_password = $::easystack::config::database_keystone_password
+    $keystone_admin_password = $::easystack::config::keystone_admin_password
+
+    class { 'keystone':
+        catalog_type        => 'sql',
+        admin_token         => $::easystack::config::keystone_admin_token,
+        database_connection => "mysql://keystone:${keystone_db_password}@localhost/keystone",
+        token_provider      => 'fernet',
+        service_name        => 'httpd',
+        require             => Class['::mysql::server'],
+    }
+
+    Package['openstack-keystone'] -> Class['apache::service']
+
+    class { 'keystone::roles::admin':
+        email    => $::easystack::config::keystone_admin_email,
+        password => $keystone_admin_password,
+        require  => [
+            Class['apache::service'],
+            Class['::mysql::server'],
+        ],
+    }
+
     # Installs the service user endpoint.
     class { 'keystone::endpoint':
         public_url   => "http://${::fqdn}:5000/v3/",
         admin_url    => "http://${::fqdn}:35357/v3/",
         internal_url => "http://${::fqdn}:5000/v3/",
-        region       => 'RegionOne',
+        region       => $::easystack::config::keystone_region,
         require      => [
             Class['apache::service'],
             Class['::mysql::server'],
         ],
-    }
-    -> class { 'keystone::roles::admin':
-        email    => $::easystack::config::keystone_admin_email,
-        password => $::easystack::config::keystone_admin_password,
     }
 
     # Remove the admin_token_auth paste pipeline.
     # After the first puppet run this requires setting keystone v3
     # admin credentials via /root/openrc or as environment variables.
     include keystone::disable_admin_token_auth
+
+    file { '/root/openrc':
+        ensure    => file,
+        content   => template('easystack/keystone/openrc.erb'),
+        show_diff => false,
+        owner     => 'root',
+        group     => 'root',
+        require   => [
+            Class['keystone::endpoint'],
+            Class['keystone::roles::admin'],
+        ],
+    }
 
 }
