@@ -16,4 +16,7 @@ class easystack::params {
     $database_nova_password = undef
     $database_nova_password_hash = undef
     $keystone_nova_placement_password = undef
+    $keystone_neutron_password = undef
+    $database_neutron_password = undef
+    $database_neutron_password_hash = undef
 }
