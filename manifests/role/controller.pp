@@ -125,10 +125,14 @@ class easystack::role::controller inherits ::easystack::role {
 
     # Installs the service user endpoint.
     class { 'keystone::endpoint':
-        public_url   => "http://${::fqdn}:5000/v3/",
-        admin_url    => "http://${::fqdn}:35357/v3/",
-        internal_url => "http://${::fqdn}:5000/v3/",
+        public_url   => "http://${::fqdn}:5000",
+        admin_url    => "http://${::fqdn}:35357",
+        internal_url => "http://${::fqdn}:5000",
         region       => $::easystack::config::keystone_region,
+        #   If the version is set to the empty string (''), then it won't be
+        #   used. This is the expected behaviour since Keystone V3 handles API versions
+        #   from the context.
+        version      => '',
         require      => [
             Class['apache::service'],
             Class['::mysql::server'],
