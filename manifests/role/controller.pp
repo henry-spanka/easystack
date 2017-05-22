@@ -406,10 +406,11 @@ class easystack::role::controller inherits ::easystack::role {
 
     # lint:ignore:duplicate_params
     nova_config {
-        'DEFAULT/my_ip':                     value => $management_ip;
-        'vnc/enabled':                       value => true;
-        'vnc/vncserver_listen':              value => $management_ip;
-        'vnc/vncserver_proxyclient_address': value => $management_ip;
+        'DEFAULT/my_ip':                              value => $management_ip;
+        'vnc/enabled':                                value => true;
+        'vnc/vncserver_listen':                       value => $management_ip;
+        'vnc/vncserver_proxyclient_address':          value => $management_ip;
+        'scheduler/discover_hosts_in_cells_interval': value => 300;
     }
     # lint:endignore
 
