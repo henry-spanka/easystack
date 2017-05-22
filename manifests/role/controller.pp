@@ -407,13 +407,23 @@ class easystack::role::controller inherits ::easystack::role {
     # lint:ignore:duplicate_params
     nova_config {
         'DEFAULT/my_ip':                     value => $management_ip;
-        'DEFAULT/use_neutron':               value => true;
-        'DEFAULT/firewall_driver':           value => 'nova.virt.firewall.NoopFirewallDriver';
         'vnc/enabled':                       value => true;
         'vnc/vncserver_listen':              value => $management_ip;
         'vnc/vncserver_proxyclient_address': value => $management_ip;
     }
     # lint:endignore
+
+    class { 'nova::network::neutron':
+        neutron_project_name        => 'services',
+        neutron_project_domain_name => 'default',
+        neutron_user_domain_name    => 'default',
+        neutron_username            => 'neutron',
+        neutron_password            => $::easystack::config::keystone_neutron_password,
+        neutron_url                 => "http://${::fqdn}:9696",
+        neutron_auth_url            => "http://${::fqdn}:35357/v3",
+        firewall_driver             => 'nova.virt.firewall.NoopFirewallDriver',
+        neutron_region_name         => $::easystack::config::keystone_region,
+    }
 
     # Only on Primary Controller?
     include ::nova::cell_v2::simple_setup
@@ -439,7 +449,7 @@ class easystack::role::controller inherits ::easystack::role {
             'volume'   => 2,
         },
         neutron_options              => {
-            'enable_router'             => false,
+            'enable_router'             => true,
             'enable_quotas'             => false,
             'enable_distributed_router' => false,
             'enable_ha_router'          => false,
@@ -451,5 +461,105 @@ class easystack::role::controller inherits ::easystack::role {
         },
         default_theme                => 'material',
     }
+
+    # Configure Neutron server on controller
+
+    # Setup database for Neutron
+    mysql::db { 'neutron':
+        user     => 'neutron',
+        password => $::easystack::config::database_neutron_password_hash,
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql_user { 'neutron@%':
+        ensure        => 'present',
+        password_hash => $::easystack::config::database_neutron_password_hash,
+    }
+    -> mysql_grant { 'neutron@%/neutron.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'neutron.*',
+        user       => 'neutron@%',
+    }
+
+    $neutron_db_password = $::easystack::config::database_neutron_password
+
+    class { '::neutron::keystone::authtoken':
+        project_name        => 'services',
+        project_domain_name => 'default',
+        user_domain_name    => 'default',
+        memcached_servers   => ['127.0.0.1:11211'],
+        username            => 'neutron',
+        password            => $::easystack::config::keystone_neutron_password,
+        auth_uri            => "http://${::fqdn}:5000",
+        auth_url            => "http://${::fqdn}:35357",
+    }
+
+    class { '::neutron':
+        enabled               => true,
+        bind_host             => $::fqdn,
+        default_transport_url => "rabbit://openstack:${rabbit_password}@localhost",
+        debug                 => false,
+        auth_strategy         => 'keystone',
+        lock_path             => '/var/lib/neutron/tmp',
+        use_ssl               => false,
+        core_plugin           => 'ml2',
+        service_plugins       => ['router'],
+        allow_overlapping_ips => true,
+    }
+
+    class { '::neutron::server':
+        database_connection => "mysql+pymysql://neutron:${neutron_db_password}@localhost/neutron?charset=utf8",
+        auth_strategy       => 'keystone',
+    }
+
+    class { '::neutron::server::notifications':
+        username                           => 'nova',
+        password                           => $::easystack::config::keystone_nova_password,
+        notify_nova_on_port_status_changes => true,
+        notify_nova_on_port_data_changes   => true,
+        project_name                       => 'services',
+        project_domain_name                => 'default',
+        user_domain_name                   => 'default',
+        auth_type                          => 'password',
+        auth_url                           => "http://${::fqdn}:35357",
+        region_name                        => $::easystack::config::keystone_region
+    }
+
+    class { '::neutron::plugins::ml2':
+        type_drivers          => ['flat', 'vlan', 'vxlan'],
+        tenant_network_types  => ['vxlan'],
+        mechanism_drivers     => ['linuxbridge', 'l2population'],
+        extension_drivers     => ['port_security'],
+        flat_networks         => ['provider'],
+        vni_ranges            => ['1:1000'],
+        enable_security_group => true,
+    }
+
+    class { '::neutron::keystone::auth':
+        password            => $::easystack::config::keystone_neutron_password,
+        auth_name           => 'neutron',
+        configure_endpoint  => true,
+        configure_user      => true,
+        configure_user_role => true,
+        service_name        => 'nova',
+        public_url          => "http://${::fqdn}:9696",
+        internal_url        => "http://${::fqdn}:9696",
+        admin_url           => "http://${::fqdn}:9696",
+        region              => $::easystack::config::keystone_region,
+        tenant              => 'services',
+        require             => Class['keystone::endpoint'],
+    }
+
+    class { '::neutron::db::sync':
+        before => Service['neutron-server'],
+    }
+
+    # lint:ignore:duplicate_params
+    neutron_config {
+        'securitygroup/enable_ipset': value => true;
+    }
+    # lint:endignore
 
 }
