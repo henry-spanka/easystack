@@ -22,6 +22,9 @@ class easystack::config (
     $database_neutron_password_hash = undef,
     $horizon_secret_key = undef,
     $controller_host = undef,
+    $neutron_network = undef,
+    $neutron_provider_interface = undef,
+    $neutron_metadata_shared_secret = undef,
 ) {
 
 }

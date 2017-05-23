@@ -63,10 +63,44 @@ class easystack::role::compute inherits ::easystack::role {
         neutron_enabled               => true,
     }
 
+    # We need to use QEMU for virtual servers and the old QEMU version
+    # on CentOS 7 does not support disk discarding.
+    if ($::is_virtual) {
+        $hw_disk_discard = undef
+        $libvirt_virt_type = 'qemu'
+    } else {
+        $hw_disk_discard = 'unmap'
+        $libvirt_virt_type = 'kvm'
+    }
+
     class { 'nova::compute::libvirt':
-        libvirt_hw_disk_discard => 'unmap',
+        libvirt_hw_disk_discard => $hw_disk_discard,
         vncserver_listen        => '0.0.0.0',
-        libvirt_virt_type       => 'qemu',
+        libvirt_virt_type       => $libvirt_virt_type,
+    }
+
+    class { '::neutron::keystone::authtoken':
+        project_name        => 'services',
+        project_domain_name => 'default',
+        user_domain_name    => 'default',
+        memcached_servers   => ["${controller_host}:11211"],
+        username            => 'neutron',
+        password            => $::easystack::config::keystone_neutron_password,
+        auth_uri            => "http://${controller_host}:5000",
+        auth_url            => "http://${controller_host}:35357",
+    }
+
+    class { '::neutron':
+        enabled               => true,
+        bind_host             => $::fqdn,
+        default_transport_url => "rabbit://openstack:${rabbit_password}@${controller_host}",
+        debug                 => false,
+        auth_strategy         => 'keystone',
+        lock_path             => '/var/lib/neutron/tmp',
+    }
+
+    class { '::neutron::agents::ml2::linuxbridge':
+        local_ip => ip_for_network($::easystack::config::neutron_network)
     }
 
 }

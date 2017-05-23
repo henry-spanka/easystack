@@ -64,6 +64,9 @@ class easystack (
     $database_neutron_password_hash   = $easystack::params::database_neutron_password_hash,
     $horizon_secret_key               = $easystack::params::horizon_secret_key,
     $controller_host                  = $easystack::params::controller_host,
+    $neutron_network                  = $easystack::params::neutron_network,
+    $neutron_provider_interface       = $easystack::params::neutron_provider_interface,
+    $neutron_metadata_shared_secret   = $easystack::params::neutron_metadata_shared_secret,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
@@ -87,6 +90,9 @@ class easystack (
     validate_string($database_neutron_password_hash)
     validate_string($horizon_secret_key)
     validate_string($controller_host)
+    validate_string($neutron_network)
+    validate_string($neutron_provider_interface)
+    validate_string($neutron_metadata_shared_secret)
 
     # Instaniate config class
     class { '::easystack::config':
@@ -111,5 +117,8 @@ class easystack (
         database_neutron_password_hash   => $database_neutron_password_hash,
         horizon_secret_key               => $horizon_secret_key,
         controller_host                  => $controller_host,
+        neutron_network                  => $neutron_network,
+        neutron_provider_interface       => $neutron_provider_interface,
+        neutron_metadata_shared_secret   => $neutron_metadata_shared_secret,
     }
 }
