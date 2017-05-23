@@ -100,7 +100,8 @@ class easystack::role::compute inherits ::easystack::role {
     }
 
     class { '::neutron::agents::ml2::linuxbridge':
-        local_ip => ip_for_network($::easystack::config::neutron_network)
+        local_ip     => ip_for_network($::easystack::config::neutron_network),
+        tunnel_types => ['vxlan'],
     }
 
 }

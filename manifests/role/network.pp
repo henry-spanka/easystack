@@ -66,6 +66,7 @@ class easystack::role::network inherits ::easystack::role {
         physical_interface_mappings => ['provider:eth2'],
         local_ip                    => ip_for_network($::easystack::config::neutron_network),
         l2_population               => true,
+        tunnel_types                => ['vxlan'],
     }
 
     class { '::neutron::agents::metadata':
