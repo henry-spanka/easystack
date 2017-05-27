@@ -221,4 +221,64 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     -> Package['nmap']
     -> Package['percona-xtrabackup']
     -> Class['::mysql::server']
+
+    # RabbitMQ does not like FQDNs, therefore we need to establish a cluster
+    # with only the hostnames
+    $controller_servers_rabbit = $::easystack::config::controller_servers.map |$server| {
+        split($server, '\.')[0]
+    }
+
+    # Install and configure RabbitMQ
+    class { '::rabbitmq':
+        delete_guest_user          => true,
+        config_cluster             => true,
+        cluster_nodes              => $controller_servers_rabbit,
+        cluster_node_type          => 'disc',
+        erlang_cookie              => $::easystack::config::rabbitmq_erlang_cookie,
+        wipe_db_on_cookie_change   => true,
+        cluster_partition_handling => 'pause_minority',
+    }
+
+    rabbitmq_user { 'openstack':
+        admin    => false,
+        password => $::easystack::config::rabbitmq_user_openstack_password,
+    }
+    rabbitmq_user_permissions { 'openstack@/':
+        configure_permission => '.*',
+        read_permission      => '.*',
+        write_permission     => '.*',
+    }
+
+    rabbitmq_policy { 'ha-all@/':
+        pattern    => '.*',
+        priority   => 0,
+        applyto    => 'all',
+        definition => {
+            'ha-mode'      => 'all',
+        },
+    }
+
+    firewalld_port { 'Allow rabbitmq cluster on port 4369 tcp':
+      ensure   => present,
+      zone     => 'public',
+      port     => 4369,
+      protocol => 'tcp',
+      before   => Class['::rabbitmq'],
+    }
+
+    firewalld_port { 'Allow rabbitmq cluster on port 25672 tcp':
+      ensure   => present,
+      zone     => 'public',
+      port     => 25672,
+      protocol => 'tcp',
+      before   => Class['::rabbitmq'],
+    }
+
+    firewalld_port { 'Allow rabbitmq on port 5672 tcp':
+      ensure   => present,
+      zone     => 'public',
+      port     => 5672,
+      protocol => 'tcp',
+      before   => Class['::rabbitmq'],
+    }
 }

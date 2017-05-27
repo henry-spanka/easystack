@@ -22,4 +22,5 @@ class easystack::params {
     $neutron_metadata_shared_secret = undef
     $controller_servers = undef
     $database_sstuser_password = undef
+    $rabbitmq_erlang_cookie = undef
 }

@@ -65,6 +65,7 @@ class easystack (
     $neutron_metadata_shared_secret   = $easystack::params::neutron_metadata_shared_secret,
     $controller_servers               = $easystack::params::controller_servers,
     $database_sstuser_password        = $easystack::params::database_sstuser_password,
+    $rabbitmq_erlang_cookie           = $easystack::params::rabbitmq_erlang_cookie,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
@@ -91,6 +92,7 @@ class easystack (
     if ($controller_servers != undef) {
         validate_array($controller_servers)
         validate_string($database_sstuser_password)
+        validate_string($rabbitmq_erlang_cookie)
     }
 
     # Instaniate config class
@@ -117,5 +119,6 @@ class easystack (
         neutron_metadata_shared_secret   => $neutron_metadata_shared_secret,
         controller_servers               => $controller_servers,
         database_sstuser_password        => $database_sstuser_password,
+        rabbitmq_erlang_cookie           => $rabbitmq_erlang_cookie,
     }
 }
