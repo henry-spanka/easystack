@@ -64,7 +64,7 @@ class easystack (
     $neutron_provider_interface       = $easystack::params::neutron_provider_interface,
     $neutron_metadata_shared_secret   = $easystack::params::neutron_metadata_shared_secret,
     $database_servers                 = $easystack::params::database_servers,
-    $database_sstuser_password        = $easystack::params::database_sstuser_password_hash,
+    $database_sstuser_password        = $easystack::params::database_sstuser_password,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
