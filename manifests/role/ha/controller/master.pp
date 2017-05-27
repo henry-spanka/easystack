@@ -49,8 +49,8 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         ensure => installed,
     }
 
-    $server_list = join($::easystack::config::database_servers, ' ')
-    $server_list_comma = join($::easystack::config::database_servers, ',')
+    $server_list = join($::easystack::config::controller_servers, ' ')
+    $server_list_comma = join($::easystack::config::controller_servers, ',')
     $database_sstuser_password = $easystack::config::database_sstuser_password
 
     # Setup Controller SQL databases

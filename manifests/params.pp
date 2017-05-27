@@ -20,6 +20,6 @@ class easystack::params {
     $neutron_network = undef
     $neutron_provider_interface = undef
     $neutron_metadata_shared_secret = undef
-    $database_servers = undef
+    $controller_servers = undef
     $database_sstuser_password = undef
 }
