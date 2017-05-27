@@ -67,6 +67,9 @@ class easystack (
     $neutron_network                  = $easystack::params::neutron_network,
     $neutron_provider_interface       = $easystack::params::neutron_provider_interface,
     $neutron_metadata_shared_secret   = $easystack::params::neutron_metadata_shared_secret,
+    $database_servers                 = $easystack::params::database_servers,
+    $database_sstuser_password        = $easystack::params::database_sstuser_password_hash,
+    $database_sstuser_password_hash   = $easystack::params::database_sstuser_password_hash,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
@@ -94,6 +97,12 @@ class easystack (
     validate_string($neutron_provider_interface)
     validate_string($neutron_metadata_shared_secret)
 
+    if ($database_servers != undef) {
+        validate_array($database_servers)
+        validate_string($database_sstuser_password)
+        validate_string($database_sstuser_password_hash)
+    }
+
     # Instaniate config class
     class { '::easystack::config':
         database_root_password           => $database_root_password,
@@ -120,5 +129,8 @@ class easystack (
         neutron_network                  => $neutron_network,
         neutron_provider_interface       => $neutron_provider_interface,
         neutron_metadata_shared_secret   => $neutron_metadata_shared_secret,
+        database_servers                 => $database_servers,
+        database_sstuser_password        => $database_sstuser_password,
+        database_sstuser_password_hash   => $database_sstuser_password_hash,
     }
 }

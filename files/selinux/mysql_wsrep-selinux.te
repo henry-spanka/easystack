@@ -1,0 +1,11 @@
+
+module mysql_wsrep-selinux 1.0;
+
+require {
+        type initrc_tmp_t;
+        type mysqld_t;
+        class file open;
+}
+
+#============= mysqld_t ==============
+allow mysqld_t initrc_tmp_t:file open;

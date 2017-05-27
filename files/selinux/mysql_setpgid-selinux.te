@@ -1,0 +1,10 @@
+
+module mysql_setpgid-selinux 1.0;
+
+require {
+        type mysqld_t;
+        class process setpgid;
+}
+
+#============= mysqld_t ==============
+allow mysqld_t self:process setpgid;
