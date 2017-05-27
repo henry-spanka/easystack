@@ -60,13 +60,13 @@ class easystack::role::controller inherits ::easystack::role {
     # Configure keystone mySQL database
     mysql::db { 'keystone':
         user     => 'keystone',
-        password => $::easystack::config::database_keystone_password_hash,
+        password => mysql_password($::easystack::config::database_keystone_password),
         host     => 'localhost',
         grant    => ['ALL'],
     }
     -> mysql_user { 'keystone@%':
         ensure        => 'present',
-        password_hash => $::easystack::config::database_keystone_password_hash,
+        password_hash => mysql_password($::easystack::config::database_keystone_password),
     }
     -> mysql_grant { 'keystone@%/keystone.*':
         ensure     => 'present',
@@ -168,13 +168,13 @@ class easystack::role::controller inherits ::easystack::role {
     # Configure glance mySQL database
     mysql::db { 'glance':
         user     => 'glance',
-        password => $::easystack::config::database_glance_password_hash,
+        password => mysql_password($::easystack::config::database_glance_password),
         host     => 'localhost',
         grant    => ['ALL'],
     }
     -> mysql_user { 'glance@%':
         ensure        => 'present',
-        password_hash => $::easystack::config::database_glance_password_hash,
+        password_hash => mysql_password($::easystack::config::database_glance_password),
     }
     -> mysql_grant { 'glance@%/glance.*':
         ensure     => 'present',
@@ -295,7 +295,7 @@ class easystack::role::controller inherits ::easystack::role {
     }
     -> mysql_user { 'nova@%':
         ensure        => 'present',
-        password_hash => $::easystack::config::database_nova_password_hash,
+        password_hash => mysql_password($::easystack::config::database_nova_password),
     }
     -> mysql_grant { 'nova@%/nova_api.*':
         ensure     => 'present',
@@ -468,13 +468,13 @@ class easystack::role::controller inherits ::easystack::role {
     # Setup database for Neutron
     mysql::db { 'neutron':
         user     => 'neutron',
-        password => $::easystack::config::database_neutron_password_hash,
+        password => mysql_password($::easystack::config::database_neutron_password),
         host     => 'localhost',
         grant    => ['ALL'],
     }
     -> mysql_user { 'neutron@%':
         ensure        => 'present',
-        password_hash => $::easystack::config::database_neutron_password_hash,
+        password_hash => mysql_password($::easystack::config::database_neutron_password),
     }
     -> mysql_grant { 'neutron@%/neutron.*':
         ensure     => 'present',

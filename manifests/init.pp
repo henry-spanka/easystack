@@ -47,21 +47,17 @@ class easystack (
     $management_network               = $easystack::params::management_network,
     $rabbitmq_user_openstack_password = $easystack::params::rabbitmq_user_openstack_password,
     $database_keystone_password       = $easystack::params::database_keystone_password,
-    $database_keystone_password_hash  = $easystack::params::database_keystone_password_hash,
     $keystone_admin_token             = $easystack::params::keystone_admin_token,
     $keystone_admin_password          = $easystack::params::keystone_admin_password,
     $keystone_admin_email             = $easystack::params::keystone_admin_email,
     $keystone_region                  = $easystack::params::keystone_region,
     $database_glance_password         = $easystack::params::database_glance_password,
-    $database_glance_password_hash    = $easystack::params::database_glance_password_hash,
     $keystone_glance_password         = $easystack::params::keystone_glance_password,
     $keystone_nova_password           = $easystack::params::keystone_nova_password,
     $database_nova_password           = $easystack::params::database_nova_password,
-    $database_nova_password_hash      = $easystack::params::database_nova_password_hash,
     $keystone_nova_placement_password = $easystack::params::keystone_nova_placement_password,
     $keystone_neutron_password        = $easystack::params::keystone_neutron_password,
     $database_neutron_password        = $easystack::params::database_neutron_password,
-    $database_neutron_password_hash   = $easystack::params::database_neutron_password_hash,
     $horizon_secret_key               = $easystack::params::horizon_secret_key,
     $controller_host                  = $easystack::params::controller_host,
     $neutron_network                  = $easystack::params::neutron_network,
@@ -69,28 +65,23 @@ class easystack (
     $neutron_metadata_shared_secret   = $easystack::params::neutron_metadata_shared_secret,
     $database_servers                 = $easystack::params::database_servers,
     $database_sstuser_password        = $easystack::params::database_sstuser_password_hash,
-    $database_sstuser_password_hash   = $easystack::params::database_sstuser_password_hash,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
     validate_string($management_network)
     validate_string($rabbitmq_user_openstack_password)
     validate_string($database_keystone_password)
-    validate_string($database_keystone_password_hash)
     validate_string($keystone_admin_token)
     validate_string($keystone_admin_password)
     validate_string($keystone_admin_email)
     validate_string($keystone_region)
     validate_string($database_glance_password)
-    validate_string($database_glance_password_hash)
     validate_string($keystone_glance_password)
     validate_string($keystone_nova_password)
     validate_string($database_nova_password)
-    validate_string($database_nova_password_hash)
     validate_string($keystone_nova_placement_password)
     validate_string($keystone_neutron_password)
     validate_string($database_neutron_password)
-    validate_string($database_neutron_password_hash)
     validate_string($horizon_secret_key)
     validate_string($controller_host)
     validate_string($neutron_network)
@@ -100,7 +91,6 @@ class easystack (
     if ($database_servers != undef) {
         validate_array($database_servers)
         validate_string($database_sstuser_password)
-        validate_string($database_sstuser_password_hash)
     }
 
     # Instaniate config class
@@ -109,21 +99,17 @@ class easystack (
         management_network               => $management_network,
         rabbitmq_user_openstack_password => $rabbitmq_user_openstack_password,
         database_keystone_password       => $database_keystone_password,
-        database_keystone_password_hash  => $database_keystone_password_hash,
         keystone_admin_token             => $keystone_admin_token,
         keystone_admin_password          => $keystone_admin_password,
         keystone_admin_email             => $keystone_admin_email,
         keystone_region                  => $keystone_region,
         database_glance_password         => $database_glance_password,
-        database_glance_password_hash    => $database_glance_password_hash,
         keystone_glance_password         => $keystone_glance_password,
         keystone_nova_password           => $keystone_nova_password,
         database_nova_password           => $database_nova_password,
-        database_nova_password_hash      => $database_nova_password_hash,
         keystone_nova_placement_password => $keystone_nova_placement_password,
         keystone_neutron_password        => $keystone_neutron_password,
         database_neutron_password        => $database_neutron_password,
-        database_neutron_password_hash   => $database_neutron_password_hash,
         horizon_secret_key               => $horizon_secret_key,
         controller_host                  => $controller_host,
         neutron_network                  => $neutron_network,
@@ -131,6 +117,5 @@ class easystack (
         neutron_metadata_shared_secret   => $neutron_metadata_shared_secret,
         database_servers                 => $database_servers,
         database_sstuser_password        => $database_sstuser_password,
-        database_sstuser_password_hash   => $database_sstuser_password_hash,
     }
 }

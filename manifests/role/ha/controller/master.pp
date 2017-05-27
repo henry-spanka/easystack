@@ -114,7 +114,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
 
     mysql_user { 'sstuser@localhost':
         ensure        => 'present',
-        password_hash => $::easystack::config::database_sstuser_password_hash,
+        password_hash => mysql_password($::easystack::config::database_sstuser_password),
     }
     -> mysql_grant { 'sstuser@localhost/*.*':
         ensure     => 'present',
