@@ -5,12 +5,12 @@ class easystack::profile::base {
 
     # Setup OpenStack repository on all nodes
     file { '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Cloud':
-        ensure => present,
-        source => 'puppet:///modules/easystack/RPM-GPG-KEY-CentOS-SIG-Virtualization',
+        ensure => file,
+        source => 'puppet:///modules/easystack/RPM-GPG-KEY-CentOS-SIG-Cloud',
     }
 
     yumrepo { 'CentOS-OpenStack-Octata':
-        baseurl  => 'ttp://mirror.centos.org/centos/$releasever/cloud/$basearch/openstack-ocata/',
+        baseurl  => 'http://mirror.centos.org/centos/$releasever/cloud/$basearch/openstack-ocata/',
         descr    => 'CentOS-$releasever - Openstack Octata',
         enabled  => 1,
         gpgcheck => 1,
