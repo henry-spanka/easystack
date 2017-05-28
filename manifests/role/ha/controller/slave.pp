@@ -60,7 +60,7 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         create_root_user        => false,
         override_options        => {
             'mysqld' => {
-                'bind-address'                   => '0.0.0.0',
+                'bind-address'                   => $management_ip,
                 'default-storage-engine'         => 'innodb',
                 'innodb_file_per_table'          => true,
                 'max_connections'                => 4096,
