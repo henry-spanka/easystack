@@ -281,4 +281,67 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
       protocol => 'tcp',
       before   => Class['::rabbitmq'],
     }
+
+    # Setup Corosync and Pacemaker
+    class { 'corosync':
+        authkey             => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
+        bind_address        => $management_ip,
+        cluster_name        => 'openstack_corosync_cluster',
+        enable_secauth      => true,
+        set_votequorum      => true,
+        quorum_members      => $::easystack::config::controller_servers,
+        manage_pcsd_service => true,
+        rrp_mode            => 'active',
+    }
+
+    corosync::service { 'pacemaker':
+        version => 1,
+    }
+
+    firewalld_service { 'Allow Corosync and pacemaker multicast':
+      ensure  => present,
+      service => 'high-availability',
+      zone    => 'public',
+      before  => Class['corosync'],
+    }
+
+    cs_property { 'pe-warn-series-max':
+        value => 1000,
+    }
+
+    cs_property { 'pe-input-series-max':
+        value => 1000,
+    }
+
+    cs_property { 'pe-error-series-max':
+        value => 1000,
+    }
+
+    cs_property { 'cluster-recheck-interval':
+        value => '5min',
+    }
+
+    if ($::is_virtual) {
+        # lint:ignore:quoted_booleans
+        cs_property { 'stonith-enabled':
+            value => 'false',
+        }
+        # lint:endignore
+    }
+
+    cs_primitive { 'generic_vip':
+        primitive_class => 'ocf',
+        primitive_type  => 'IPaddr2',
+        provided_by     => 'heartbeat',
+        parameters      => {
+            'ip'           => $::easystack::config::controller_vip,
+            'cidr_netmask' => '24'
+        },
+        operations      => {
+            'monitor' => {
+                'interval' => '30s',
+            }
+        },
+    }
+
 }

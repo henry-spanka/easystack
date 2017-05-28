@@ -236,4 +236,27 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
       protocol => 'tcp',
       before   => Class['::rabbitmq'],
     }
+
+    # Setup Corosync and Pacemaker
+    class { 'corosync':
+        authkey             => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
+        bind_address        => $management_ip,
+        cluster_name        => 'openstack_corosync_cluster',
+        enable_secauth      => true,
+        set_votequorum      => true,
+        quorum_members      => $::easystack::config::controller_servers,
+        manage_pcsd_service => true,
+        rrp_mode            => 'active',
+    }
+
+    corosync::service { 'pacemaker':
+        version => 1,
+    }
+
+    firewalld_service { 'Allow Corosync and pacemaker multicast':
+      ensure  => present,
+      service => 'high-availability',
+      zone    => 'public',
+      before  => Class['corosync'],
+    }
 }

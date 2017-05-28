@@ -23,4 +23,5 @@ class easystack::params {
     $controller_servers = undef
     $database_sstuser_password = undef
     $rabbitmq_erlang_cookie = undef
+    $controller_vip = undef
 }
