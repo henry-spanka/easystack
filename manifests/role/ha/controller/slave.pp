@@ -204,6 +204,7 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
 
     # Install and configure RabbitMQ
     class { '::rabbitmq':
+        node_ip_address            => $management_ip,
         delete_guest_user          => true,
         config_cluster             => true,
         cluster_nodes              => $controller_servers_rabbit,
