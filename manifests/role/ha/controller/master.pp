@@ -833,6 +833,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     cs_order { 'vip_before_haproxy':
         first   => 'generic_vip',
         second  => 'haproxy-clone',
+        kind    => 'Optional',
         require => [
             Cs_clone['haproxy-clone'],
             Cs_primitive['generic_vip'],
