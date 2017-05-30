@@ -812,4 +812,36 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         value  => '1',
         before => Class['haproxy'],
     }
+
+    cs_primitive { 'haproxy':
+        primitive_class => 'systemd',
+        primitive_type  => 'haproxy',
+        operations      => {
+            'monitor' => {
+                'interval' => '1s',
+            }
+        },
+        require         => Class['haproxy'],
+    }
+
+    cs_clone { 'haproxy-clone':
+        ensure    => present,
+        primitive => 'haproxy',
+        require   => Cs_primitive['haproxy'],
+    }
+
+    cs_order { 'vip_before_haproxy':
+        first   => 'generic_vip',
+        second  => 'haproxy-clone',
+        require => [
+            Cs_clone['haproxy-clone'],
+            Cs_primitive['generic_vip'],
+        ],
+    }
+
+    cs_colocation { 'vip_with_haproxy':
+        primitives => ['generic_vip', 'haproxy-clone'],
+        require    => Cs_order['vip_before_haproxy'],
+    }
+
 }
