@@ -48,7 +48,15 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         ensure => installed,
     }
 
-    $server_list_comma = join($::easystack::config::controller_servers, ',')
+    $controller_nodes_fqdn = $::easystack::config::controller_nodes.map |Hash $params| {
+        $params[fqdn]
+    }
+
+    $controller_nodes_ip = $::easystack::config::controller_nodes.map |Hash $params| {
+        $params[ip]
+    }
+
+    $controller_nodes_fqdn_list = join($controller_nodes_fqdn, ',')
     $database_sstuser_password = $easystack::config::database_sstuser_password
 
     # Setup Controller SQL databases
@@ -69,7 +77,7 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
                 'wsrep_node_address'             => $management_ip,
                 'wsrep_provider'                 => '/usr/lib64/galera/libgalera_smm.so',
                 'wsrep_cluster_name'             => 'openstack_galera_cluster',
-                'wsrep_cluster_address'          => "gcomm://${server_list_comma}",
+                'wsrep_cluster_address'          => "gcomm://${controller_nodes_fqdn_list}",
                 'wsrep_slave_threads'            => '8',
                 'wsrep_sst_method'               => 'xtrabackup-v2',
                 'wsrep_sst_auth'                 => "sstuser:${database_sstuser_password}",
@@ -146,6 +154,23 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         before    => Class['mysql::server::installdb'],
     }
 
+    ::etc_services { 'mysqlchk/tcp':
+        port    => '9200',
+        aliases => [],
+        comment => 'Mysqlcheck',
+        before  => Class['galera::status'],
+    }
+
+    class { 'galera::status':
+        status_password         => $::easystack::config::database_status_password,
+        status_user             => 'status',
+        status_allow            => '%',
+        port                    => '9200',
+        available_when_donor    => 0,
+        available_when_readonly => 0,
+        status_host             => $management_ip,
+    }
+
     class { 'firewalld': }
 
     firewalld_port { 'Allow galera replication on port 4444 tcp':
@@ -187,6 +212,14 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
       before  => Class['mysql::server::installdb'],
     }
 
+    firewalld_port { 'Allow galera status check on port 9200 tcp':
+      ensure   => present,
+      zone     => 'public',
+      port     => 9200,
+      protocol => 'tcp',
+      before   => Service['xinetd'],
+    }
+
     # Dependencies definition
     Yumrepo['MariaDB']
     -> Package['galera']
@@ -198,8 +231,8 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
 
     # RabbitMQ does not like FQDNs, therefore we need to establish a cluster
     # with only the hostnames
-    $controller_servers_rabbit = $::easystack::config::controller_servers.map |$server| {
-        split($server, '\.')[0]
+    $controller_nodes_hostname = $controller_nodes_fqdn.map |String $fqdn| {
+        split($fqdn, '\.')[0]
     }
 
     # Install and configure RabbitMQ
@@ -207,7 +240,7 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         node_ip_address            => $management_ip,
         delete_guest_user          => true,
         config_cluster             => true,
-        cluster_nodes              => $controller_servers_rabbit,
+        cluster_nodes              => $controller_nodes_hostname,
         cluster_node_type          => 'disc',
         erlang_cookie              => $::easystack::config::rabbitmq_erlang_cookie,
         wipe_db_on_cookie_change   => true,
@@ -245,7 +278,7 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         cluster_name        => 'openstack_corosync_cluster',
         enable_secauth      => true,
         set_votequorum      => true,
-        quorum_members      => $::easystack::config::controller_servers,
+        quorum_members      => $controller_nodes_fqdn,
         manage_pcsd_service => true,
         rrp_mode            => 'active',
     }
@@ -259,5 +292,440 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
       service => 'high-availability',
       zone    => 'public',
       before  => Class['corosync'],
+    }
+
+    # Setup haproxy
+    class { 'haproxy':
+        global_options   => {
+            chroot  => '/var/lib/haproxy',
+            daemon  => '',
+            user    => 'haproxy',
+            group   => 'haproxy',
+            pidfile => '/var/run/haproxy.pid',
+            maxconn => '4000',
+        },
+        defaults_options => {
+            'log'     => 'global',
+            'stats'   => 'enable',
+            'option'  => [
+                'redispatch',
+            ],
+            'retries' => '3',
+            'timeout' => [
+                'http-request 10s',
+                'queue 1m',
+                'connect 10s',
+                'client 1m',
+                'server 1m',
+                'check 10s',
+            ],
+            'maxconn' => '4000',
+        },
+    }
+
+    # Horizon Dashboard
+    haproxy::listen { 'dashboard_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '80',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    $controller_master = $::easystack::config::controller_nodes.filter |Hash $params| {
+        $params[master] == true
+    }
+
+    if ($controller_master == undef or length($controller_master) != 1) {
+        fail('No controller master could be found')
+    }
+
+    $controller_master_fqdn = $controller_master.map |Hash $params| {
+        $params[fqdn]
+    }
+
+    $controller_master_ip = $controller_master.map |Hash $params| {
+        $params[ip]
+    }
+
+    $controller_nodes_slaves = $::easystack::config::controller_nodes.filter |Hash $params| {
+        $params[master] == false
+    }
+
+    $controller_nodes_slaves_fqdn = $controller_nodes_slaves.map |Hash $params| {
+        $params[fqdn]
+    }
+
+    $controller_nodes_slaves_ip = $controller_nodes_slaves.map |Hash $params| {
+        $params[ip]
+    }
+
+    haproxy::balancermember { 'dashboard_members':
+        listening_service => 'dashboard_cluster',
+        ports             => '80',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # Galera Cluster
+    haproxy::listen { 'galera_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '3306',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'mysql-check',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'galera_members_master':
+        listening_service => 'galera_cluster',
+        ports             => '3306',
+        server_names      => $controller_master_fqdn,
+        ipaddresses       => $controller_master_ip,
+        options           => [
+            'check',
+            'port 9200',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    haproxy::balancermember { 'galera_members_slaves':
+        listening_service => 'galera_cluster',
+        ports             => '3306',
+        server_names      => $controller_nodes_slaves_fqdn,
+        ipaddresses       => $controller_nodes_slaves_ip,
+        options           => [
+            'backup',
+            'check',
+            'port 9200',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # Glance API
+    haproxy::listen { 'glance_api_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '9292',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'glance_api_members':
+        listening_service => 'glance_api_cluster',
+        ports             => '9292',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # Glance Registry
+    haproxy::listen { 'glance_registry_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '9191',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'glance_registry_members':
+        listening_service => 'glance_registry_cluster',
+        ports             => '9191',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # Keystone admin
+    haproxy::listen { 'keystone_admin_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '35357',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'keystone_admin_members':
+        listening_service => 'keystone_admin_cluster',
+        ports             => '35357',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # keystone public internal
+    haproxy::listen { 'keystone_public_internal_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '5000',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'keystone_public_internal_members':
+        listening_service => 'keystone_public_internal_cluster',
+        ports             => '5000',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # Nova EC2 API
+    haproxy::listen { 'nova_ec2_api_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '8773',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'nova_ec2_api_members':
+        listening_service => 'nova_ec2_api_cluster',
+        ports             => '8773',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # Nova Compute API
+    haproxy::listen { 'nova_compute_api_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '8774',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'nova_compute_api_members':
+        listening_service => 'nova_compute_api_cluster',
+        ports             => '8774',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # Nova Metadata API
+    haproxy::listen { 'nova_metadata_api_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '8775',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'nova_metadata_api_members':
+        listening_service => 'nova_metadata_api_cluster',
+        ports             => '8775',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # Cinder API
+    haproxy::listen { 'cinder_api_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '8776',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'cinder_api_members':
+        listening_service => 'cinder_api_cluster',
+        ports             => '8776',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # Ceilometer API
+    haproxy::listen { 'ceilometer_api_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '8777',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'ceilometer_api_members':
+        listening_service => 'ceilometer_api_cluster',
+        ports             => '8777',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # Nova VNCProxy
+    haproxy::listen { 'nova_vncproxy_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '6080',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'nova_vncproxy_members':
+        listening_service => 'nova_vncproxy_cluster',
+        ports             => '6080',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    # Neutron API
+    haproxy::listen { 'neutron_api_cluster':
+        ipaddress => $::easystack::config::controller_vip,
+        ports     => '9696',
+        mode      => 'tcp',
+        options   => {
+            'option'  => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+            ],
+            'balance' => 'source',
+        },
+    }
+
+    haproxy::balancermember { 'neutron_api_members':
+        listening_service => 'neutron_api_cluster',
+        ports             => '9696',
+        server_names      => $controller_nodes_fqdn,
+        ipaddresses       => $controller_nodes_ip,
+        options           => [
+            'check',
+            'inter 2000',
+            'rise 2',
+            'fall 5',
+        ],
+    }
+
+    sysctl::value { 'net.ipv4.ip_nonlocal_bind':
+        value  => '1',
+        before => Class['haproxy'],
     }
 }

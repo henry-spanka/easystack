@@ -63,10 +63,11 @@ class easystack (
     $neutron_network                  = $easystack::params::neutron_network,
     $neutron_provider_interface       = $easystack::params::neutron_provider_interface,
     $neutron_metadata_shared_secret   = $easystack::params::neutron_metadata_shared_secret,
-    $controller_servers               = $easystack::params::controller_servers,
+    $controller_nodes                 = $easystack::params::controller_nodes,
     $database_sstuser_password        = $easystack::params::database_sstuser_password,
     $rabbitmq_erlang_cookie           = $easystack::params::rabbitmq_erlang_cookie,
     $controller_vip                   = $easystack::params::controller_vip,
+    $database_status_password         = $easystack::params::database_status_password,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
@@ -90,11 +91,12 @@ class easystack (
     validate_string($neutron_provider_interface)
     validate_string($neutron_metadata_shared_secret)
 
-    if ($controller_servers != undef) {
-        validate_array($controller_servers)
+    if ($controller_nodes != undef) {
+        validate_array($controller_nodes)
         validate_string($database_sstuser_password)
         validate_string($rabbitmq_erlang_cookie)
         validate_string($controller_vip)
+        validate_string($database_status_password)
     }
 
     # Instaniate config class
@@ -119,9 +121,10 @@ class easystack (
         neutron_network                  => $neutron_network,
         neutron_provider_interface       => $neutron_provider_interface,
         neutron_metadata_shared_secret   => $neutron_metadata_shared_secret,
-        controller_servers               => $controller_servers,
+        controller_nodes                 => $controller_nodes,
         database_sstuser_password        => $database_sstuser_password,
         rabbitmq_erlang_cookie           => $rabbitmq_erlang_cookie,
         controller_vip                   => $controller_vip,
+        database_status_password         => $database_status_password,
     }
 }

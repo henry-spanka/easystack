@@ -21,10 +21,11 @@ class easystack::config (
     $neutron_network = undef,
     $neutron_provider_interface = undef,
     $neutron_metadata_shared_secret = undef,
-    $controller_servers = undef,
+    $controller_nodes = undef,
     $database_sstuser_password = undef,
     $rabbitmq_erlang_cookie = undef,
     $controller_vip = undef,
+    $database_status_password = undef,
 ) {
 
 }
