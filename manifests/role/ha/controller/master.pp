@@ -869,7 +869,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     }
 
     cs_colocation { 'vip_with_haproxy':
-        primitives => ['generic_vip', 'haproxy-clone'],
+        primitives => ['haproxy-clone', 'generic_vip'],
         require    => Cs_order['vip_before_haproxy'],
     }
 
