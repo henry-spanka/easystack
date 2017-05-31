@@ -271,6 +271,10 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         erlang_cookie              => $::easystack::config::rabbitmq_erlang_cookie,
         wipe_db_on_cookie_change   => true,
         cluster_partition_handling => 'pause_minority',
+        environment_variables      => {
+            'RABBITMQ_NODE_IP_ADDRESS' => $management_ip,
+            'ERL_EPMD_ADDRESS'         => $management_ip,
+        },
     }
 
     rabbitmq_user { 'openstack':
