@@ -837,6 +837,9 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         subsetting => 'admin_token_auth',
     }
 
+    # Variable needed in easystack/keystone/openrc.erb
+    $keystone_admin_password = $::easystack::config::keystone_admin_password
+
     file { '/root/openrc':
         ensure    => file,
         content   => template('easystack/keystone/openrc.erb'),
