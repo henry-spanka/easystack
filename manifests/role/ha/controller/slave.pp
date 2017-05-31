@@ -728,4 +728,104 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         value  => '1',
         before => Class['haproxy'],
     }
+
+    # Configure keystone service
+
+    class { 'apache':
+        default_vhost => false,
+        servername    => $::fqdn,
+    }
+
+    class { 'keystone::wsgi::apache':
+        servername => $::fqdn,
+        ssl        => false,
+        bind_host  => $management_ip
+    }
+
+    -> selinux::port { 'allow-keystone-httpd-5000':
+        seltype  => 'http_port_t',
+        port     => 5000,
+        protocol => 'tcp',
+    }
+    -> selinux::port { 'allow-keystone-httpd-35357':
+        seltype  => 'http_port_t',
+        port     => 35357,
+        protocol => 'tcp',
+    }
+    -> selinux::boolean { 'httpd_can_network_connect_db':
+        ensure => 'on',
+    }
+
+    firewalld_port { 'Allow keystone public and internal endpoint on port 5000 tcp':
+      ensure   => present,
+      zone     => 'public',
+      port     => 5000,
+      protocol => 'tcp',
+      before   => Class['keystone'],
+    }
+
+    firewalld_port { 'Allow keystone admin endpoint on port 35357 tcp':
+      ensure   => present,
+      zone     => 'public',
+      port     => 35357,
+      protocol => 'tcp',
+      before   => Class['keystone'],
+    }
+
+    $keystone_db_password = $::easystack::config::database_keystone_password
+
+    $controller_vip = $::easystack::config::controller_vip
+
+    class { 'keystone':
+        catalog_type        => 'sql',
+        admin_token         => $::easystack::config::keystone_admin_token,
+        database_connection => "mysql+pymysql://keystone:${keystone_db_password}@${controller_vip}/keystone",
+        token_provider      => 'fernet',
+        service_name        => 'httpd',
+        require             => Class['::mysql::server'],
+        public_bind_host    => $management_ip,
+        admin_bind_host     => $management_ip,
+        public_endpoint     => "http://${controller_vip}:5000",
+        admin_endpoint      => "http://${controller_vip}:35357",
+    }
+
+    Package['openstack-keystone'] -> Class['apache::service']
+
+    # Remove the admin_token_auth paste pipeline.
+    # After the first puppet run this requires setting keystone v3
+    # admin credentials via /root/openrc or as environment variables.
+    Ini_subsetting {
+        notify => Exec['restart_keystone'],
+    }
+
+    ini_subsetting { 'public_api/admin_token_auth':
+        ensure     => absent,
+        path       => '/etc/keystone/keystone-paste.ini',
+        section    => 'pipeline:public_api',
+        setting    => 'pipeline',
+        subsetting => 'admin_token_auth',
+    }
+    ini_subsetting { 'admin_api/admin_token_auth':
+        ensure     => absent,
+        path       => '/etc/keystone/keystone-paste.ini',
+        section    => 'pipeline:admin_api',
+        setting    => 'pipeline',
+        subsetting => 'admin_token_auth',
+    }
+    ini_subsetting { 'api_v3/admin_token_auth':
+        ensure     => absent,
+        path       => '/etc/keystone/keystone-paste.ini',
+        section    => 'pipeline:api_v3',
+        setting    => 'pipeline',
+        subsetting => 'admin_token_auth',
+    }
+
+    file { '/root/openrc':
+        ensure    => file,
+        content   => template('easystack/keystone/openrc.erb'),
+        show_diff => false,
+        owner     => 'root',
+        group     => 'root',
+        mode      => '0600', # Only root should be able to read the credentials
+    }
 }

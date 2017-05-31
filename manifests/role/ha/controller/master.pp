@@ -814,6 +814,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     }
 
     cs_primitive { 'haproxy':
+        ensure          => present,
         primitive_class => 'systemd',
         primitive_type  => 'haproxy',
         operations      => {
@@ -843,6 +844,151 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     cs_colocation { 'vip_with_haproxy':
         primitives => ['generic_vip', 'haproxy-clone'],
         require    => Cs_order['vip_before_haproxy'],
+    }
+
+    # Configure keystone mySQL database
+    mysql::db { 'keystone':
+        user     => 'keystone',
+        password => mysql_password($::easystack::config::database_keystone_password),
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql_user { 'keystone@%':
+        ensure        => 'present',
+        password_hash => mysql_password($::easystack::config::database_keystone_password),
+    }
+    -> mysql_grant { 'keystone@%/keystone.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'keystone.*',
+        user       => 'keystone@%',
+    }
+
+    class { 'apache':
+        default_vhost => false,
+        servername    => $::fqdn,
+    }
+
+    class { 'keystone::wsgi::apache':
+        servername => $::fqdn,
+        ssl        => false,
+        bind_host  => $management_ip
+    }
+
+    -> selinux::port { 'allow-keystone-httpd-5000':
+        seltype  => 'http_port_t',
+        port     => 5000,
+        protocol => 'tcp',
+    }
+    -> selinux::port { 'allow-keystone-httpd-35357':
+        seltype  => 'http_port_t',
+        port     => 35357,
+        protocol => 'tcp',
+    }
+    -> selinux::boolean { 'httpd_can_network_connect_db':
+        ensure => 'on',
+    }
+
+    firewalld_port { 'Allow keystone public and internal endpoint on port 5000 tcp':
+      ensure   => present,
+      zone     => 'public',
+      port     => 5000,
+      protocol => 'tcp',
+      before   => Class['keystone'],
+    }
+
+    firewalld_port { 'Allow keystone admin endpoint on port 35357 tcp':
+      ensure   => present,
+      zone     => 'public',
+      port     => 35357,
+      protocol => 'tcp',
+      before   => Class['keystone'],
+    }
+
+    $keystone_db_password = $::easystack::config::database_keystone_password
+    $keystone_admin_password = $::easystack::config::keystone_admin_password
+
+    $controller_vip = $::easystack::config::controller_vip
+
+    class { 'keystone':
+        catalog_type        => 'sql',
+        admin_token         => $::easystack::config::keystone_admin_token,
+        database_connection => "mysql+pymysql://keystone:${keystone_db_password}@${controller_vip}/keystone",
+        token_provider      => 'fernet',
+        service_name        => 'httpd',
+        require             => Class['::mysql::server'],
+        public_bind_host    => $management_ip,
+        admin_bind_host     => $management_ip,
+        public_endpoint     => "http://${controller_vip}:5000",
+        admin_endpoint      => "http://${controller_vip}:35357",
+    }
+
+    Package['openstack-keystone'] -> Class['apache::service']
+
+    class { 'keystone::roles::admin':
+        email    => $::easystack::config::keystone_admin_email,
+        password => $keystone_admin_password,
+        require  => [
+            Class['apache::service'],
+            Class['::mysql::server'],
+        ],
+    }
+
+    # Installs the service user endpoint.
+    class { 'keystone::endpoint':
+        public_url   => "http://${controller_vip}:5000",
+        admin_url    => "http://${controller_vip}:35357",
+        internal_url => "http://${controller_vip}:5000",
+        region       => $::easystack::config::keystone_region,
+        #   If the version is set to the empty string (''), then it won't be
+        #   used. This is the expected behaviour since Keystone V3 handles API versions
+        #   from the context.
+        version      => '',
+        require      => [
+            Class['apache::service'],
+            Class['::mysql::server'],
+        ],
+    }
+
+    # Remove the admin_token_auth paste pipeline.
+    # After the first puppet run this requires setting keystone v3
+    # admin credentials via /root/openrc or as environment variables.
+    include keystone::disable_admin_token_auth
+
+    file { '/root/openrc':
+        ensure    => file,
+        content   => template('easystack/keystone/openrc.erb'),
+        show_diff => false,
+        owner     => 'root',
+        group     => 'root',
+        mode      => '0600', # Only root should be able to read the credentials
+        require   => [
+            Class['keystone::endpoint'],
+            Class['keystone::roles::admin'],
+        ],
+    }
+
+    keystone_role { 'user':
+        ensure  => present,
+        require => [
+            Class['keystone::endpoint'],
+            Class['keystone::roles::admin'],
+        ],
+    }
+
+    cs_primitive { 'httpd':
+        ensure          => present,
+        primitive_class => 'systemd',
+        primitive_type  => 'httpd',
+        require         => Class['apache'],
+    }
+
+    cs_clone { 'httpd-clone':
+        ensure     => present,
+        primitive  => 'httpd',
+        require    => Cs_primitive['httpd'],
+        interleave => true,
     }
 
 }
