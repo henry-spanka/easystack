@@ -328,6 +328,33 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         rrp_mode            => 'active',
     }
 
+    $user_hacluster_password = $::easystack::config::user_hacluster_password
+
+    exec {'wait-for-quorum':
+        timeout   => '3600',
+        tries     => '360',
+        try_sleep => '10',
+        command   => "/usr/sbin/pcs status | grep -q 'partition with quorum' > /dev/null 2>&1",
+        unless    => "/usr/sbin/pcs status | grep -q 'partition with quorum' > /dev/null 2>&1",
+        require   => Class['corosync'],
+    }
+
+    user { 'hacluster':
+        password => pw_hash($user_hacluster_password, 'SHA-512', fqdn_rand_string(10)),
+        groups   => 'haclient',
+        require  => Class['corosync'],
+        notify   => Exec['reauthenticate-across-all-nodes'],
+    }
+
+    exec { 'reauthenticate-across-all-nodes':
+        command     => "/usr/sbin/pcs cluster auth ${controller_nodes_fqdn_spaced} -u hacluster -p ${user_hacluster_password} --force",
+        refreshonly => true,
+        timeout     => '3600',
+        tries       => '360',
+        try_sleep   => '10',
+        require     => Exec['wait-for-quorum'],
+    }
+
     corosync::service { 'pacemaker':
         version => 1,
     }

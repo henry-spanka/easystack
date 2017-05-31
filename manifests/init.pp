@@ -68,6 +68,7 @@ class easystack (
     $rabbitmq_erlang_cookie           = $easystack::params::rabbitmq_erlang_cookie,
     $controller_vip                   = $easystack::params::controller_vip,
     $database_status_password         = $easystack::params::database_status_password,
+    $user_hacluster_password          = $easystack::params::user_hacluster_password,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
@@ -97,6 +98,7 @@ class easystack (
         validate_string($rabbitmq_erlang_cookie)
         validate_string($controller_vip)
         validate_string($database_status_password)
+        validate_string($user_hacluster_password)
     }
 
     # Instaniate config class
@@ -126,5 +128,6 @@ class easystack (
         rabbitmq_erlang_cookie           => $rabbitmq_erlang_cookie,
         controller_vip                   => $controller_vip,
         database_status_password         => $database_status_password,
+        user_hacluster_password          => $user_hacluster_password,
     }
 }
