@@ -26,4 +26,5 @@ class easystack::params {
     $controller_vip = undef
     $database_status_password = undef
     $user_hacluster_password = undef
+    $keystone_fernet_keys = undef
 }

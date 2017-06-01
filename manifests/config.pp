@@ -27,6 +27,7 @@ class easystack::config (
     $controller_vip = undef,
     $database_status_password = undef,
     $user_hacluster_password = undef,
+    $keystone_fernet_keys = undef,
 ) {
 
 }

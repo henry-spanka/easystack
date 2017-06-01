@@ -8,6 +8,7 @@ class easystack::profile::keystone (
     String $admin_password = $::easystack::config::keystone_admin_password,
     String $region         = $::easystack::config::keystone_region,
     Boolean $master        = false,
+    Hash $fernet_keys      = $::easystack::config::keystone_fernet_keys,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -71,7 +72,9 @@ class easystack::profile::keystone (
         public_endpoint     => "http://${vip}:5000",
         admin_endpoint      => "http://${vip}:35357",
         sync_db             => $master,
-        enable_fernet_setup => $master,
+        enable_fernet_setup => true,
+        fernet_keys         => $fernet_keys,
+
     }
 
     if ($master) {

@@ -69,6 +69,7 @@ class easystack (
     $controller_vip                   = $easystack::params::controller_vip,
     $database_status_password         = $easystack::params::database_status_password,
     $user_hacluster_password          = $easystack::params::user_hacluster_password,
+    $keystone_fernet_keys             = $easystack::params::keystone_fernet_keys,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
@@ -99,6 +100,7 @@ class easystack (
         validate_string($controller_vip)
         validate_string($database_status_password)
         validate_string($user_hacluster_password)
+        validate_hash($keystone_fernet_keys)
     }
 
     # Instaniate config class
@@ -129,5 +131,6 @@ class easystack (
         controller_vip                   => $controller_vip,
         database_status_password         => $database_status_password,
         user_hacluster_password          => $user_hacluster_password,
+        keystone_fernet_keys             => $keystone_fernet_keys,
     }
 }
