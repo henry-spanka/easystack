@@ -28,8 +28,10 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
 
     # Install Haproxy and Apache before autenticating as otherwise a warning message
     # will be displayed that the services can not be found by pacemaker
-    Service['haproxy'] -> Exec['reauthenticate-across-all-nodes']
-    Service['httpd'] -> Exec['reauthenticate-across-all-nodes']
+    Package['haproxy'] -> Class['::easystack::profile::corosync']
+    Package['httpd'] -> Class['::easystack::profile::corosync']
+    Service['mysqld'] -> Service['haproxy']
+    Service['mysqld'] -> Service['httpd']
 
     # Setup haproxy
     include ::easystack::profile::haproxy
