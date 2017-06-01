@@ -143,6 +143,11 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         primitive_class => 'systemd',
         primitive_type  => 'httpd',
         require         => Class['apache'],
+        operations      => {
+            'monitor' => {
+                'interval' => '5s',
+            }
+        },
     }
 
     cs_clone { 'httpd-clone':
