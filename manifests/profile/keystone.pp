@@ -75,16 +75,6 @@ class easystack::profile::keystone (
     }
 
     if ($master) {
-        class { 'keystone::roles::admin':
-            email    => $admin_email,
-            password => $admin_password,
-            require  => [
-                Class['apache::service'],
-                Class['::easystack::profile::mariadb'],
-            ],
-            before   => File['/root/openrc'],
-        }
-
         # Installs the service user endpoint.
         class { 'keystone::endpoint':
             public_url   => "http://${vip}:5000",
@@ -99,6 +89,18 @@ class easystack::profile::keystone (
                 Class['apache::service'],
                 Class['::easystack::profile::mariadb'],
             ],
+            before       => File['/root/openrc'],
+        }
+
+        class { 'keystone::roles::admin':
+            email    => $admin_email,
+            password => $admin_password,
+            require  => [
+                Class['apache::service'],
+                Class['::easystack::profile::mariadb'],
+                Class['keystone::endpoint'],
+            ],
+            before   => File['/root/openrc'],
         }
 
         keystone_role { 'user':
@@ -106,7 +108,9 @@ class easystack::profile::keystone (
             require => [
                 Class['keystone::endpoint'],
                 Class['keystone::roles::admin'],
+                Class['keystone::endpoint'],
             ],
+            before  => File['/root/openrc'],
         }
 
         # Remove the admin_token_auth paste pipeline.
