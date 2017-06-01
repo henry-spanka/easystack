@@ -1,4 +1,4 @@
-# Setup Keystone Service
+# Setup Glance Service
 class easystack::profile::glance (
     String $listen_ip      = ip_for_network($::easystack::config::management_network),
     Array $controller_nodes = $::easystack::config::controller_nodes,
