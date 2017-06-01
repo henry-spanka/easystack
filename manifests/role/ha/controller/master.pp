@@ -160,4 +160,71 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         interleave => true,
     }
 
+    # Configure glance
+    # Configure glance mySQL database
+    mysql::db { 'glance':
+        user     => 'glance',
+        password => mysql_password($::easystack::config::database_glance_password),
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql_user { 'glance@%':
+        ensure        => 'present',
+        password_hash => mysql_password($::easystack::config::database_glance_password),
+    }
+    -> mysql_grant { 'glance@%/glance.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'glance.*',
+        user       => 'glance@%',
+    }
+
+    class { '::easystack::profile::glance':
+        master => true,
+    }
+
+    # Setup Glance Haproxy resources
+    include ::easystack::profile::haproxy::glance_api
+    include ::easystack::profile::haproxy::glance_registry
+
+    # Setup glance corosync service
+    cs_primitive { 'openstack-glance-api':
+        ensure          => present,
+        primitive_class => 'systemd',
+        primitive_type  => 'openstack-glance-api',
+        require         => Service['glance-api'],
+        operations      => {
+            'monitor' => {
+                'interval' => '5s',
+            }
+        },
+    }
+
+    cs_clone { 'openstack-glance-api-clone':
+        ensure     => present,
+        primitive  => 'openstack-glance-api',
+        require    => Cs_primitive['openstack-glance-api'],
+        interleave => true,
+    }
+
+    cs_primitive { 'openstack-glance-registry':
+        ensure          => present,
+        primitive_class => 'systemd',
+        primitive_type  => 'openstack-glance-registry',
+        require         => Service['glance-registry'],
+        operations      => {
+            'monitor' => {
+                'interval' => '5s',
+            }
+        },
+    }
+
+    cs_clone { 'openstack-glance-registry-clone':
+        ensure     => present,
+        primitive  => 'openstack-glance-registry',
+        require    => Cs_primitive['openstack-glance-registry'],
+        interleave => true,
+    }
+
 }

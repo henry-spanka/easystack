@@ -50,4 +50,13 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         master => false,
     }
 
+    # Configure glance
+    class { '::easystack::profile::glance':
+        master => false,
+    }
+
+    # Setup Glance Haproxy resources
+    include ::easystack::profile::haproxy::glance_api
+    include ::easystack::profile::haproxy::glance_registry
+
 }
