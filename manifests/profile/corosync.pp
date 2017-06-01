@@ -33,7 +33,7 @@ class easystack::profile::corosync (
         password => pw_hash($user_hacluster_password, 'SHA-512', fqdn_rand_string(10)),
         groups   => 'haclient',
         require  => Class['corosync'],
-    }s
+    }
 
     if ($master) {
         $controller_nodes_fqdn_spaced = join($controller_nodes_fqdn, ' ')
