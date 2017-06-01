@@ -1,12 +1,12 @@
 # Setup Glance Service
 class easystack::profile::glance (
-    String $listen_ip      = ip_for_network($::easystack::config::management_network),
+    String $listen_ip       = ip_for_network($::easystack::config::management_network),
     Array $controller_nodes = $::easystack::config::controller_nodes,
-    String $vip            = $::easystack::config::controller_vip,
+    String $vip             = $::easystack::config::controller_vip,
     String $db_password     = $::easystack::config::database_glance_password,
     String $glance_password = $::easystack::config::keystone_glance_password,
-    String $region         = $::easystack::config::keystone_region,
-    Boolean $master        = false,
+    String $region          = $::easystack::config::keystone_region,
+    Boolean $master         = false,
 ) {
     # make sure the parameters are initialized
     include ::easystack
