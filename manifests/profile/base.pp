@@ -33,4 +33,10 @@ class easystack::profile::base {
         mode => 'enforcing',
         type => 'targeted',
     }
+
+    # Install MySQL python library
+    package { 'python2-PyMySQL':
+        ensure => installed,
+        name   => 'python2-PyMySQL'
+    }
 }
