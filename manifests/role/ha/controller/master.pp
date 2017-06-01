@@ -45,6 +45,11 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         master => true,
     }
 
+    # Make sure MariaDB Services start before pcsd
+    # as the slaves can not start mariadb if the master has not initialized the
+    # database yet
+    Service['mysqld'] -> Service['pcsd']
+
     cs_primitive { 'vip':
         primitive_class => 'ocf',
         primitive_type  => 'IPaddr2',

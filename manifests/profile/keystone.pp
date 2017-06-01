@@ -127,6 +127,7 @@ class easystack::profile::keystone (
             section    => 'pipeline:public_api',
             setting    => 'pipeline',
             subsetting => 'admin_token_auth',
+            before     => File['/root/openrc'],
         }
         ini_subsetting { 'admin_api/admin_token_auth':
             ensure     => absent,
@@ -134,6 +135,7 @@ class easystack::profile::keystone (
             section    => 'pipeline:admin_api',
             setting    => 'pipeline',
             subsetting => 'admin_token_auth',
+            before     => File['/root/openrc'],
         }
         ini_subsetting { 'api_v3/admin_token_auth':
             ensure     => absent,
@@ -141,6 +143,7 @@ class easystack::profile::keystone (
             section    => 'pipeline:api_v3',
             setting    => 'pipeline',
             subsetting => 'admin_token_auth',
+            before     => File['/root/openrc'],
         }
     }
 

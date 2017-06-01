@@ -35,18 +35,19 @@ class easystack::profile::corosync (
         require  => Class['corosync'],
     }
 
-    if ($master) {
-        $controller_nodes_fqdn_spaced = join($controller_nodes_fqdn, ' ')
+    $controller_nodes_fqdn_spaced = join($controller_nodes_fqdn, ' ')
 
-        exec { 'reauthenticate-across-all-nodes':
-            command     => "/usr/sbin/pcs cluster auth ${controller_nodes_fqdn_spaced} -u hacluster -p ${user_hacluster_password} --force",
-            refreshonly => true,
-            timeout     => '3600',
-            tries       => '360',
-            try_sleep   => '10',
-            require     => Exec['wait-for-quorum'],
-            subscribe   => User['hacluster'],
-        }
+    exec { 'reauthenticate-across-all-nodes':
+        command     => "/usr/sbin/pcs cluster auth ${controller_nodes_fqdn_spaced} -u hacluster -p ${user_hacluster_password} --force",
+        refreshonly => true,
+        timeout     => '3600',
+        tries       => '360',
+        try_sleep   => '10',
+        subscribe   => User['hacluster'],
+        require     => Service['pcsd'],
+    }
+
+    if ($master) {
 
         cs_property { 'pe-warn-series-max':
             value => 1000,

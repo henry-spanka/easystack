@@ -21,6 +21,16 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         master => false,
     }
 
+    # Make sure we authenticate before starting mysql
+    # The master has already initialized the database when
+    # corosync and pcsd is ready so it's safe to start mysql
+    Exec['reauthenticate-across-all-nodes'] -> Service['mysqld']
+
+    # Install Haproxy and Apache before autenticating as otherwise a warning message
+    # will be displayed that the services can not be found by pacemaker
+    Service['haproxy'] -> Exec['reauthenticate-across-all-nodes']
+    Service['httpd'] -> Exec['reauthenticate-across-all-nodes']
+
     # Setup haproxy
     include ::easystack::profile::haproxy
 
