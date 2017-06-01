@@ -142,7 +142,10 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         ensure          => present,
         primitive_class => 'systemd',
         primitive_type  => 'httpd',
-        require         => Class['apache'],
+        require         => [
+            Class['apache'],
+            Exec['restart_keystone'],
+        ],
         operations      => {
             'monitor' => {
                 'interval' => '5s',
