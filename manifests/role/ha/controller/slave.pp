@@ -77,4 +77,10 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
     include ::easystack::profile::haproxy::nova_placement_api
     include ::easystack::profile::haproxy::nova_vncproxy
 
+    # Setup Horizon
+    include ::easystack::profile::horizon
+
+    # Setup Horizon Haproxy resource
+    include ::easystack::profile::haproxy::horizon
+
 }
