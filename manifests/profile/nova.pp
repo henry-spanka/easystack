@@ -23,7 +23,7 @@ class easystack::profile::nova (
         require  => Class['apache'],
     }
 
-    selinux::port { 'allow-nova-httpd-8778':
+    selinux::port { 'allow-nova-placement-api-httpd-8778':
         seltype  => 'http_port_t',
         port     => 8778,
         protocol => 'tcp',
@@ -106,6 +106,7 @@ class easystack::profile::nova (
         username            => 'nova',
         password            => $nova_password,
         auth_url            => "http://${vip}:35357",
+        auth_uri            => "http://${vip}:5000",
     }
 
     if ($master) {
