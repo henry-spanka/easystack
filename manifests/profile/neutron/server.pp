@@ -24,8 +24,11 @@ class easystack::profile::neutron::server (
     }
 
     class { '::neutron::server':
-        database_connection => "mysql+pymysql://neutron:${db_password}@${vip}/neutron?charset=utf8",
-        auth_strategy       => 'keystone',
+        database_connection              => "mysql+pymysql://neutron:${db_password}@${vip}/neutron?charset=utf8",
+        auth_strategy                    => 'keystone',
+        l3_ha                            => true,
+        allow_automatic_l3agent_failover => true,
+        max_l3_agents_per_router         => '2',
     }
 
     class { '::neutron::server::notifications':

@@ -20,18 +20,19 @@ class easystack::profile::neutron (
     $controller_nodes_hostname_auth_list = join($controller_nodes_hostname_auth, ',')
 
     class { '::neutron':
-        enabled               => true,
-        bind_host             => $listen_ip,
-        default_transport_url => "rabbit://${controller_nodes_hostname_auth_list}",
-        debug                 => false,
-        auth_strategy         => 'keystone',
-        lock_path             => '/var/lib/neutron/tmp',
-        use_ssl               => false,
-        core_plugin           => 'ml2',
-        service_plugins       => ['router'],
-        allow_overlapping_ips => true,
-        rabbit_ha_queues      => true,
-        amqp_durable_queues   => true,
+        enabled                 => true,
+        bind_host               => $listen_ip,
+        default_transport_url   => "rabbit://${controller_nodes_hostname_auth_list}",
+        debug                   => false,
+        auth_strategy           => 'keystone',
+        lock_path               => '/var/lib/neutron/tmp',
+        use_ssl                 => false,
+        core_plugin             => 'ml2',
+        service_plugins         => ['router'],
+        allow_overlapping_ips   => true,
+        rabbit_ha_queues        => true,
+        amqp_durable_queues     => true,
+        dhcp_agents_per_network => '2',
     }
 
 }
