@@ -37,6 +37,8 @@ class easystack::profile::glance (
     glance_api_config {
         'paste_deploy/flavor': ensure => present, value => 'keystone';
         'DEFAULT/bind_host': ensure => present, value => $listen_ip;
+        'DEFAULT/enable_v1_api': ensure => present, value => false;
+        'DEFAULT/enable_v2_api': ensure => present, value => true;
     }
     # lint:endignore
 
@@ -64,6 +66,7 @@ class easystack::profile::glance (
     glance_registry_config {
         'paste_deploy/flavor': ensure => present, value => 'keystone';
         'DEFAULT/bind_host': ensure => present, value => $listen_ip;
+        'DEFAULT/enable_v1_registry': ensure => present, value => false;
     }
     # lint:endignore
 
