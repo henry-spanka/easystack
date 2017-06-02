@@ -105,6 +105,7 @@ class easystack::profile::nova (
         memcached_servers   => $controller_nodes_ip,
         username            => 'nova',
         password            => $nova_password,
+        auth_url            => "http://${vip}:35357",
     }
 
     if ($master) {

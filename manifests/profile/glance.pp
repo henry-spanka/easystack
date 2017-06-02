@@ -57,6 +57,7 @@ class easystack::profile::glance (
         username            => 'glance',
         password            => $glance_password,
         notify              => Service['glance-api'],
+        auth_url            => "http://${vip}:35357",
     }
 
     # lint:ignore:duplicate_params
