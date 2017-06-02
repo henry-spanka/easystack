@@ -333,13 +333,21 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         user       => 'neutron@%',
     }
 
-    class { '::easystack::profile::neutron':
-        master => true,
+    include ::easystack::profile::neutron
+
+    include ::easystack::profile::neutron::authtoken
+
+    class { '::easystack::profile::neutron::server':
+        sync_db => true,
     }
+
+    include ::easystack::profile::neutron::plugins::ml2
+
+    include ::easystack::profile::neutron::auth
 
     Service['mysqld'] -> Service['neutron-server']
 
-    # Setup Glance Haproxy resources
+    # Setup Neutron Haproxy resources
     include ::easystack::profile::haproxy::neutron_api
 
 }
