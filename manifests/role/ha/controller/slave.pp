@@ -83,4 +83,14 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
     # Setup Horizon Haproxy resource
     include ::easystack::profile::haproxy::horizon
 
+    # Configure Neutron server on controller
+    class { '::easystack::profile::neutron':
+        master => false,
+    }
+
+    Service['mysqld'] -> Service['neutron-server']
+
+    # Setup Glance Haproxy resources
+    include ::easystack::profile::haproxy::neutron_api
+
 }

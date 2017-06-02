@@ -312,4 +312,34 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     # Setup Horizon Haproxy resource
     include ::easystack::profile::haproxy::horizon
 
+    # Configure Neutron server on controller
+
+    # Setup database for Neutron
+    mysql::db { 'neutron':
+        user     => 'neutron',
+        password => mysql_password($::easystack::config::database_neutron_password),
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql_user { 'neutron@%':
+        ensure        => 'present',
+        password_hash => mysql_password($::easystack::config::database_neutron_password),
+    }
+    -> mysql_grant { 'neutron@%/neutron.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'neutron.*',
+        user       => 'neutron@%',
+    }
+
+    class { '::easystack::profile::neutron':
+        master => true,
+    }
+
+    Service['mysqld'] -> Service['neutron-server']
+
+    # Setup Glance Haproxy resources
+    include ::easystack::profile::haproxy::neutron_api
+
 }
