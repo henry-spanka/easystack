@@ -76,7 +76,7 @@ class easystack::profile::nova (
     }
 
     $controller_nodes_hostname_auth = $controller_nodes_hostname.map |String $hostname| {
-        "openstack:${rabbit_password}@${hostname}:15672"
+        "openstack:${rabbit_password}@${hostname}:5672"
     }
 
     $controller_nodes_hostname_auth_list = join($controller_nodes_hostname_auth, ',')
