@@ -159,7 +159,8 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
                 'interval' => '5s',
             },
             'start'   => {
-                'timeout' => '300',
+                'timeout'  => '300s',
+                'interval' => '0s',
             },
         },
     }
