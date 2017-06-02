@@ -25,12 +25,13 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
     # The master has already initialized the database when
     # corosync and pcsd is ready so it's safe to start mysql
     Exec['reauthenticate-across-all-nodes'] -> Service['mysqld']
+    Service['haproxy'] -> Package['corosync']
 
     # Install Haproxy and Apache before autenticating as otherwise a warning message
     # will be displayed that the services can not be found by pacemaker
     Package['haproxy'] -> Class['::easystack::profile::corosync']
     Package['httpd'] -> Class['::easystack::profile::corosync']
-    Service['mysqld'] -> Service['haproxy']
+    Service['haproxy'] -> Service['mysqld']
     Service['mysqld'] -> Service['httpd']
 
     # Setup haproxy
@@ -58,5 +59,22 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
     # Setup Glance Haproxy resources
     include ::easystack::profile::haproxy::glance_api
     include ::easystack::profile::haproxy::glance_registry
+
+    # Configure Compute service Nova on controller node
+    class { '::easystack::profile::nova':
+        master => false,
+    }
+
+    Service['mysqld'] -> Service['nova-api']
+    Service['mysqld'] -> Service['nova-conductor']
+    Service['mysqld'] -> Service['nova-consoleauth']
+    Service['mysqld'] -> Service['nova-vncproxy']
+    Service['mysqld'] -> Service['nova-scheduler']
+
+    # Setup Glance Haproxy resources
+    include ::easystack::profile::haproxy::nova_compute_api
+    include ::easystack::profile::haproxy::nova_metadata_api
+    include ::easystack::profile::haproxy::nova_placement_api
+    include ::easystack::profile::haproxy::nova_vncproxy
 
 }

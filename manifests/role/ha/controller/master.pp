@@ -49,6 +49,14 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     # as the slaves can not start mariadb if the master has not initialized the
     # database yet
     Service['mysqld'] -> Service['pcsd']
+    Service['haproxy'] -> Service['pcsd']
+
+    # Install Haproxy and Apache before autenticating as otherwise a warning message
+    # will be displayed that the services can not be found by pacemaker
+    Package['haproxy'] -> Class['::easystack::profile::corosync']
+    Package['httpd'] -> Class['::easystack::profile::corosync']
+    Service['haproxy'] -> Service['mysqld']
+    Service['mysqld'] -> Service['httpd']
 
     cs_primitive { 'vip':
         primitive_class => 'ocf',
@@ -226,5 +234,68 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         require    => Cs_primitive['openstack-glance-registry'],
         interleave => true,
     }
+
+    # Configure Compute service Nova on controller node
+
+    # Configure nova mySQL databases
+    mysql::db { 'nova_api':
+        user     => 'nova',
+        password => $::easystack::config::database_nova_password,
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql::db { 'nova':
+        user     => 'nova',
+        password => $::easystack::config::database_nova_password,
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql::db { 'nova_cell0':
+        user     => 'nova',
+        password => $::easystack::config::database_nova_password,
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql_user { 'nova@%':
+        ensure        => 'present',
+        password_hash => mysql_password($::easystack::config::database_nova_password),
+    }
+    -> mysql_grant { 'nova@%/nova_api.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'nova_api.*',
+        user       => 'nova@%',
+    }
+    -> mysql_grant { 'nova@%/nova.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'nova.*',
+        user       => 'nova@%',
+    }
+    -> mysql_grant { 'nova@%/nova_cell0.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'nova_cell0.*',
+        user       => 'nova@%',
+    }
+
+    class { '::easystack::profile::nova':
+        master => true,
+    }
+
+    Service['mysqld'] -> Service['nova-api']
+    Service['mysqld'] -> Service['nova-conductor']
+    Service['mysqld'] -> Service['nova-consoleauth']
+    Service['mysqld'] -> Service['nova-vncproxy']
+    Service['mysqld'] -> Service['nova-scheduler']
+
+    # Setup Glance Haproxy resources
+    include ::easystack::profile::haproxy::nova_compute_api
+    include ::easystack::profile::haproxy::nova_metadata_api
+    include ::easystack::profile::haproxy::nova_placement_api
+    include ::easystack::profile::haproxy::nova_vncproxy
 
 }

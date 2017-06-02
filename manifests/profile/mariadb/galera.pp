@@ -1,6 +1,8 @@
 # Setup Galera
 class easystack::profile::mariadb::galera (
-    Array $controller_nodes = $::easystack::config::controller_nodes,
+    Array $controller_nodes  = $::easystack::config::controller_nodes,
+    String $sstuser_password = $::easystack::config::database_sstuser_password,
+    Boolean $master          = false,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -57,16 +59,18 @@ class easystack::profile::mariadb::galera (
         before   => Class['mysql::server::installdb'],
     }
 
-    mysql_user { 'sstuser@localhost':
-        ensure        => 'present',
-        password_hash => mysql_password($::easystack::config::database_sstuser_password),
-    }
-    -> mysql_grant { 'sstuser@localhost/*.*':
-        ensure     => 'present',
-        options    => ['GRANT'],
-        privileges => ['RELOAD', 'LOCK TABLES', 'REPLICATION CLIENT'],
-        table      => '*.*',
-        user       => 'sstuser@localhost',
+    if ($master) {
+        mysql_user { 'sstuser@localhost':
+            ensure        => 'present',
+            password_hash => mysql_password($sstuser_password),
+        }
+        -> mysql_grant { 'sstuser@localhost/*.*':
+            ensure     => 'present',
+            options    => ['GRANT'],
+            privileges => ['RELOAD', 'LOCK TABLES', 'REPLICATION CLIENT'],
+            table      => '*.*',
+            user       => 'sstuser@localhost',
+        }
     }
 
     include ::firewalld

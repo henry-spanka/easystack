@@ -83,6 +83,7 @@ class easystack::profile::mariadb (
 
     class { '::easystack::profile::mariadb::galera':
         controller_nodes => $controller_nodes,
+        master           => $master,
     }
 
     include ::firewalld
