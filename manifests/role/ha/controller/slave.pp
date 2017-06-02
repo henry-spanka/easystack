@@ -65,6 +65,8 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         master => false,
     }
 
+    include ::easystack::profile::nova::neutron
+
     Service['mysqld'] -> Service['nova-api']
     Service['mysqld'] -> Service['nova-conductor']
     Service['mysqld'] -> Service['nova-consoleauth']
