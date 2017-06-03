@@ -5,6 +5,7 @@ class easystack::role::ha::compute inherits ::easystack::role {
     include ::easystack::profile::chrony
 
     include ::easystack::profile::nova
+    include ::easystack::profile::nova::cache
 
     include ::easystack::profile::nova::compute
     include ::easystack::profile::nova::compute::libvirt
