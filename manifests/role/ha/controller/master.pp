@@ -291,6 +291,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     }
 
     include ::easystack::profile::nova
+    include ::easystack::profile::nova::cache
 
     include ::easystack::profile::nova::authtoken
 

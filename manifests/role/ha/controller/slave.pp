@@ -62,6 +62,7 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
 
     # Configure Compute service Nova on controller node
     include ::easystack::profile::nova
+    include ::easystack::profile::nova::cache
 
     include ::easystack::profile::nova::authtoken
 
