@@ -19,8 +19,22 @@ class easystack::profile::nova::vncproxy (
         before   => Service['nova-vncproxy'],
     }
 
-    class { 'nova::vncproxy':
-        host => $listen_ip,
+    include ::nova::deps
+    include ::nova::params
+
+    # See http://nova.openstack.org/runnova/vncconsole.html for more details.
+
+    nova_config {
+        'vnc/novncproxy_host': value => $listen_ip;
+        'vnc/novncproxy_port': value => 6080;
+    }
+
+    nova::generic_service { 'vncproxy':
+        enabled        => true,
+        manage_service => true,
+        package_name   => $::nova::params::vncproxy_package_name,
+        service_name   => $::nova::params::vncproxy_service_name,
+        ensure_package => 'present',
     }
 
     # lint:ignore:duplicate_params
@@ -28,6 +42,7 @@ class easystack::profile::nova::vncproxy (
         'vnc/enabled':                       value => true;
         'vnc/vncserver_listen':              value => $listen_ip;
         'vnc/vncserver_proxyclient_address': value => $vip;
+        'vnc/novncproxy_base_url':           value => "http://${vip}:6080/vnc_auto.html";
     }
     # lint:endignore
 
