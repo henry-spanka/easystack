@@ -24,4 +24,15 @@ class easystack::profile::nova::compute::libvirt (
         libvirt_virt_type       => $libvirt_virt_type,
     }
 
+    include ::firewalld
+
+    firewalld_port { 'Allow libvirt console port range from 5900 to 6900 tcp':
+        ensure   => present,
+        zone     => 'public',
+        port     => '5900-6900',
+        protocol => 'tcp',
+        tag      => 'nova-firewall',
+        before   => Service['httpd'],
+    }
+
 }
