@@ -25,7 +25,8 @@
     {"name":"puppetlabs-haproxy","version_requirement":">= 1.5.0 < 2.0.0"},
     {"name":"duritong-sysctl","version_requirement":">= 0.0.11 < 1.0.0"},
     {"name":"michaeltchapman-galera","version_requirement":">= 0.6.0 < 1.0.0"},
-    {"name":"ccin2p3-etc_services","version_requirement":">= 1.0.2 < 2.0.0"}
+    {"name":"ccin2p3-etc_services","version_requirement":">= 1.0.2 < 2.0.0"},
+    {"name":"openstack-ceph","version_requirement":">= 2.3.0 < 3.0.0"}
   ],
   "data_provider": null,
   "operatingsystem_support": [

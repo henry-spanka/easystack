@@ -28,6 +28,11 @@ class easystack::config (
     $database_status_password = undef,
     $user_hacluster_password = undef,
     $keystone_fernet_keys = undef,
+    $ceph_monitors = undef,
+    $ceph_fsid = undef,
+    $ceph_mon_key = undef,
+    $ceph_admin_key = undef,
+    $ceph_bootstrap_osd_key = undef,
 ) {
 
 }

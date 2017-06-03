@@ -70,6 +70,11 @@ class easystack (
     $database_status_password         = $easystack::params::database_status_password,
     $user_hacluster_password          = $easystack::params::user_hacluster_password,
     $keystone_fernet_keys             = $easystack::params::keystone_fernet_keys,
+    $ceph_monitors                    = $easystack::params::ceph_monitors,
+    $ceph_fsid                        = $easystack::params::ceph_fsid,
+    $ceph_mon_key                     = $easystack::params::ceph_mon_key,
+    $ceph_admin_key                   = $easystack::params::ceph_admin_key,
+    $ceph_bootstrap_osd_key           = $easystack::params::ceph_bootstrap_osd_key,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
@@ -103,6 +108,14 @@ class easystack (
         validate_hash($keystone_fernet_keys)
     }
 
+    if ($ceph_monitors != undef) {
+        validate_array($ceph_monitors)
+        validate_string($ceph_fsid)
+        validate_string($ceph_mon_key)
+        validate_string($ceph_admin_key)
+        validate_string($ceph_bootstrap_osd_key)
+    }
+
     # Instaniate config class
     class { '::easystack::config':
         database_root_password           => $database_root_password,
@@ -132,5 +145,10 @@ class easystack (
         database_status_password         => $database_status_password,
         user_hacluster_password          => $user_hacluster_password,
         keystone_fernet_keys             => $keystone_fernet_keys,
+        ceph_monitors                    => $ceph_monitors,
+        ceph_fsid                        => $ceph_fsid,
+        ceph_mon_key                     => $ceph_mon_key,
+        ceph_admin_key                   => $ceph_admin_key,
+        ceph_bootstrap_osd_key           => $ceph_bootstrap_osd_key,
     }
 }
