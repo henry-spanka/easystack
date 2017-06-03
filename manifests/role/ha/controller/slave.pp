@@ -61,9 +61,17 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
     include ::easystack::profile::haproxy::glance_registry
 
     # Configure Compute service Nova on controller node
-    class { '::easystack::profile::nova':
-        master => false,
-    }
+    include ::easystack::profile::nova
+
+    include ::easystack::profile::nova::authtoken
+
+    include ::easystack::profile::nova::api
+    include ::easystack::profile::nova::placement
+
+    include ::easystack::profile::nova::conductor
+    include ::easystack::profile::nova::consoleauth
+    include ::easystack::profile::nova::vncproxy
+    include ::easystack::profile::nova::scheduler
 
     include ::easystack::profile::nova::neutron
 

@@ -290,9 +290,21 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         user       => 'nova@%',
     }
 
-    class { '::easystack::profile::nova':
-        master => true,
-    }
+    include ::easystack::profile::nova
+
+    include ::easystack::profile::nova::authtoken
+
+    include ::easystack::profile::nova::auth
+    include ::easystack::profile::nova::auth_placement
+    include ::easystack::profile::nova::cell_v2
+
+    include ::easystack::profile::nova::api
+    include ::easystack::profile::nova::placement
+
+    include ::easystack::profile::nova::conductor
+    include ::easystack::profile::nova::consoleauth
+    include ::easystack::profile::nova::vncproxy
+    include ::easystack::profile::nova::scheduler
 
     include ::easystack::profile::nova::neutron
 
