@@ -1,7 +1,9 @@
 # Setup Ceph
 class easystack::profile::ceph (
-    String $fsid = $::easystack::config::ceph_fsid,
-    Array $monitors = $::easystack::config::ceph_monitors,
+    String $fsid            = $::easystack::config::ceph_fsid,
+    Array $monitors         = $::easystack::config::ceph_monitors,
+    String $cluster_network = $::easystack::config::ceph_cluster_network,
+    String $public_network  = $::easystack::config::ceph_public_network,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -21,9 +23,11 @@ class easystack::profile::ceph (
     $monitors_hostname_list = join($monitors_hostname, ',')
 
     class { 'ceph':
-      fsid                => $fsid,
-      mon_initial_members => $monitors_hostname_list,
-      mon_host            => $monitors_ip_list,
+        fsid                => $fsid,
+        mon_initial_members => $monitors_hostname_list,
+        mon_host            => $monitors_ip_list,
+        cluster_network     => $cluster_network,
+        public_network      => $public_network,
     }
 
 }
