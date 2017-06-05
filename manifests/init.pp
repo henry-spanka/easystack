@@ -75,6 +75,7 @@ class easystack (
     $ceph_mon_key                     = $easystack::params::ceph_mon_key,
     $ceph_admin_key                   = $easystack::params::ceph_admin_key,
     $ceph_bootstrap_osd_key           = $easystack::params::ceph_bootstrap_osd_key,
+    $ceph_glance_key                  = $easystack::params::ceph_glance_key,
     $ceph_cluster_network             = $easystack::params::ceph_cluster_network,
     $ceph_public_network              = $easystack::params::ceph_public_network,
 ) inherits easystack::params {
@@ -116,6 +117,7 @@ class easystack (
         validate_string($ceph_mon_key)
         validate_string($ceph_admin_key)
         validate_string($ceph_bootstrap_osd_key)
+        validate_string($ceph_glance_key)
         validate_string($ceph_cluster_network)
         validate_string($ceph_public_network)
     }
@@ -154,6 +156,7 @@ class easystack (
         ceph_mon_key                     => $ceph_mon_key,
         ceph_admin_key                   => $ceph_admin_key,
         ceph_bootstrap_osd_key           => $ceph_bootstrap_osd_key,
+        ceph_glance_key                  => $ceph_glance_key,
         ceph_cluster_network             => $ceph_cluster_network,
         ceph_public_network              => $ceph_public_network,
     }

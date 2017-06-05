@@ -32,6 +32,7 @@ class easystack::config (
     $ceph_fsid = undef,
     $ceph_mon_key = undef,
     $ceph_admin_key = undef,
+    $ceph_glance_key = undef,
     $ceph_bootstrap_osd_key = undef,
     $ceph_cluster_network = undef,
     $ceph_public_network = undef,

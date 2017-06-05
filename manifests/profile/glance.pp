@@ -7,6 +7,8 @@ class easystack::profile::glance (
     String $glance_password = $::easystack::config::keystone_glance_password,
     String $region          = $::easystack::config::keystone_region,
     Boolean $master         = false,
+    String $default_store   = 'rbd',
+    Array $store_backends   = ['rbd'],
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -39,6 +41,13 @@ class easystack::profile::glance (
         'DEFAULT/bind_host': ensure => present, value => $listen_ip;
         'DEFAULT/enable_v1_api': ensure => present, value => false;
         'DEFAULT/enable_v2_api': ensure => present, value => true;
+    }
+    # lint:endignore
+
+    # lint:ignore:duplicate_params
+    glance_api_config {
+        'glance_store/default_store': value => $default_store;
+        'glance_store/stores':        value => join($store_backends);
     }
     # lint:endignore
 
@@ -85,8 +94,6 @@ class easystack::profile::glance (
         password            => $glance_password,
         notify              => Service['glance-registry'],
     }
-
-    class { 'glance::backend::file': }
 
     if ($master) {
         class { '::glance::keystone::auth':

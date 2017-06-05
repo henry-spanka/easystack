@@ -200,6 +200,8 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         master => true,
     }
 
+    include ::easystack::profile::glance::backend::rbd
+
     # Setup Glance Haproxy resources
     include ::easystack::profile::haproxy::glance_api
     include ::easystack::profile::haproxy::glance_registry
