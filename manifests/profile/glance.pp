@@ -138,4 +138,8 @@ class easystack::profile::glance (
         tag        => 'glance-service',
     }
 
+    Mysql_database <| |> -> Anchor['glance::db::end']
+    Mysql_user <| |> -> Anchor['glance::db::end']
+    Mysql_grant <| |> -> Anchor['glance::db::end']
+
 }

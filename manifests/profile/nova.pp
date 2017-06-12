@@ -40,4 +40,8 @@ class easystack::profile::nova (
     }
     # lint:endignore
 
+    Mysql_database <| |> -> Anchor['nova::db::begin']
+    Mysql_user <| |> -> Anchor['nova::db::begin']
+    Mysql_grant <| |> -> Anchor['nova::db::begin']
+
 }
