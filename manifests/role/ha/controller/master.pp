@@ -301,7 +301,10 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::nova::auth_placement
     include ::easystack::profile::nova::cell_v2
 
-    include ::easystack::profile::nova::api
+    class { '::easystack::profile::nova::api':
+        sync_db => true,
+    }
+
     include ::easystack::profile::nova::placement
 
     include ::easystack::profile::nova::conductor
