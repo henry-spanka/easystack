@@ -76,8 +76,12 @@ class easystack (
     $ceph_admin_key                   = $easystack::params::ceph_admin_key,
     $ceph_bootstrap_osd_key           = $easystack::params::ceph_bootstrap_osd_key,
     $ceph_glance_key                  = $easystack::params::ceph_glance_key,
+    $ceph_cinder_key                  = $easystack::params::ceph_cinder_key,
+    $ceph_cinder_secret_uuid          = $easystack::params::ceph_cinder_secret_uuid,
     $ceph_cluster_network             = $easystack::params::ceph_cluster_network,
     $ceph_public_network              = $easystack::params::ceph_public_network,
+    $database_cinder_password         = $easystack::params::database_cinder_password,
+    $keystone_cinder_password         = $easystack::params::keystone_cinder_password,
 ) inherits easystack::params {
     # Validate the parameters
     validate_string($database_root_password)
@@ -100,6 +104,8 @@ class easystack (
     validate_string($neutron_network)
     validate_string($neutron_provider_interface)
     validate_string($neutron_metadata_shared_secret)
+    validate_string($database_cinder_password)
+    validate_string($keystone_cinder_password)
 
     if ($controller_nodes != undef) {
         validate_array($controller_nodes)
@@ -118,6 +124,8 @@ class easystack (
         validate_string($ceph_admin_key)
         validate_string($ceph_bootstrap_osd_key)
         validate_string($ceph_glance_key)
+        validate_string($ceph_cinder_key)
+        validate_string($ceph_cinder_secret_uuid)
         validate_string($ceph_cluster_network)
         validate_string($ceph_public_network)
     }
@@ -157,7 +165,11 @@ class easystack (
         ceph_admin_key                   => $ceph_admin_key,
         ceph_bootstrap_osd_key           => $ceph_bootstrap_osd_key,
         ceph_glance_key                  => $ceph_glance_key,
+        ceph_cinder_key                  => $ceph_cinder_key,
+        ceph_cinder_secret_uuid          => $ceph_cinder_secret_uuid,
         ceph_cluster_network             => $ceph_cluster_network,
         ceph_public_network              => $ceph_public_network,
+        database_cinder_password         => $database_cinder_password,
+        keystone_cinder_password         => $keystone_cinder_password,
     }
 }

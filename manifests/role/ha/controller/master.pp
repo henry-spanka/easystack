@@ -370,4 +370,42 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     # Setup Neutron Haproxy resources
     include ::easystack::profile::haproxy::neutron_api
 
+    # Setup database for Cinder
+    mysql::db { 'cinder':
+        user     => 'cinder',
+        password => mysql_password($::easystack::config::database_cinder_password),
+        host     => 'localhost',
+        grant    => ['ALL'],
+    }
+    -> mysql_user { 'cinder@%':
+        ensure        => 'present',
+        password_hash => mysql_password($::easystack::config::database_cinder_password),
+    }
+    -> mysql_grant { 'cinder@%/cinder.*':
+        ensure     => 'present',
+        options    => ['GRANT'],
+        privileges => ['ALL'],
+        table      => 'cinder.*',
+        user       => 'cinder@%',
+    }
+
+    # Setup Cinder
+    include ::easystack::profile::cinder
+    include ::easystack::profile::cinder::authtoken
+
+    class { '::easystack::profile::cinder::api':
+        sync_db => true,
+    }
+
+    include ::easystack::profile::cinder::scheduler
+    include ::easystack::profile::cinder::volume
+
+    include ::easystack::profile::cinder::backends
+
+    include ::easystack::profile::cinder::backends::ceph
+
+    include ::easystack::profile::haproxy::cinder_api
+
+    Service['mysqld'] -> Service['cinder-api']
+
 }
