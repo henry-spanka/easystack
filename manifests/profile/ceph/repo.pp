@@ -3,6 +3,9 @@ class easystack::profile::ceph::repo {
     # make sure the parameters are initialized
     include ::easystack
 
-    include ceph::repo
+    class { 'ceph::repo':
+        enable_sig  => true,
+        enable_epel => false,
+    }
 
 }
