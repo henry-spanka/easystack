@@ -77,6 +77,7 @@ class easystack (
     $ceph_bootstrap_osd_key           = $easystack::params::ceph_bootstrap_osd_key,
     $ceph_glance_key                  = $easystack::params::ceph_glance_key,
     $ceph_cinder_key                  = $easystack::params::ceph_cinder_key,
+    $ceph_nova_key                    = $easystack::params::ceph_nova_key,
     $ceph_cinder_secret_uuid          = $easystack::params::ceph_cinder_secret_uuid,
     $ceph_cluster_network             = $easystack::params::ceph_cluster_network,
     $ceph_public_network              = $easystack::params::ceph_public_network,
@@ -125,6 +126,7 @@ class easystack (
         validate_string($ceph_bootstrap_osd_key)
         validate_string($ceph_glance_key)
         validate_string($ceph_cinder_key)
+        validate_string($ceph_nova_key)
         validate_string($ceph_cinder_secret_uuid)
         validate_string($ceph_cluster_network)
         validate_string($ceph_public_network)
@@ -166,6 +168,7 @@ class easystack (
         ceph_bootstrap_osd_key           => $ceph_bootstrap_osd_key,
         ceph_glance_key                  => $ceph_glance_key,
         ceph_cinder_key                  => $ceph_cinder_key,
+        ceph_nova_key                    => $ceph_nova_key,
         ceph_cinder_secret_uuid          => $ceph_cinder_secret_uuid,
         ceph_cluster_network             => $ceph_cluster_network,
         ceph_public_network              => $ceph_public_network,

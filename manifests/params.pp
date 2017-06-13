@@ -34,6 +34,7 @@ class easystack::params {
     $ceph_bootstrap_osd_key = undef
     $ceph_glance_key = undef
     $ceph_cinder_key = undef
+    $ceph_nova_key = undef
     $ceph_cinder_secret_uuid = undef
     $ceph_cluster_network = undef
     $ceph_public_network = undef

@@ -15,6 +15,8 @@ class easystack::role::ha::compute inherits ::easystack::role {
 
     include ::easystack::profile::nova::authtoken
 
+    include ::easystack::profile::nova::compute::rbd
+
     include ::easystack::profile::neutron
 
     class { '::easystack::profile::neutron::agents::ml2::linuxbridge':
