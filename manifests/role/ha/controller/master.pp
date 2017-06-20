@@ -397,6 +397,8 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         sync_db => true,
     }
 
+    include ::easystack::profile::cinder::auth
+
     include ::easystack::profile::cinder::scheduler
     include ::easystack::profile::cinder::volume
 

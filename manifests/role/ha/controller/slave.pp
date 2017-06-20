@@ -119,8 +119,6 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         sync_db => false,
     }
 
-    include ::easystack::profile::cinder::auth
-
     include ::easystack::profile::cinder::scheduler
     include ::easystack::profile::cinder::volume
 
