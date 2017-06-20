@@ -1,6 +1,6 @@
 # Setup Neutron Metadata Agent
 class easystack::profile::neutron::agents::metadata (
-    String $listen_ip     = ip_for_network($::easystack::config::management_network),
+    String $vip     = $::easystack::config::controller_vip,
     String $shared_secret = $::easystack::config::neutron_metadata_shared_secret
 ) {
     # make sure the parameters are initialized
@@ -9,8 +9,8 @@ class easystack::profile::neutron::agents::metadata (
     include ::easystack::profile::neutron
 
     class { '::neutron::agents::metadata':
-        metadata_ip   => ip_for_network($::easystack::config::management_network),
-        shared_secret => $::easystack::config::neutron_metadata_shared_secret,
+        metadata_ip   => $vip,
+        shared_secret => $shared_secret,
     }
 
 }
