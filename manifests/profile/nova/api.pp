@@ -1,36 +1,21 @@
 # Setup Nova API
 class easystack::profile::nova::api (
-    String $listen_ip = ip_for_network($::easystack::config::management_network),
-    Boolean $sync_db  = false,
+    String $listen_ip     = ip_for_network($::easystack::config::management_network),
+    Boolean $sync_db      = false,
+    String $shared_secret = $::easystack::config::neutron_metadata_shared_secret
 ) {
     # make sure the parameters are initialized
     include ::easystack
 
-    include apache
-
     include ::easystack::profile::nova
 
     class { 'nova::api':
-        enabled_apis     => ['osapi_compute', 'metadata'],
-        api_bind_address => $listen_ip,
-        metadata_listen  => $listen_ip,
-        service_name     => 'httpd',
-        sync_db          => $sync_db,
-        sync_db_api      => $sync_db,
-    }
-
-    class { '::nova::wsgi::apache':
-        ssl        => false,
-        bind_host  => $listen_ip,
-        servername => $::fqdn,
-    }
-
-    selinux::port { 'allow-nova-api-httpd-8774':
-        seltype  => 'http_port_t',
-        port     => 8774,
-        protocol => 'tcp',
-        notify   => Class['apache::service'],
-        require  => Class['apache'],
+        enabled_apis                         => ['osapi_compute', 'metadata'],
+        api_bind_address                     => $listen_ip,
+        metadata_listen                      => $listen_ip,
+        sync_db                              => $sync_db,
+        sync_db_api                          => $sync_db,
+        neutron_metadata_proxy_shared_secret => $shared_secret,
     }
 
     include ::firewalld
@@ -41,7 +26,7 @@ class easystack::profile::nova::api (
         port     => 8774,
         protocol => 'tcp',
         tag      => 'nova-firewall',
-        before   => Service['httpd'],
+        before   => Service['nova-api'],
     }
 
     firewalld_port { 'Allow nova metadata api on port 8775 tcp':
@@ -50,7 +35,7 @@ class easystack::profile::nova::api (
         port     => 8775,
         protocol => 'tcp',
         tag      => 'nova-firewall',
-        before   => Service['httpd'],
+        before   => Service['nova-api'],
     }
 
 }
