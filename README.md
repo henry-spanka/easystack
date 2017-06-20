@@ -1,11 +1,41 @@
 # easystack
 
+[OpenStack]: https://www.openstack.org
+
+[Puppet module]: https://docs.puppetlabs.com/puppet/latest/reference/modules_fundamentals.html
+
+[Chrony]: https://chrony.tuxfamily.org
+[MariaDB]: https://mariadb.com
+[RabbitMQ]: https://www.rabbitmq.com
+[Memcached]: https://memcached.org
+[Apache]: https://httpd.apache.org
+[Selinux]: https://wiki.centos.org/HowTos/SELinux
+[Firewalld]: http://www.firewalld.org
+[Pacemaker]: http://clusterlabs.org
+[HAProxy]: https://www.haproxy.org
+[Sysctl]: https://www.centos.org/docs/4/4.5/Reference_Guide/s1-proc-sysctl.html
+[Galera]: http://galeracluster.com
+[/etc/services]: https://www.lifewire.com/what-is-etc-services-2196940
+[Ceph]: http://ceph.com
+
+[Keystone]: https://docs.openstack.org/developer/keystone/
+[Glance]: https://docs.openstack.org/developer/glance/
+[Nova]: https://docs.openstack.org/developer/nova/
+[Neutron]: https://docs.openstack.org/developer/neutron/
+[Horizon]: https://docs.openstack.org/developer/horizon/
+[Cinder]: https://docs.openstack.org/developer/cinder/
+
+[metadata.json]: metadata.json
+
+[`easystack`]: manifests/init.pp
+
+[Foreman]: https://theforeman.org
+
 #### Table of Contents
 
 1. [Description](#description)
 1. [Setup - The basics of getting started with easystack](#setup)
     * [What easystack affects](#what-easystack-affects)
-    * [Setup requirements](#setup-requirements)
     * [Beginning with easystack](#beginning-with-easystack)
 1. [Usage - Configuration options and additional functionality](#usage)
 1. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
@@ -14,44 +44,69 @@
 
 ## Description
 
-Start with a one- or two-sentence summary of what the module does and/or what
-problem it solves. This is your 30-second elevator pitch for your module.
-Consider including OS/Puppet version it works with.
-
-You can give more descriptive information in a second paragraph. This paragraph
-should answer the questions: "What does this module *do*?" and "Why would I use
-it?" If your module has a range of functionality (installation, configuration,
-management, etc.), this is the time to mention it.
+[OpenStack] is a free platform for cloud computing. The deployment process
+requires a deep understanding of the OpenStack services or individual projects.
+This [Puppet module] tries to simplify the process of deploying and maintaining
+an [OpenStack] cloud and it's individual projects.
 
 ## Setup
 
-### What easystack affects **OPTIONAL**
+### What easystack affects
 
-If it's obvious what your module touches, you can skip this section. For
-example, folks can probably figure out that your mysql_instance module affects
-their MySQL instances.
+Easystack maintains a complete [OpenStack] cloud and affects the following
+services:
 
-If there's more that they should know about, though, this is the place to mention:
+* Basic Services:
+    * [Chrony]
+    * [MariaDB]
+    * [RabbitMQ]
+    * [Memcached]
+    * [Apache]
+    * [Selinux]
+    * [Firewalld]
+    * [Sysctl]
+    * [/etc/services]
 
-* A list of files, packages, services, or operations that the module will alter,
-  impact, or execute.
-* Dependencies that your module automatically installs.
-* Warnings or other important notices.
 
-### Setup Requirements **OPTIONAL**
+* HA Services:
+    * [Pacemaker]
+    * [HAProxy]
+    * [Galera]
 
-If your module requires anything extra before setting up (pluginsync enabled,
-etc.), mention it here.
 
-If your most recent release breaks compatibility or requires particular steps
-for upgrading, you might want to include an additional "Upgrading" section
-here.
+* Storage Services:
+    * [Ceph]
+
+
+* OpenStack Services:
+    * [Keystone]
+    * [Glance]
+    * [Nova]
+    * [Neutron]
+    * [Horizon]
+    * [Cinder]
+
+
+* Puppet Module Dependencies can be viewed in [metadata.json]
 
 ### Beginning with easystack
 
-The very basic steps needed for a user to get the module up and running. This
-can include setup steps, if necessary, or it can be an example of the most
-basic use of the module.
+In order to configure OpenStack first we need to declare the [`easystack`] class
+to initialize any parameters:
+
+``` puppet
+class { 'easystack':
+    parameter1 => value1,
+    parameter2 => value2,
+}
+```
+
+At the moment there are many required parameters. Information can be obtained in
+the [`easystack`] class.
+
+This module is compatible with [Foreman] to allow easy deployment of nodes
+including OS installation.
+
 
 ## Usage
 
@@ -68,16 +123,11 @@ se.
 
 ## Limitations
 
-This is where you list OS compatibility, version compatibility, etc. If there
-are Known Issues, you might want to include them under their own heading here.
+This module is currently compatible with the following Operating Systems:
+
+* CentOS 7
 
 ## Development
 
 Since your module is awesome, other users will want to play with it. Let them
 know what the ground rules for contributing are.
-
-## Release Notes/Contributors/Etc. **Optional**
-
-If you aren't using changelog, put your release notes here (though you should
-consider using changelog). You can also add any additional sections you feel
-are necessary or important to include here. Please use the `## ` header.
