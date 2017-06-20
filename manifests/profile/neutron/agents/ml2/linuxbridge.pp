@@ -1,6 +1,6 @@
 # Setup Neutron Linuxbridge ML2 Agent
 class easystack::profile::neutron::agents::ml2::linuxbridge (
-    String $local_ip                   = ip_for_network($::easystack::config::management_network),
+    String $local_ip                   = ip_for_network($::easystack::config::neutron_network),
     Array $provider_interface_mappings = ['provider:eth2'],
 ) {
     # make sure the parameters are initialized

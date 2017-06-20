@@ -20,7 +20,6 @@ class easystack::role::ha::compute inherits ::easystack::role {
     include ::easystack::profile::neutron
 
     class { '::easystack::profile::neutron::agents::ml2::linuxbridge':
-        local_ip                    => ip_for_network($::easystack::config::neutron_network),
         provider_interface_mappings => [],
     }
 
