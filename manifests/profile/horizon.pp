@@ -51,7 +51,7 @@ class easystack::profile::horizon (
             'volume'   => 2,
         },
         neutron_options              => {
-            'enable_router'             => true,
+            'enable_router'             => false,
             'enable_quotas'             => false,
             'enable_distributed_router' => false,
             'enable_ha_router'          => false,

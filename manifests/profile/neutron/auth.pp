@@ -15,7 +15,7 @@ class easystack::profile::neutron::auth (
         configure_endpoint  => true,
         configure_user      => true,
         configure_user_role => true,
-        service_name        => 'nova',
+        service_name        => 'neutron',
         public_url          => "http://${vip}:9696",
         internal_url        => "http://${vip}:9696",
         admin_url           => "http://${vip}:9696",

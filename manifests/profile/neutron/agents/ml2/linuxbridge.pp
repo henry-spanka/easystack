@@ -1,7 +1,7 @@
 # Setup Neutron Linuxbridge ML2 Agent
 class easystack::profile::neutron::agents::ml2::linuxbridge (
-    String $local_ip                   = ip_for_network($::easystack::config::neutron_network),
-    Array $provider_interface_mappings = ['provider:eth2'],
+    Array $provider_interface_mappings = ['provider:eth1'],
+    String $firewall_driver            = 'neutron.agent.linux.iptables_firewall.IptablesFirewallDriver',
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -10,9 +10,7 @@ class easystack::profile::neutron::agents::ml2::linuxbridge (
 
     class { '::neutron::agents::ml2::linuxbridge':
         physical_interface_mappings => $provider_interface_mappings,
-        local_ip                    => $local_ip,
-        l2_population               => true,
-        tunnel_types                => ['vxlan'],
+        firewall_driver             => $firewall_driver,
     }
 
 }

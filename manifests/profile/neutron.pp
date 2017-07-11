@@ -28,7 +28,7 @@ class easystack::profile::neutron (
         lock_path               => '/var/lib/neutron/tmp',
         use_ssl                 => false,
         core_plugin             => 'ml2',
-        service_plugins         => ['router'],
+        service_plugins         => [],
         allow_overlapping_ips   => true,
         rabbit_ha_queues        => true,
         amqp_durable_queues     => true,

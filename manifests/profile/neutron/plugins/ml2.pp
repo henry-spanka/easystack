@@ -6,9 +6,9 @@ class easystack::profile::neutron::plugins::ml2 {
     include ::easystack::profile::neutron
 
     class { '::neutron::plugins::ml2':
-        type_drivers          => ['flat', 'vlan', 'vxlan'],
-        tenant_network_types  => ['vxlan'],
-        mechanism_drivers     => ['linuxbridge', 'l2population'],
+        type_drivers          => ['flat', 'vlan'],
+        tenant_network_types  => [],
+        mechanism_drivers     => ['linuxbridge'],
         extension_drivers     => ['port_security'],
         flat_networks         => ['provider'],
         vni_ranges            => ['1:1000'],

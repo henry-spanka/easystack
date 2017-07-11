@@ -106,6 +106,12 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
 
     include ::easystack::profile::neutron::plugins::ml2
 
+    include ::easystack::profile::neutron::agents::dhcp
+
+    include ::easystack::profile::neutron::agents::ml2::linuxbridge
+
+    include ::easystack::profile::neutron::agents::metadata
+
     Service['mysqld'] -> Service['neutron-server']
 
     # Setup Neutron Haproxy resources

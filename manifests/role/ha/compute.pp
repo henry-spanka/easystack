@@ -21,8 +21,6 @@ class easystack::role::ha::compute inherits ::easystack::role {
 
     include ::easystack::profile::neutron
 
-    class { '::easystack::profile::neutron::agents::ml2::linuxbridge':
-        provider_interface_mappings => [],
-    }
+    include ::easystack::profile::neutron::agents::ml2::linuxbridge
 
 }

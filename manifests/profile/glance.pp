@@ -46,8 +46,10 @@ class easystack::profile::glance (
 
     # lint:ignore:duplicate_params
     glance_api_config {
-        'glance_store/default_store': value => $default_store;
-        'glance_store/stores':        value => join($store_backends);
+        'glance_store/default_store':          value => $default_store;
+        'glance_store/stores':                 value => join($store_backends);
+        'taskflow_executor/conversion_format': value => 'raw';
+        'DEFAULT/show_image_direct_url':       value => true;
     }
     # lint:endignore
 
