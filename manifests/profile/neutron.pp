@@ -32,7 +32,7 @@ class easystack::profile::neutron (
         allow_overlapping_ips   => true,
         rabbit_ha_queues        => true,
         amqp_durable_queues     => true,
-        dhcp_agents_per_network => '2',
+        dhcp_agents_per_network => '3',
     }
 
 }
