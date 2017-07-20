@@ -196,11 +196,19 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         user       => 'glance@%',
     }
 
-    class { '::easystack::profile::glance':
-        master => true,
+    include ::easystack::profile::glance
+
+    include ::easystack::profile::glance::api::authtoken
+    class { '::easystack::profile::glance::api':
+        sync_db => true,
     }
 
+    include ::easystack::profile::glance::registry::authtoken
+    include ::easystack::profile::glance::registry
+
     include ::easystack::profile::glance::backend::rbd
+
+    include ::easystack::profile::glance::auth
 
     # Setup Glance Haproxy resources
     include ::easystack::profile::haproxy::glance_api

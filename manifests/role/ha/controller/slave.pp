@@ -52,9 +52,13 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
     }
 
     # Configure glance
-    class { '::easystack::profile::glance':
-        master => false,
-    }
+    include ::easystack::profile::glance
+
+    include ::easystack::profile::glance::api::authtoken
+    include ::easystack::profile::glance::api
+
+    include ::easystack::profile::glance::registry::authtoken
+    include ::easystack::profile::glance::registry
 
     include ::easystack::profile::glance::backend::rbd
 
