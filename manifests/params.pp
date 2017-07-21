@@ -16,7 +16,6 @@ class easystack::params {
     $keystone_neutron_password = undef
     $database_neutron_password = undef
     $horizon_secret_key = undef
-    $controller_host = undef
     $neutron_provider_interface = undef
     $neutron_metadata_shared_secret = undef
     $controller_nodes = undef
