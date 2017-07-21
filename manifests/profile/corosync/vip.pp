@@ -1,6 +1,6 @@
 # Setup VIP Resource
 class easystack::profile::corosync::vip (
-    String $vip             = $::easystack::config::controller_vip,
+    String $vip                = $::easystack::config::controller_vip,
     String $management_network = $::easystack::config::management_network,
 ) {
     # make sure the parameters are initialized
