@@ -60,7 +60,6 @@ class easystack (
     $database_neutron_password        = $easystack::params::database_neutron_password,
     $horizon_secret_key               = $easystack::params::horizon_secret_key,
     $controller_host                  = $easystack::params::controller_host,
-    $neutron_network                  = $easystack::params::neutron_network,
     $neutron_provider_interface       = $easystack::params::neutron_provider_interface,
     $neutron_metadata_shared_secret   = $easystack::params::neutron_metadata_shared_secret,
     $controller_nodes                 = $easystack::params::controller_nodes,
@@ -102,7 +101,6 @@ class easystack (
     validate_string($database_neutron_password)
     validate_string($horizon_secret_key)
     validate_string($controller_host)
-    validate_string($neutron_network)
     validate_string($neutron_provider_interface)
     validate_string($neutron_metadata_shared_secret)
     validate_string($database_cinder_password)
@@ -151,7 +149,6 @@ class easystack (
         database_neutron_password        => $database_neutron_password,
         horizon_secret_key               => $horizon_secret_key,
         controller_host                  => $controller_host,
-        neutron_network                  => $neutron_network,
         neutron_provider_interface       => $neutron_provider_interface,
         neutron_metadata_shared_secret   => $neutron_metadata_shared_secret,
         controller_nodes                 => $controller_nodes,
