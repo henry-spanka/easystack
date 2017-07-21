@@ -58,21 +58,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     Service['haproxy'] -> Service['mysqld']
     Service['mysqld'] -> Service['httpd']
 
-    cs_primitive { 'vip':
-        primitive_class => 'ocf',
-        primitive_type  => 'IPaddr2',
-        provided_by     => 'heartbeat',
-        parameters      => {
-            'ip'           => $::easystack::config::controller_vip,
-            'cidr_netmask' => '24'
-        },
-        operations      => {
-            'monitor' => {
-                'interval' => '30s',
-            }
-        },
-        require         => Class['::easystack::profile::corosync'],
-    }
+    include ::easystack::profile::corosync::vip
 
     # Setup haproxy
     include ::easystack::profile::haproxy
@@ -81,39 +67,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::haproxy::keystone
     include ::easystack::profile::haproxy::galera
 
-    # Setup Haproxy Corosync service and VIP
-    cs_primitive { 'haproxy':
-        ensure          => present,
-        primitive_class => 'systemd',
-        primitive_type  => 'haproxy',
-        operations      => {
-            'monitor' => {
-                'interval' => '1s',
-            }
-        },
-        require         => Class['haproxy'],
-    }
-
-    cs_clone { 'haproxy-clone':
-        ensure    => present,
-        primitive => 'haproxy',
-        require   => Cs_primitive['haproxy'],
-    }
-
-    cs_order { 'vip_before_haproxy':
-        first   => 'vip',
-        second  => 'haproxy-clone',
-        kind    => 'Optional',
-        require => [
-            Cs_clone['haproxy-clone'],
-            Cs_primitive['vip'],
-        ],
-    }
-
-    cs_colocation { 'vip_with_haproxy':
-        primitives => ['haproxy-clone', 'vip'],
-        require    => Cs_order['vip_before_haproxy'],
-    }
+    include ::easystack::profile::corosync::haproxy
 
     # Setup apache
     class { 'apache':
@@ -145,36 +99,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         master => true,
     }
 
-    # Setup httpd corosync service
-    cs_primitive { 'httpd':
-        ensure          => present,
-        primitive_class => 'systemd',
-        primitive_type  => 'httpd',
-        require         => [
-            Class['apache'],
-            Exec['restart_keystone'],
-        ],
-        operations      => {
-            'monitor' => {
-                'interval' => '5s',
-            },
-            'start'   => {
-                'timeout'  => '300s',
-                'interval' => '0s',
-            },
-            'stop'    => {
-                'timeout'  => '120s',
-                'interval' => '0s',
-            },
-        },
-    }
-
-    cs_clone { 'httpd-clone':
-        ensure     => present,
-        primitive  => 'httpd',
-        require    => Cs_primitive['httpd'],
-        interleave => true,
-    }
+    include ::easystack::profile::corosync::httpd
 
     # Configure glance
     # Configure glance mySQL database
@@ -214,44 +139,8 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::haproxy::glance_api
     include ::easystack::profile::haproxy::glance_registry
 
-    # Setup glance corosync service
-    cs_primitive { 'openstack-glance-api':
-        ensure          => present,
-        primitive_class => 'systemd',
-        primitive_type  => 'openstack-glance-api',
-        require         => Service['glance-api'],
-        operations      => {
-            'monitor' => {
-                'interval' => '5s',
-            }
-        },
-    }
-
-    cs_clone { 'openstack-glance-api-clone':
-        ensure     => present,
-        primitive  => 'openstack-glance-api',
-        require    => Cs_primitive['openstack-glance-api'],
-        interleave => true,
-    }
-
-    cs_primitive { 'openstack-glance-registry':
-        ensure          => present,
-        primitive_class => 'systemd',
-        primitive_type  => 'openstack-glance-registry',
-        require         => Service['glance-registry'],
-        operations      => {
-            'monitor' => {
-                'interval' => '5s',
-            }
-        },
-    }
-
-    cs_clone { 'openstack-glance-registry-clone':
-        ensure     => present,
-        primitive  => 'openstack-glance-registry',
-        require    => Cs_primitive['openstack-glance-registry'],
-        interleave => true,
-    }
+    include ::easystack::profile::corosync::glance_api
+    include ::easystack::profile::corosync::glance_registry
 
     # Configure Compute service Nova on controller node
 
