@@ -9,12 +9,18 @@ class easystack::profile::base {
         source => 'puppet:///modules/easystack/RPM-GPG-KEY-CentOS-SIG-Cloud',
     }
 
+    package { 'yum-plugin-priorities':
+        ensure => installed,
+        before => Yumrepo['CentOS-OpenStack-Octata'],
+    }
+
     yumrepo { 'CentOS-OpenStack-Octata':
         baseurl  => 'http://mirror.centos.org/centos/$releasever/cloud/$basearch/openstack-ocata/',
         descr    => 'CentOS-$releasever - Openstack Octata',
         enabled  => 1,
         gpgcheck => 1,
         gpgkey   => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Cloud',
+        priority => 20,
         require  => File['/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Cloud'],
     }
 
