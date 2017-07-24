@@ -313,4 +313,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
 
     Service['mysqld'] -> Service['cinder-api']
 
+    # Setup Corosync resources
+    include ::easystack::profile::corosync::chrony
+
 }
