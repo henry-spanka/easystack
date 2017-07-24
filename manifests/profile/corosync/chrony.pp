@@ -4,13 +4,14 @@ class easystack::profile::corosync::chrony {
     include ::easystack
 
     include ::easystack::profile::corosync
+    include ::easystack::profile::chrony
 
     # Setup chrony service
     cs_primitive { 'chrony':
         ensure          => present,
         primitive_class => 'systemd',
         primitive_type  => 'chronyd',
-        require         => Class['chrony'],
+        require         => Class['easystack::profile::chrony'],
         operations      => {
             'monitor' => {
                 'interval' => '60s',

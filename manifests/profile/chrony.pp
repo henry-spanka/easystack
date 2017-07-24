@@ -17,4 +17,9 @@ class easystack::profile::chrony (
         servers        => $servers,
         service_manage => $service_manage,
     }
+
+    anchor { 'easystack::profile::chrony::begin': }
+    -> Class['chrony']
+    -> anchor { 'easystack::profile::chrony::end': }
+
 }
