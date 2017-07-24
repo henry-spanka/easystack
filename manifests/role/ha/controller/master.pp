@@ -315,5 +315,6 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
 
     # Setup Corosync resources
     include ::easystack::profile::corosync::chrony
+    include ::easystack::profile::corosync::memcached
 
 }
