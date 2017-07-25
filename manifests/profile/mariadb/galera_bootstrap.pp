@@ -17,7 +17,6 @@ class easystack::profile::mariadb::galera_bootstrap (
         command  => '/usr/bin/galera_new_cluster',
         unless   => "nmap -Pn -p 4567 ${controller_nodes_fqdn_spaced} | grep -q '4567/tcp open'",
         require  => Class['mysql::server::installdb'],
-        before   => Service['mysqld'],
         provider => shell,
         path     => '/usr/bin:/bin:/usr/sbin:/sbin'
     }

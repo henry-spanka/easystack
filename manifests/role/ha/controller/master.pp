@@ -48,15 +48,12 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     # Make sure MariaDB Services start before pcsd
     # as the slaves can not start mariadb if the master has not initialized the
     # database yet
-    Service['mysqld'] -> Service['pcsd']
     Service['haproxy'] -> Service['pcsd']
 
     # Install Haproxy and Apache before autenticating as otherwise a warning message
     # will be displayed that the services can not be found by pacemaker
     Package['haproxy'] -> Class['::easystack::profile::corosync']
     Package['httpd'] -> Class['::easystack::profile::corosync']
-    Service['haproxy'] -> Service['mysqld']
-    Service['mysqld'] -> Service['httpd']
 
     include ::easystack::profile::corosync::vip
 
@@ -211,12 +208,6 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
 
     include ::easystack::profile::nova::neutron
 
-    Service['mysqld'] -> Service['nova-api']
-    Service['mysqld'] -> Service['nova-conductor']
-    Service['mysqld'] -> Service['nova-consoleauth']
-    Service['mysqld'] -> Service['nova-vncproxy']
-    Service['mysqld'] -> Service['nova-scheduler']
-
     # Setup Glance Haproxy resources
     include ::easystack::profile::haproxy::nova_compute_api
     include ::easystack::profile::haproxy::nova_metadata_api
@@ -268,8 +259,6 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
 
     include ::easystack::profile::neutron::agents::metadata
 
-    Service['mysqld'] -> Service['neutron-server']
-
     # Setup Neutron Haproxy resources
     include ::easystack::profile::haproxy::neutron_api
 
@@ -311,10 +300,9 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
 
     include ::easystack::profile::haproxy::cinder_api
 
-    Service['mysqld'] -> Service['cinder-api']
-
     # Setup Corosync resources
     include ::easystack::profile::corosync::chrony
     include ::easystack::profile::corosync::memcached
+    include ::easystack::profile::corosync::mariadb
 
 }

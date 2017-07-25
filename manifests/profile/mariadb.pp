@@ -25,6 +25,7 @@ class easystack::profile::mariadb (
         remove_default_accounts => true,
         create_root_my_cnf      => true,
         create_root_user        => $master,
+        service_manage          => false,
         override_options        => {
             'mysqld' => {
                 'bind-address'                   => $listen_ip,
@@ -84,6 +85,16 @@ class easystack::profile::mariadb (
     class { '::easystack::profile::mariadb::galera':
         controller_nodes => $controller_nodes,
         master           => $master,
+    }
+
+    service { 'mysqld':
+        ensure  => undef,
+        name    => 'mariadb',
+        enable  => false,
+        require => [
+            Package['mysql-server'],
+            File['mysql-config-file'],
+        ],
     }
 
     include ::firewalld
