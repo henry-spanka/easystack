@@ -66,11 +66,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
 
     include ::easystack::profile::corosync::haproxy
 
-    # Setup apache
-    class { 'apache':
-        default_vhost => false,
-        servername    => $::fqdn,
-    }
+    include ::easystack::profile::apache
 
     # Setup keystone
     # Configure keystone mySQL database

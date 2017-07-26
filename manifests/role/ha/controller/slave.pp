@@ -38,11 +38,7 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
     include ::easystack::profile::haproxy::keystone
     include ::easystack::profile::haproxy::galera
 
-    # Setup apache
-    class { 'apache':
-        default_vhost => false,
-        servername    => $::fqdn,
-    }
+    include ::easystack::profile::apache
 
     class { '::easystack::profile::keystone':
         master => false,
