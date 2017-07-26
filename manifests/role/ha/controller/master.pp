@@ -304,5 +304,6 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::corosync::chrony
     include ::easystack::profile::corosync::memcached
     include ::easystack::profile::corosync::mariadb
+    include ::easystack::profile::corosync::rabbitmq
 
 }

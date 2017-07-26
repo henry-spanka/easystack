@@ -24,6 +24,7 @@ class easystack::profile::rabbitmq (
         erlang_cookie              => $erlang_cookie,
         wipe_db_on_cookie_change   => true,
         cluster_partition_handling => 'pause_minority',
+        service_manage             => false,
         environment_variables      => {
             'RABBITMQ_NODE_IP_ADDRESS' => $listen_ip,
             'ERL_EPMD_ADDRESS'         => $listen_ip,
