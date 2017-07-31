@@ -21,12 +21,4 @@ class easystack::profile::apache (
         restart => 'echo 0',
     }
 
-    notify { 'httpd-not-managed':
-        # lint:ignore:140chars
-        message   => 'The httpd service is managed by pacemaker and therefore not restarted on configuration changes. Please restart httpd manually',
-        # lint:endignore
-        loglevel  => 'warning',
-        subscribe => Service['httpd'],
-    }
-
 }
