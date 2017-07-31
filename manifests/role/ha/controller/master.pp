@@ -132,9 +132,6 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::haproxy::glance_api
     include ::easystack::profile::haproxy::glance_registry
 
-    include ::easystack::profile::corosync::glance_api
-    include ::easystack::profile::corosync::glance_registry
-
     # Configure Compute service Nova on controller node
 
     # Configure nova mySQL databases
@@ -301,5 +298,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::corosync::memcached
     include ::easystack::profile::corosync::mariadb
     include ::easystack::profile::corosync::rabbitmq
+    include ::easystack::profile::corosync::glance_api
+    include ::easystack::profile::corosync::glance_registry
 
 }

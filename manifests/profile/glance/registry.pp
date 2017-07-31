@@ -15,6 +15,8 @@ class easystack::profile::glance::registry (
         pipeline            => 'keystone',
         database_connection => "mysql+pymysql://glance:${db_password}@${vip}/glance",
         auth_strategy       => 'keystone',
+        manage_service      => false,
+        enabled             => false,
     }
 
     include ::firewalld

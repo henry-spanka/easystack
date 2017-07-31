@@ -24,6 +24,8 @@ class easystack::profile::glance::api (
         pipeline              => 'keystone',
         stores                => $store_backends,
         conversion_format     => 'raw',
+        manage_service        => false,
+        enabled               => false,
     }
 
     include ::firewalld

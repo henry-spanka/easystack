@@ -10,7 +10,7 @@ class easystack::profile::corosync::glance_registry {
         ensure          => present,
         primitive_class => 'systemd',
         primitive_type  => 'openstack-glance-registry',
-        require         => Service['glance-registry'],
+        require         => Class['easystack::profile::glance::registry'],
         operations      => {
             'monitor' => {
                 'interval' => '5s',

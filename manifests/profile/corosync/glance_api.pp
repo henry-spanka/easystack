@@ -10,7 +10,7 @@ class easystack::profile::corosync::glance_api {
         ensure          => present,
         primitive_class => 'systemd',
         primitive_type  => 'openstack-glance-api',
-        require         => Service['glance-api'],
+        require         => Class['easystack::profile::glance::api'],
         operations      => {
             'monitor' => {
                 'interval' => '5s',
