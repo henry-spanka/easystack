@@ -29,6 +29,9 @@ class easystack::profile::neutron::server (
         l3_ha                            => true,
         allow_automatic_l3agent_failover => true,
         max_l3_agents_per_router         => '2',
+        enabled                          => false,
+        manage_service                   => false,
+        sync_db                          => $sync_db,
     }
 
     class { '::neutron::server::notifications':
@@ -44,9 +47,4 @@ class easystack::profile::neutron::server (
         region_name                        => $region,
     }
 
-    if ($sync_db) {
-        class { '::neutron::db::sync':
-            before => Service['neutron-server'],
-        }
-    }
 }

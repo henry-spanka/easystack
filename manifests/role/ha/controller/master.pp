@@ -306,5 +306,9 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::corosync::nova_placement
     include ::easystack::profile::corosync::nova_scheduler
     include ::easystack::profile::corosync::nova_vncproxy
+    include ::easystack::profile::corosync::neutron_server
+    include ::easystack::profile::corosync::neutron_metadata_agent
+    include ::easystack::profile::corosync::neutron_linuxbridge_agent
+    include ::easystack::profile::corosync::neutron_dhcp_agent
 
 }
