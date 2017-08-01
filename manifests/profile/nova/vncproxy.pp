@@ -30,8 +30,8 @@ class easystack::profile::nova::vncproxy (
     }
 
     nova::generic_service { 'vncproxy':
-        enabled        => true,
-        manage_service => true,
+        enabled        => false,
+        manage_service => false,
         package_name   => $::nova::params::vncproxy_package_name,
         service_name   => $::nova::params::vncproxy_service_name,
         ensure_package => 'present',

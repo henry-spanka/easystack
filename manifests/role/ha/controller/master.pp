@@ -300,5 +300,11 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::corosync::rabbitmq
     include ::easystack::profile::corosync::glance_api
     include ::easystack::profile::corosync::glance_registry
+    include ::easystack::profile::corosync::nova_api
+    include ::easystack::profile::corosync::nova_conductor
+    include ::easystack::profile::corosync::nova_consoleauth
+    include ::easystack::profile::corosync::nova_placement
+    include ::easystack::profile::corosync::nova_scheduler
+    include ::easystack::profile::corosync::nova_vncproxy
 
 }

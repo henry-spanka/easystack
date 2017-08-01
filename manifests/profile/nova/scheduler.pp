@@ -5,6 +5,9 @@ class easystack::profile::nova::scheduler {
 
     include ::easystack::profile::nova
 
-    class { 'nova::scheduler': }
+    class { 'nova::scheduler':
+        manage_service => false,
+        enabled        => false,
+    }
 
 }

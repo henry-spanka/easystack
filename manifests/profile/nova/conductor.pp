@@ -5,6 +5,9 @@ class easystack::profile::nova::conductor {
 
     include ::easystack::profile::nova
 
-    class { 'nova::conductor': }
+    class { 'nova::conductor':
+        manage_service => false,
+        enabled        => false,
+    }
 
 }

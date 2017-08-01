@@ -5,6 +5,9 @@ class easystack::profile::nova::consoleauth {
 
     include ::easystack::profile::nova
 
-    class { 'nova::consoleauth': }
+    class { 'nova::consoleauth':
+        manage_service => false,
+        enabled        => false,
+    }
 
 }
