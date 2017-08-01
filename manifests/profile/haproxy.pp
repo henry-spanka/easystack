@@ -29,6 +29,13 @@ class easystack::profile::haproxy {
             ],
             'maxconn' => '4000',
         },
+        # We currently can not set service_manage to false and also disable the service.
+        # That's why we need to override the ensure parameter using a Resource Collector afterwards
+        service_ensure   => 'stopped',
+    }
+
+    Service <| title == 'haproxy' |> {
+        ensure => undef,
     }
 
     sysctl::value { 'net.ipv4.ip_nonlocal_bind':
