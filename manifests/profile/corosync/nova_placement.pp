@@ -7,7 +7,7 @@ class easystack::profile::corosync::nova_placement {
 
     include ::easystack::profile::corosync::httpd
 
-    Class['::easystack::profile::nova::placement']
+    Class['::easystack::profile::nova::placement_api']
     -> Class['::easystack::profile::corosync::httpd']
 
 }

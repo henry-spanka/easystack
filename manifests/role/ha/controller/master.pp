@@ -192,7 +192,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         sync_db => true,
     }
 
-    include ::easystack::profile::nova::placement
+    include ::easystack::profile::nova::placement_api
 
     include ::easystack::profile::nova::conductor
     include ::easystack::profile::nova::consoleauth

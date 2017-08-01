@@ -32,7 +32,6 @@ class easystack::profile::nova::compute::libvirt (
         port     => '5900-6900',
         protocol => 'tcp',
         tag      => 'nova-firewall',
-        before   => Service['httpd'],
     }
 
 }
