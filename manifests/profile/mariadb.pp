@@ -53,6 +53,7 @@ class easystack::profile::mariadb (
         # We currently can not set service_enabled to false and also not manage the service.
         # That's why we need to override the ensure parameter using a Resource Collector afterwards
         service_enabled         => false,
+        restart                 => false,
     }
 
     Service <| title == 'mysqld' |> {
