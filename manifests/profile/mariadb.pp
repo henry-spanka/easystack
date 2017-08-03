@@ -25,7 +25,6 @@ class easystack::profile::mariadb (
         remove_default_accounts => true,
         create_root_my_cnf      => true,
         create_root_user        => $master,
-        service_manage          => false,
         override_options        => {
             'mysqld' => {
                 'bind-address'                   => $listen_ip,
@@ -50,7 +49,14 @@ class easystack::profile::mariadb (
                 'wsrep_sst_receive_address'      => $listen_ip,
                 'wsrep_on'                       => 'ON',
             }
-        }
+        },
+        # We currently can not set service_enabled to false and also not manage the service.
+        # That's why we need to override the ensure parameter using a Resource Collector afterwards
+        service_enabled         => false,
+    }
+
+    Service <| title == 'mysqld' |> {
+        ensure => undef,
     }
 
     file { '/var/log/mariadb':
@@ -85,16 +91,6 @@ class easystack::profile::mariadb (
     class { '::easystack::profile::mariadb::galera':
         controller_nodes => $controller_nodes,
         master           => $master,
-    }
-
-    service { 'mysqld':
-        ensure  => undef,
-        name    => 'mariadb',
-        enable  => false,
-        require => [
-            Package['mysql-server'],
-            File['mysql-config-file'],
-        ],
     }
 
     include ::firewalld
