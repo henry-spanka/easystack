@@ -19,15 +19,13 @@ class easystack::profile::chrony (
         service_enable => $service_manage,
     }
 
+    contain chrony
+
     # We need to override ensure
     if (!$service_manage) {
         Service <| title == 'chrony' |> {
             ensure => undef,
         }
     }
-
-    anchor { 'easystack::profile::chrony::begin': }
-    -> Class['chrony']
-    -> anchor { 'easystack::profile::chrony::end': }
 
 }
