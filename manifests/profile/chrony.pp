@@ -15,7 +15,15 @@ class easystack::profile::chrony (
     class { 'chrony':
         pool_use       => $pool_use,
         servers        => $servers,
-        service_manage => $service_manage,
+        service_manage => true,
+        service_enable => $service_manage,
+    }
+
+    # We need to override ensure
+    if (!$service_manage) {
+        Service <| title == 'chrony' |> {
+            ensure => undef,
+        }
     }
 
     anchor { 'easystack::profile::chrony::begin': }
