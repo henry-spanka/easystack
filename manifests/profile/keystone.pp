@@ -1,11 +1,12 @@
 # Setup Keystone Service
 class easystack::profile::keystone (
-    String $listen_ip      = ip_for_network($::easystack::config::management_network),
-    String $vip            = $::easystack::config::controller_vip,
-    String $admin_token    = $::easystack::config::keystone_admin_token,
-    String $db_password    = $::easystack::config::database_keystone_password,
-    Boolean $sync_db       = false,
-    Hash $fernet_keys      = $::easystack::config::keystone_fernet_keys,
+    String $listen_ip       = ip_for_network($::easystack::config::management_network),
+    String $vip             = $::easystack::config::controller_vip,
+    String $admin_token     = $::easystack::config::keystone_admin_token,
+    String $db_password     = $::easystack::config::database_keystone_password,
+    Boolean $sync_db        = false,
+    Hash $fernet_keys       = $::easystack::config::keystone_fernet_keys,
+    Array $controller_nodes = $::easystack::config::controller_nodes,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -53,6 +54,10 @@ class easystack::profile::keystone (
       tag      => 'keystone-firewall',
     }
 
+    $controller_nodes_ip = $controller_nodes.map |Hash $params| {
+        $params[ip]
+    }
+
     class { 'keystone':
         catalog_type        => 'sql',
         admin_token         => $admin_token,
@@ -66,6 +71,9 @@ class easystack::profile::keystone (
         sync_db             => $sync_db,
         enable_fernet_setup => true,
         fernet_keys         => $fernet_keys,
+        cache_enabled       => true,
+        cache_backend       => 'oslo_cache.memcache_pool',
+        memcache_servers    => $controller_nodes_ip,
     }
 
     Anchor['easystack::openstack::install_1::begin']
