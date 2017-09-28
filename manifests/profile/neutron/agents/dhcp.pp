@@ -11,4 +11,11 @@ class easystack::profile::neutron::agents::dhcp {
         enable_isolated_metadata => true,
     }
 
+    firewalld_service { 'Allow dhcp requests to neutron dhcp agent':
+        ensure  => present,
+        service => 'dhcp',
+        zone    => 'public',
+        tag     => 'neutron-firewall',
+    }
+
 }
