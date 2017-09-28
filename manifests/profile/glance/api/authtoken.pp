@@ -24,4 +24,6 @@ class easystack::profile::glance::api::authtoken (
         auth_url            => "http://${vip}:35357",
         auth_uri            => "http://${vip}:5000",
     }
+
+    contain ::glance::api::authtoken
 }

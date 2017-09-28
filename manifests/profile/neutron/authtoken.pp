@@ -23,4 +23,7 @@ class easystack::profile::neutron::authtoken (
         auth_uri            => "http://${vip}:5000",
         auth_url            => "http://${vip}:35357",
     }
+
+    contain ::neutron::keystone::authtoken
+
 }

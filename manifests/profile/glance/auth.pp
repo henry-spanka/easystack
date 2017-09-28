@@ -21,6 +21,7 @@ class easystack::profile::glance::auth (
         admin_url           => "http://${vip}:9292",
         region              => $region,
         tenant              => 'services',
-        require             => Class['::easystack::profile::keystone'],
     }
+
+    contain ::glance::keystone::auth
 }

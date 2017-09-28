@@ -21,6 +21,7 @@ class easystack::profile::nova::auth (
         admin_url           => "http://${vip}:8774/v2.1",
         region              => $region,
         tenant              => 'services',
-        require             => Class['::easystack::profile::keystone'],
     }
+
+    contain ::nova::keystone::auth
 }

@@ -39,6 +39,7 @@ class easystack::config (
     $ceph_public_network = undef,
     $database_cinder_password = undef,
     $keystone_cinder_password = undef,
+    $glance_nfs_device = undef,
 ) {
 
 }

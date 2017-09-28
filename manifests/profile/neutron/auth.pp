@@ -21,6 +21,7 @@ class easystack::profile::neutron::auth (
         admin_url           => "http://${vip}:9696",
         region              => $region,
         tenant              => 'services',
-        require             => Class['keystone::endpoint'],
     }
+
+    contain ::neutron::keystone::auth
 }

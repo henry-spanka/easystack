@@ -12,6 +12,8 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
         master => true,
     }
 
+    include ::easystack::profile::haproxy::galera
+
     # If there are no other servers up and we are the master, the cluster
     # needs to be bootstrapped. This happens before the service is managed
     include ::easystack::profile::mariadb::galera_bootstrap
@@ -21,39 +23,14 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     # Setup RabbitMQ
     include ::easystack::profile::rabbitmq
 
-    rabbitmq_user { 'openstack':
-        admin    => false,
-        password => $::easystack::config::rabbitmq_user_openstack_password,
-    }
-    rabbitmq_user_permissions { 'openstack@/':
-        configure_permission => '.*',
-        read_permission      => '.*',
-        write_permission     => '.*',
-    }
-
-    rabbitmq_policy { 'ha-all@/':
-        pattern    => '.*',
-        priority   => 0,
-        applyto    => 'all',
-        definition => {
-            'ha-mode'      => 'all',
-        },
-    }
+    include ::easystack::profile::rabbitmq::openstack
 
     # Setup corosync
     class { '::easystack::profile::corosync':
         master => true,
     }
 
-    # Make sure MariaDB Services start before pcsd
-    # as the slaves can not start mariadb if the master has not initialized the
-    # database yet
-    Service['haproxy'] -> Service['pcsd']
-
-    # Install Haproxy and Apache before autenticating as otherwise a warning message
-    # will be displayed that the services can not be found by pacemaker
-    Package['haproxy'] -> Class['::easystack::profile::corosync']
-    Package['httpd'] -> Class['::easystack::profile::corosync']
+    include ::easystack::profile::corosync::authenticate_nodes
 
     include ::easystack::profile::corosync::vip
 
@@ -62,59 +39,20 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
 
     # Configure haproxy resources
     include ::easystack::profile::haproxy::keystone
-    include ::easystack::profile::haproxy::galera
-
-    include ::easystack::profile::corosync::haproxy
 
     include ::easystack::profile::apache
 
-    # Setup keystone
-    # Configure keystone mySQL database
-    mysql::db { 'keystone':
-        user     => 'keystone',
-        password => mysql_password($::easystack::config::database_keystone_password),
-        host     => 'localhost',
-        grant    => ['ALL'],
-    }
-    -> mysql_user { 'keystone@%':
-        ensure        => 'present',
-        password_hash => mysql_password($::easystack::config::database_keystone_password),
-    }
-    -> mysql_grant { 'keystone@%/keystone.*':
-        ensure     => 'present',
-        options    => ['GRANT'],
-        privileges => ['ALL'],
-        table      => 'keystone.*',
-        user       => 'keystone@%',
-    }
+    include ::easystack::profile::keystone::database
 
     class { '::easystack::profile::keystone':
-        master => true,
+        sync_db => true,
     }
 
-    include ::easystack::profile::corosync::httpd
+    include ::easystack::profile::keystone::endpoint
+    include ::easystack::profile::keystone::roles::admin
+    include ::easystack::profile::keystone::disable_admin_token_auth
 
-    # Configure glance
-    # Configure glance mySQL database
-    mysql::db { 'glance':
-        user     => 'glance',
-        password => mysql_password($::easystack::config::database_glance_password),
-        host     => 'localhost',
-        grant    => ['ALL'],
-    }
-    -> mysql_user { 'glance@%':
-        ensure        => 'present',
-        password_hash => mysql_password($::easystack::config::database_glance_password),
-    }
-    -> mysql_grant { 'glance@%/glance.*':
-        ensure     => 'present',
-        options    => ['GRANT'],
-        privileges => ['ALL'],
-        table      => 'glance.*',
-        user       => 'glance@%',
-    }
-
-    include ::easystack::profile::glance
+    include ::easystack::profile::glance::database
 
     include ::easystack::profile::glance::api::authtoken
     class { '::easystack::profile::glance::api':
@@ -124,7 +62,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::glance::registry::authtoken
     include ::easystack::profile::glance::registry
 
-    include ::easystack::profile::glance::backend::rbd
+    include ::easystack::profile::glance::backend::nfs
 
     include ::easystack::profile::glance::auth
 
@@ -132,52 +70,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::haproxy::glance_api
     include ::easystack::profile::haproxy::glance_registry
 
-    # Configure Compute service Nova on controller node
-
-    # Configure nova mySQL databases
-    mysql::db { 'nova_api':
-        user     => 'nova',
-        password => $::easystack::config::database_nova_password,
-        host     => 'localhost',
-        grant    => ['ALL'],
-    }
-    -> mysql::db { 'nova':
-        user     => 'nova',
-        password => $::easystack::config::database_nova_password,
-        host     => 'localhost',
-        grant    => ['ALL'],
-    }
-    -> mysql::db { 'nova_cell0':
-        user     => 'nova',
-        password => $::easystack::config::database_nova_password,
-        host     => 'localhost',
-        grant    => ['ALL'],
-    }
-    -> mysql_user { 'nova@%':
-        ensure        => 'present',
-        password_hash => mysql_password($::easystack::config::database_nova_password),
-    }
-    -> mysql_grant { 'nova@%/nova_api.*':
-        ensure     => 'present',
-        options    => ['GRANT'],
-        privileges => ['ALL'],
-        table      => 'nova_api.*',
-        user       => 'nova@%',
-    }
-    -> mysql_grant { 'nova@%/nova.*':
-        ensure     => 'present',
-        options    => ['GRANT'],
-        privileges => ['ALL'],
-        table      => 'nova.*',
-        user       => 'nova@%',
-    }
-    -> mysql_grant { 'nova@%/nova_cell0.*':
-        ensure     => 'present',
-        options    => ['GRANT'],
-        privileges => ['ALL'],
-        table      => 'nova_cell0.*',
-        user       => 'nova@%',
-    }
+    include ::easystack::profile::nova::database
 
     include ::easystack::profile::nova
     include ::easystack::profile::nova::cache
@@ -213,26 +106,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     # Setup Horizon Haproxy resource
     include ::easystack::profile::haproxy::horizon
 
-    # Configure Neutron server on controller
-
-    # Setup database for Neutron
-    mysql::db { 'neutron':
-        user     => 'neutron',
-        password => mysql_password($::easystack::config::database_neutron_password),
-        host     => 'localhost',
-        grant    => ['ALL'],
-    }
-    -> mysql_user { 'neutron@%':
-        ensure        => 'present',
-        password_hash => mysql_password($::easystack::config::database_neutron_password),
-    }
-    -> mysql_grant { 'neutron@%/neutron.*':
-        ensure     => 'present',
-        options    => ['GRANT'],
-        privileges => ['ALL'],
-        table      => 'neutron.*',
-        user       => 'neutron@%',
-    }
+    include ::easystack::profile::neutron::database
 
     include ::easystack::profile::neutron
 
@@ -254,61 +128,5 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
 
     # Setup Neutron Haproxy resources
     include ::easystack::profile::haproxy::neutron_api
-
-    # Setup database for Cinder
-    mysql::db { 'cinder':
-        user     => 'cinder',
-        password => mysql_password($::easystack::config::database_cinder_password),
-        host     => 'localhost',
-        grant    => ['ALL'],
-    }
-    -> mysql_user { 'cinder@%':
-        ensure        => 'present',
-        password_hash => mysql_password($::easystack::config::database_cinder_password),
-    }
-    -> mysql_grant { 'cinder@%/cinder.*':
-        ensure     => 'present',
-        options    => ['GRANT'],
-        privileges => ['ALL'],
-        table      => 'cinder.*',
-        user       => 'cinder@%',
-    }
-
-    # Setup Cinder
-    include ::easystack::profile::cinder
-    include ::easystack::profile::cinder::authtoken
-
-    class { '::easystack::profile::cinder::api':
-        sync_db => true,
-    }
-
-    include ::easystack::profile::cinder::auth
-
-    include ::easystack::profile::cinder::scheduler
-    include ::easystack::profile::cinder::volume
-
-    include ::easystack::profile::cinder::backends
-
-    include ::easystack::profile::cinder::backends::ceph
-
-    include ::easystack::profile::haproxy::cinder_api
-
-    # Setup Corosync resources
-    include ::easystack::profile::corosync::chrony
-    include ::easystack::profile::corosync::memcached
-    include ::easystack::profile::corosync::mariadb
-    include ::easystack::profile::corosync::rabbitmq
-    include ::easystack::profile::corosync::glance_api
-    include ::easystack::profile::corosync::glance_registry
-    include ::easystack::profile::corosync::nova_api
-    include ::easystack::profile::corosync::nova_conductor
-    include ::easystack::profile::corosync::nova_consoleauth
-    include ::easystack::profile::corosync::nova_placement
-    include ::easystack::profile::corosync::nova_scheduler
-    include ::easystack::profile::corosync::nova_vncproxy
-    include ::easystack::profile::corosync::neutron_server
-    include ::easystack::profile::corosync::neutron_metadata_agent
-    include ::easystack::profile::corosync::neutron_linuxbridge_agent
-    include ::easystack::profile::corosync::neutron_dhcp_agent
 
 }

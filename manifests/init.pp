@@ -81,7 +81,10 @@ class easystack (
     String $ceph_public_network              = $easystack::params::ceph_public_network,
     String $database_cinder_password         = $easystack::params::database_cinder_password,
     String $keystone_cinder_password         = $easystack::params::keystone_cinder_password,
+    String $glance_nfs_device                = $easystack::params::glance_nfs_device,
 ) inherits easystack::params {
+    include easystack::deps
+
     # Instaniate config class
     class { '::easystack::config':
         database_root_password           => $database_root_password,
@@ -122,5 +125,6 @@ class easystack (
         ceph_public_network              => $ceph_public_network,
         database_cinder_password         => $database_cinder_password,
         keystone_cinder_password         => $keystone_cinder_password,
+        glance_nfs_device                => $glance_nfs_device,
     }
 }

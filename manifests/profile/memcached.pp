@@ -9,8 +9,10 @@ class easystack::profile::memcached (
     class { 'memcached':
         listen_ip      => $listen_ip,
         max_memory     => "${max_memory}%",
-        service_manage => false,
+        service_manage => true,
     }
+
+    contain memcached
 
     include ::firewalld
 
@@ -22,8 +24,7 @@ class easystack::profile::memcached (
         tag      => 'memcached-firewall',
     }
 
-    anchor { 'easystack::profile::memcached::begin': }
-    -> Class['memcached']
-    -> Firewalld_port <| tag == 'memcached-firewall' |>
-    -> anchor { 'easystack::profile::memcached::end': }
+    Anchor['easystack::memcached::begin']
+    -> Class['easystack::profile::memcached']
+    ~> Anchor['easystack::memcached::end']
 }

@@ -7,7 +7,6 @@ class easystack::profile::chrony (
         '2.pool.ntp.org',
         '3.pool.ntp.org',
     ],
-    Boolean $service_manage = false,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -16,16 +15,13 @@ class easystack::profile::chrony (
         pool_use       => $pool_use,
         servers        => $servers,
         service_manage => true,
-        service_enable => $service_manage,
+        service_enable => true,
     }
 
     contain chrony
 
-    # We need to override ensure
-    if (!$service_manage) {
-        Service <| title == 'chrony' |> {
-            ensure => undef,
-        }
-    }
+    Anchor['easystack::time::begin']
+    -> Class['easystack::profile::chrony']
+    ~> Anchor['easystack::time::end']
 
 }

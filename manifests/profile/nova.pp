@@ -40,8 +40,29 @@ class easystack::profile::nova (
     }
     # lint:endignore
 
-    Mysql_database <| |> -> Anchor['nova::db::begin']
-    Mysql_user <| |> -> Anchor['nova::db::begin']
-    Mysql_grant <| |> -> Anchor['nova::db::begin']
+    Anchor['easystack::openstack::install_1::begin']
+    -> Anchor['nova::install::begin']
+    -> Anchor['nova::install::end']
+    -> Anchor['easystack::openstack::install_1::end']
+
+    Anchor['easystack::openstack::config_1::begin']
+    -> Anchor['nova::config::begin']
+    -> Anchor['nova::config::end']
+    -> Anchor['easystack::openstack::config_1::end']
+
+    Anchor['easystack::openstack::dbsync_1::begin']
+    -> Anchor['nova::db::begin']
+    -> Anchor['nova::db::end']
+    -> Anchor['nova::dbsync::begin']
+    -> Anchor['nova::dbsync::end']
+    -> Anchor['easystack::openstack::dbsync_1::end']
+
+    Anchor['easystack::openstack::service_1::begin']
+    -> Anchor['nova::service::begin']
+    -> Anchor['nova::service::end']
+    -> Anchor['easystack::openstack::service_1::end']
+
+    Firewalld_port <|tag == 'nova-firewall'|>
+    -> Anchor['easystack::openstack::service_1::begin']
 
 }

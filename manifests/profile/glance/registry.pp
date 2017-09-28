@@ -15,8 +15,6 @@ class easystack::profile::glance::registry (
         pipeline            => 'keystone',
         database_connection => "mysql+pymysql://glance:${db_password}@${vip}/glance",
         auth_strategy       => 'keystone',
-        manage_service      => false,
-        enabled             => false,
     }
 
     include ::firewalld
@@ -27,7 +25,6 @@ class easystack::profile::glance::registry (
         port     => 9191,
         protocol => 'tcp',
         tag      => 'glance-firewall',
-        before   => Service['glance-registry'],
     }
 
 }

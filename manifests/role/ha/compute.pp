@@ -2,9 +2,7 @@
 class easystack::role::ha::compute inherits ::easystack::role {
     # Sync time
     # TODO: Sync time with controller(s) instead
-    class { '::easystack::profile::chrony':
-        service_manage => true,
-    }
+    include ::easystack::profile::chrony
 
     include ::easystack::profile::nova
     include ::easystack::profile::nova::cache
@@ -19,12 +17,8 @@ class easystack::role::ha::compute inherits ::easystack::role {
 
     include ::easystack::profile::nova::authtoken
 
-    include ::easystack::profile::nova::compute::rbd
-
     include ::easystack::profile::neutron
 
-    class { '::easystack::profile::neutron::agents::ml2::linuxbridge':
-        manage => true,
-    }
+    include ::easystack::profile::neutron::agents::ml2::linuxbridge
 
 }

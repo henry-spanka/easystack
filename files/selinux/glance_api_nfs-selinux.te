@@ -1,0 +1,11 @@
+
+module glance_api_nfs-selinux 1.0;
+
+require {
+        type glance_api_t;
+        type nfs_t;
+        class file read;
+}
+
+#============= glance_api_t ==============
+allow glance_api_t nfs_t:file read;

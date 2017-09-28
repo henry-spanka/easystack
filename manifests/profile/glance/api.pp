@@ -3,8 +3,8 @@ class easystack::profile::glance::api (
     String $listen_ip     = ip_for_network($::easystack::config::management_network),
     String $vip           = $::easystack::config::controller_vip,
     String $db_password   = $::easystack::config::database_glance_password,
-    String $default_store = 'rbd',
-    Array $store_backends = ['rbd'],
+    String $default_store = 'file',
+    Array $store_backends = ['file'],
     Boolean $sync_db      = false,
 ) {
     # make sure the parameters are initialized
@@ -24,8 +24,6 @@ class easystack::profile::glance::api (
         pipeline              => 'keystone',
         stores                => $store_backends,
         conversion_format     => 'raw',
-        manage_service        => false,
-        enabled               => false,
     }
 
     include ::firewalld
@@ -36,7 +34,6 @@ class easystack::profile::glance::api (
         port     => 9292,
         protocol => 'tcp',
         tag      => 'glance-firewall',
-        before   => Service['glance-api'],
     }
 
 }

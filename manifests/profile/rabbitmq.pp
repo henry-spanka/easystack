@@ -24,7 +24,7 @@ class easystack::profile::rabbitmq (
         erlang_cookie              => $erlang_cookie,
         wipe_db_on_cookie_change   => true,
         cluster_partition_handling => 'pause_minority',
-        service_manage             => false,
+        service_manage             => true,
         environment_variables      => {
             'RABBITMQ_NODE_IP_ADDRESS' => $listen_ip,
             'ERL_EPMD_ADDRESS'         => $listen_ip,
@@ -57,7 +57,26 @@ class easystack::profile::rabbitmq (
         tag      => 'rabbitmq-firewall',
     }
 
+    exec { 'wait_for_rabbitmq_ready':
+        command     => 'sleep 10',
+        path        => '/bin:/usr/bin',
+        refreshonly => true,
+        subscribe   => Service['rabbitmq-server'],
+        before      => Class['rabbitmq::management'],
+    }
+
     # Dependencies definition
-    Firewalld_port <|tag == 'rabbitmq-firewall'|> -> Class['::rabbitmq']
+    Anchor['easystack::messaging::install::begin']
+    -> Class['rabbitmq::install']
+    -> Class['rabbitmq::config']
+    ~> Anchor['easystack::messaging::install::end']
+
+    Anchor['easystack::messaging::service::begin']
+    ~> Class['rabbitmq::service']
+    -> Class['rabbitmq::management']
+    -> Anchor['easystack::messaging::service::end']
+
+    Firewalld_port <|tag == 'rabbitmq-firewall'|>
+    -> Anchor['easystack::messaging::service::begin']
 
 }

@@ -11,10 +11,12 @@ class easystack::profile::nova::cache (
         $params[ip]
     }
 
-    class { 'nova::cache':
+    class { '::nova::cache':
         enabled          => true,
         backend          => 'oslo_cache.memcache_pool',
         memcache_servers => $controller_nodes_ip,
     }
+
+    contain ::nova::cache
 
 }

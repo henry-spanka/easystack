@@ -16,8 +16,6 @@ class easystack::profile::nova::api (
         sync_db                              => $sync_db,
         sync_db_api                          => $sync_db,
         neutron_metadata_proxy_shared_secret => $shared_secret,
-        enabled                              => false,
-        manage_service                       => false,
     }
 
     include ::firewalld

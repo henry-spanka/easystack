@@ -19,4 +19,6 @@ class easystack::profile::nova::placement (
         password            => $placement_password,
     }
 
+    contain nova::placement
+
 }

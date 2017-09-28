@@ -14,6 +14,8 @@ class easystack::profile::nova::compute (
         neutron_enabled               => true,
     }
 
+    contain nova::compute
+
     # lint:ignore:duplicate_params
     nova_config {
     'DEFAULT/enabled_apis':    value => ['osapi_compute', 'metadata'];

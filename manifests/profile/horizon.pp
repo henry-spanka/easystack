@@ -14,8 +14,7 @@ class easystack::profile::horizon (
         seltype  => 'http_port_t',
         port     => 80,
         protocol => 'tcp',
-        notify   => Class['apache::service'],
-        require  => Class['apache'],
+        before   => Anchor['easystack::openstack::service_1::begin'],
     }
 
     firewalld_service { 'Allow horizon dashboard http':
@@ -23,7 +22,6 @@ class easystack::profile::horizon (
         service => 'http',
         zone    => 'public',
         tag     => 'horizon-firewall',
-        before  => Service['httpd'],
     }
 
     $controller_nodes_ip = $controller_nodes.map |Hash $params| {
@@ -63,5 +61,16 @@ class easystack::profile::horizon (
         },
         default_theme                => 'material',
     }
+
+    Anchor['easystack::openstack::install_1::begin']
+    -> Package <|tag == 'horizon-package'|>
+    -> Anchor['easystack::openstack::install_1::end']
+
+    Anchor['easystack::openstack::config_1::begin']
+    -> Class['::horizon::wsgi::apache']
+    -> Anchor['easystack::openstack::config_1::end']
+
+    Firewalld_service <|tag == 'horizon-firewall'|>
+    -> Anchor['easystack::openstack::service_1::begin']
 
 }

@@ -21,28 +21,21 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         master => false,
     }
 
-    # Make sure we authenticate before starting mysql
-    # The master has already initialized the database when
-    # corosync and pcsd is ready so it's safe to start mysql
-    Service['haproxy'] -> Package['corosync']
-
-    # Install Haproxy and Apache before autenticating as otherwise a warning message
-    # will be displayed that the services can not be found by pacemaker
-    Package['haproxy'] -> Class['::easystack::profile::corosync']
-    Package['httpd'] -> Class['::easystack::profile::corosync']
+    include easystack::profile::corosync::authenticate_nodes
 
     # Setup haproxy
     include ::easystack::profile::haproxy
 
     # Configure haproxy resources
     include ::easystack::profile::haproxy::keystone
-    include ::easystack::profile::haproxy::galera
 
     include ::easystack::profile::apache
 
     class { '::easystack::profile::keystone':
-        master => false,
+        sync_db => false,
     }
+
+    include ::easystack::profile::keystone::disable_admin_token_auth
 
     # Configure glance
     include ::easystack::profile::glance
@@ -53,7 +46,7 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
     include ::easystack::profile::glance::registry::authtoken
     include ::easystack::profile::glance::registry
 
-    include ::easystack::profile::glance::backend::rbd
+    include ::easystack::profile::glance::backend::nfs
 
     # Setup Glance Haproxy resources
     include ::easystack::profile::haproxy::glance_api
@@ -105,22 +98,5 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
 
     # Setup Neutron Haproxy resources
     include ::easystack::profile::haproxy::neutron_api
-
-    # Setup Cinder
-    include ::easystack::profile::cinder
-    include ::easystack::profile::cinder::authtoken
-
-    class { '::easystack::profile::cinder::api':
-        sync_db => false,
-    }
-
-    include ::easystack::profile::cinder::scheduler
-    include ::easystack::profile::cinder::volume
-
-    include ::easystack::profile::cinder::backends
-
-    include ::easystack::profile::cinder::backends::ceph
-
-    include ::easystack::profile::haproxy::cinder_api
 
 }

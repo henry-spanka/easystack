@@ -35,4 +35,29 @@ class easystack::profile::neutron (
         dhcp_agents_per_network => '3',
     }
 
+    Anchor['easystack::openstack::install_1::begin']
+    -> Anchor['neutron::install::begin']
+    -> Anchor['neutron::install::end']
+    -> Anchor['easystack::openstack::install_1::end']
+
+    Anchor['easystack::openstack::config_1::begin']
+    -> Anchor['neutron::config::begin']
+    -> Anchor['neutron::config::end']
+    -> Anchor['easystack::openstack::config_1::end']
+
+    Anchor['easystack::openstack::dbsync_2::begin']
+    -> Anchor['neutron::db::begin']
+    -> Anchor['neutron::db::end']
+    -> Anchor['neutron::dbsync::begin']
+    -> Anchor['neutron::dbsync::end']
+    -> Anchor['easystack::openstack::dbsync_2::end']
+
+    Anchor['easystack::openstack::service_2::begin']
+    -> Anchor['neutron::service::begin']
+    -> Anchor['neutron::service::end']
+    -> Anchor['easystack::openstack::service_2::end']
+
+    Firewalld_port <|tag == 'neutron-firewall'|>
+    -> Anchor['easystack::openstack::service_2::begin']
+
 }

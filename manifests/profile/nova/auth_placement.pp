@@ -21,6 +21,7 @@ class easystack::profile::nova::auth_placement (
         admin_url           => "http://${vip}:8778/placement",
         region              => $region,
         tenant              => 'services',
-        require             => Class['::easystack::profile::keystone'],
     }
+
+    contain ::nova::keystone::auth_placement
 }

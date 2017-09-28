@@ -23,7 +23,8 @@ class easystack::profile::corosync::vip (
                 'interval' => '30s',
             }
         },
-        require         => Class['::easystack::profile::corosync'],
+        require         => Anchor['easystack::corosync::setup::begin'],
+        before          => Anchor['easystack::corosync::setup::end'],
     }
 
 }

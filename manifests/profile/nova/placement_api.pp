@@ -18,12 +18,13 @@ class easystack::profile::nova::placement_api (
         bind_host  => $listen_ip,
     }
 
+    contain nova::wsgi::apache_placement
+
     selinux::port { 'allow-nova-placement-api-httpd-8778':
         seltype  => 'http_port_t',
         port     => 8778,
         protocol => 'tcp',
-        notify   => Class['apache::service'],
-        require  => Class['apache'],
+        before   => Anchor['easystack::openstack::service_1::begin'],
     }
 
     include ::firewalld
@@ -34,7 +35,6 @@ class easystack::profile::nova::placement_api (
         port     => 8778,
         protocol => 'tcp',
         tag      => 'nova-firewall',
-        before   => Service['httpd'],
     }
 
 }

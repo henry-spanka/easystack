@@ -22,4 +22,6 @@ class easystack::profile::glance::registry::authtoken (
         password            => $glance_password,
         notify              => Service['glance-registry'],
     }
+
+    contain ::glance::registry::authtoken
 }

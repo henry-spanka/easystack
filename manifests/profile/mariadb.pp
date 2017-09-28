@@ -9,9 +9,6 @@ class easystack::profile::mariadb (
     # make sure the parameters are initialized
     include ::easystack
 
-    # Setup MariaDB repo
-    include ::easystack::profile::mariadb::repo
-
     $controller_nodes_fqdn = $controller_nodes.map |Hash $params| {
         $params[fqdn]
     }
@@ -20,7 +17,7 @@ class easystack::profile::mariadb (
 
     # Setup Controller SQL databases
     class { '::mysql::server':
-        package_name            => 'MariaDB-server',
+        package_name            => 'mariadb-server',
         root_password           => $root_password,
         remove_default_accounts => true,
         create_root_my_cnf      => true,
@@ -50,14 +47,6 @@ class easystack::profile::mariadb (
                 'wsrep_on'                       => 'ON',
             }
         },
-        # We currently can not set service_enabled to false and also not manage the service.
-        # That's why we need to override the ensure parameter using a Resource Collector afterwards
-        service_enabled         => false,
-        restart                 => false,
-    }
-
-    Service <| title == 'mysqld' |> {
-        ensure => undef,
     }
 
     file { '/var/log/mariadb':
@@ -103,11 +92,34 @@ class easystack::profile::mariadb (
         tag     => 'mysql-firewall',
     }
 
+    exec { 'wait_for_mysql_wsrep_sync':
+        command     => 'sleep 10',
+        path        => '/bin:/usr/bin',
+        refreshonly => true,
+        subscribe   => Service['mysqld'],
+        require     => Exec['wait_for_mysql_socket_to_open'],
+        before      => Class['mysql::server::root_password'],
+    }
+
+    package { 'mariadb-server-galera':
+        ensure  => installed,
+        require => Anchor['easystack::database::install::begin'],
+        before  => Anchor['easystack::database::install::end'],
+    }
+
     # Dependencies definition
-    Class['::easystack::profile::mariadb::repo']
-    -> Class['::mysql::server']
+    Anchor['easystack::database::install::begin']
+    -> Anchor['mysql::server::start']
+    -> Class['mysql::server::installdb']
+    ~> Anchor['easystack::database::install::end']
+
+    Anchor['easystack::database::service::begin']
+    -> Class['mysql::server::service']
+    -> Anchor['mysql::server::end']
+    ~> Anchor['easystack::database::service::end']
+
 
     Firewalld_port <|tag == 'mysql-firewall'|>
     -> Firewalld_service <|tag == 'mysql-firewall'|>
-    -> Class['mysql::server::installdb']
+    -> Anchor['easystack::database::service::begin']
 }

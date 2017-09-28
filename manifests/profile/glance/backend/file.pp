@@ -7,4 +7,6 @@ class easystack::profile::glance::backend::file {
 
     class { 'glance::backend::file': }
 
+    contain glance::backend::file
+
 }
