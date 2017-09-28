@@ -21,7 +21,7 @@ class easystack::profile::glance::registry (
 
     firewalld_port { 'Allow glance registry on port 9191 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 9191,
         protocol => 'tcp',
         tag      => 'glance-firewall',

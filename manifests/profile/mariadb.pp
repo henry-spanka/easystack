@@ -88,7 +88,7 @@ class easystack::profile::mariadb (
     firewalld_service { 'Allow mysql':
         ensure  => present,
         service => 'mysql',
-        zone    => 'public',
+        zone    => 'internal',
         tag     => 'mysql-firewall',
     }
 

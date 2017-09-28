@@ -30,7 +30,7 @@ class easystack::profile::glance::api (
 
     firewalld_port { 'Allow glance api on port 9292 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 9292,
         protocol => 'tcp',
         tag      => 'glance-firewall',

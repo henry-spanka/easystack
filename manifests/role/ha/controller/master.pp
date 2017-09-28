@@ -1,6 +1,8 @@
 # The role for the OpenStack master controller
 class easystack::role::ha::controller::master inherits ::easystack::role {
 
+    require ::easystack::profile::network::controller
+
     # Sync time
     include ::easystack::profile::chrony
 

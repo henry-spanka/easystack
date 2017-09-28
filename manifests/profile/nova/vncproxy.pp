@@ -12,7 +12,7 @@ class easystack::profile::nova::vncproxy (
 
     firewalld_port { 'Allow nova vncproxy on port 6080 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 6080,
         protocol => 'tcp',
         tag      => 'nova-firewall',

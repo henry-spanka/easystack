@@ -39,7 +39,7 @@ class easystack::profile::keystone (
 
     firewalld_port { 'Allow keystone public and internal endpoint on port 5000 tcp':
       ensure   => present,
-      zone     => 'public',
+      zone     => 'internal',
       port     => 5000,
       protocol => 'tcp',
       tag      => 'keystone-firewall',
@@ -47,7 +47,7 @@ class easystack::profile::keystone (
 
     firewalld_port { 'Allow keystone admin endpoint on port 35357 tcp':
       ensure   => present,
-      zone     => 'public',
+      zone     => 'internal',
       port     => 35357,
       protocol => 'tcp',
       tag      => 'keystone-firewall',

@@ -25,7 +25,7 @@ class easystack::profile::cinder::api (
 
     firewalld_port { 'Allow cinder api on port 8776 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 8776,
         protocol => 'tcp',
         tag      => 'cinder-firewall',

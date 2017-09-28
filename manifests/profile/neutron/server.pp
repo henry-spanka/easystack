@@ -16,7 +16,7 @@ class easystack::profile::neutron::server (
 
     firewalld_port { 'Allow neutron api on port 9696 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 9696,
         protocol => 'tcp',
         tag      => 'neutron-firewall',

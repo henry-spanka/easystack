@@ -31,7 +31,7 @@ class easystack::profile::nova::placement_api (
 
     firewalld_port { 'Allow nova placement api on port 8778 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 8778,
         protocol => 'tcp',
         tag      => 'nova-firewall',

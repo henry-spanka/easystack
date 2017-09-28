@@ -35,7 +35,7 @@ class easystack::profile::rabbitmq (
 
     firewalld_port { 'Allow rabbitmq cluster on port 4369 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 4369,
         protocol => 'tcp',
         tag      => 'rabbitmq-firewall',
@@ -43,7 +43,7 @@ class easystack::profile::rabbitmq (
 
     firewalld_port { 'Allow rabbitmq cluster on port 25672 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 25672,
         protocol => 'tcp',
         tag      => 'rabbitmq-firewall',
@@ -51,7 +51,7 @@ class easystack::profile::rabbitmq (
 
     firewalld_port { 'Allow rabbitmq on port 5672 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 5672,
         protocol => 'tcp',
         tag      => 'rabbitmq-firewall',

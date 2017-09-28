@@ -19,7 +19,7 @@ class easystack::profile::nova::migration::libvirt (
 
     firewalld_port { 'Allow libvirt migration port 16509 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => '16509',
         protocol => 'tcp',
         tag      => 'libvirt-firewall',
@@ -27,7 +27,7 @@ class easystack::profile::nova::migration::libvirt (
 
     firewalld_port { 'Allow qemu migration ports 49152 to 49215 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => '49152-49215',
         protocol => 'tcp',
         tag      => 'libvirt-firewall',

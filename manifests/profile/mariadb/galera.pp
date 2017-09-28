@@ -77,7 +77,7 @@ class easystack::profile::mariadb::galera (
 
     firewalld_port { 'Allow galera replication on port 4444 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 4444,
         protocol => 'tcp',
         tag      => 'mysql-firewall',
@@ -85,7 +85,7 @@ class easystack::profile::mariadb::galera (
 
     firewalld_port { 'Allow galera replication on port 4567 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 4567,
         protocol => 'tcp',
         tag      => 'mysql-firewall',
@@ -93,7 +93,7 @@ class easystack::profile::mariadb::galera (
 
     firewalld_port { 'Allow galera replication on port 4568 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 4568,
         protocol => 'tcp',
         tag      => 'mysql-firewall',
@@ -101,7 +101,7 @@ class easystack::profile::mariadb::galera (
 
     firewalld_port { 'Allow galera replication on port 4567 udp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 4567,
         protocol => 'udp',
         tag      => 'mysql-firewall',

@@ -18,7 +18,7 @@ class easystack::profile::memcached (
 
     firewalld_port { 'Allow memcached on port 11211 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 11211,
         protocol => 'tcp',
         tag      => 'memcached-firewall',

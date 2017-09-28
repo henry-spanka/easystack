@@ -1,5 +1,8 @@
 # The role for the OpenStack compute node
 class easystack::role::ha::compute inherits ::easystack::role {
+
+    require ::easystack::profile::network::compute
+
     # Sync time
     # TODO: Sync time with controller(s) instead
     include ::easystack::profile::chrony

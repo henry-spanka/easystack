@@ -76,7 +76,7 @@ class easystack::profile::corosync (
     firewalld_service { 'Allow Corosync and pacemaker multicast':
         ensure  => present,
         service => 'high-availability',
-        zone    => 'public',
+        zone    => 'internal',
         tag     => 'corosync-firewall',
     }
 

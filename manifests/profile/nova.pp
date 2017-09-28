@@ -35,7 +35,7 @@ class easystack::profile::nova (
 
     # lint:ignore:duplicate_params
     nova_config {
-        'DEFAULT/my_ip':                              value => $listen_ip;
+        'DEFAULT/my_ip': value => $listen_ip;
     }
     # lint:endignore
 

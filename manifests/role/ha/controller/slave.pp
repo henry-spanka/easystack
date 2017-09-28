@@ -1,5 +1,8 @@
 # The role for the OpenStack slave controller(s)
 class easystack::role::ha::controller::slave inherits ::easystack::role {
+
+    require ::easystack::profile::network::controller
+
     # Sync time
     include ::easystack::profile::chrony
 

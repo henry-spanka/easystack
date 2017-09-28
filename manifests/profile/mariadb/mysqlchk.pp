@@ -31,7 +31,7 @@ class easystack::profile::mariadb::mysqlchk (
 
     firewalld_port { 'Allow galera status check on port 9200 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 9200,
         protocol => 'tcp',
         before   => Service['xinetd'],

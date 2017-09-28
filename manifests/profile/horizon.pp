@@ -20,7 +20,7 @@ class easystack::profile::horizon (
     firewalld_service { 'Allow horizon dashboard http':
         ensure  => present,
         service => 'http',
-        zone    => 'public',
+        zone    => 'internal',
         tag     => 'horizon-firewall',
     }
 

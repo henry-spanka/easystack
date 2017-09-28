@@ -11,7 +11,7 @@ class easystack::profile::ceph::storage (
 
     firewalld_port { 'Allow ceph osds from port 6800 to 7300 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => '6800-7300',
         protocol => 'tcp',
         tag      => 'ceph-firewall',

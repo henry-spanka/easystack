@@ -14,7 +14,7 @@ class easystack::profile::ceph::monitor (
 
     firewalld_port { 'Allow ceph monitor on port 6789 tcp':
         ensure   => present,
-        zone     => 'public',
+        zone     => 'internal',
         port     => 6789,
         protocol => 'tcp',
         tag      => 'ceph-firewall',
