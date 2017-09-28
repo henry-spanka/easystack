@@ -11,12 +11,12 @@ class easystack::profile::base::repo {
 
     package { 'yum-plugin-priorities':
         ensure => installed,
-        before => Yumrepo['CentOS-OpenStack-Octata'],
+        before => Yumrepo['CentOS-OpenStack-Pike'],
     }
 
-    yumrepo { 'CentOS-OpenStack-Octata':
-        baseurl  => 'http://mirror.centos.org/centos/$releasever/cloud/$basearch/openstack-ocata/',
-        descr    => 'CentOS-$releasever - Openstack Octata',
+    yumrepo { 'CentOS-OpenStack-Pike':
+        baseurl  => 'http://mirror.centos.org/centos/$releasever/cloud/$basearch/openstack-pike/',
+        descr    => 'CentOS-$releasever - Openstack Pike',
         enabled  => 1,
         gpgcheck => 1,
         gpgkey   => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Cloud',

@@ -22,13 +22,20 @@ class easystack::profile::glance::backend::nfs (
         require => Anchor['glance::install::end'],
     }
 
+    package { 'nfs-utils':
+        ensure => 'installed',
+    }
+
     mount { '/var/lib/glance/images':
         ensure  => 'mounted',
         device  => $glance_nfs_device,
         fstype  => 'nfs',
         options => 'defaults',
         atboot  => true,
-        require => File['/var/lib/glance/images'],
+        require => [
+            File['/var/lib/glance/images'],
+            Package['nfs-utils'],
+        ],
     }
 
     class { 'glance::backend::file':

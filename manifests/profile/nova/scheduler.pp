@@ -5,6 +5,10 @@ class easystack::profile::nova::scheduler {
 
     include ::easystack::profile::nova
 
+    class { '::nova::scheduler':
+        discover_hosts_in_cells_interval => '300',
+    }
+
     contain ::nova::scheduler
 
 }

@@ -13,6 +13,18 @@ class easystack::profile::nova::compute::libvirt (
     if ($::is_virtual) {
         $hw_disk_discard = undef
         $libvirt_virt_type = 'qemu'
+
+        # Install qemu-kvm-ev as Qemu Version is too old otherwise
+        package { 'centos-release-qemu-ev':
+            ensure => 'installed',
+        }
+
+        package { 'qemu-kvm-ev':
+            ensure  => 'installed',
+            require => Package['centos-release-qemu-ev'],
+            before  => Class['nova::compute::libvirt'],
+        }
+
     } else {
         $hw_disk_discard = 'unmap'
         $libvirt_virt_type = 'kvm'

@@ -36,7 +36,6 @@ class easystack::profile::nova (
     # lint:ignore:duplicate_params
     nova_config {
         'DEFAULT/my_ip':                              value => $listen_ip;
-        'scheduler/discover_hosts_in_cells_interval': value => 300;
     }
     # lint:endignore
 
