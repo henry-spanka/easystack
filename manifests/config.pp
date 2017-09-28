@@ -40,6 +40,7 @@ class easystack::config (
     $database_cinder_password = undef,
     $keystone_cinder_password = undef,
     $glance_nfs_device = undef,
+    $keystone_credential_keys = undef,
 ) {
 
 }

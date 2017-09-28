@@ -6,6 +6,7 @@ class easystack::profile::keystone (
     String $db_password     = $::easystack::config::database_keystone_password,
     Boolean $sync_db        = false,
     Hash $fernet_keys       = $::easystack::config::keystone_fernet_keys,
+    Hash $credential_keys   = $::easystack::config::keystone_credential_keys,
     Array $controller_nodes = $::easystack::config::controller_nodes,
 ) {
     # make sure the parameters are initialized
@@ -59,21 +60,23 @@ class easystack::profile::keystone (
     }
 
     class { 'keystone':
-        catalog_type        => 'sql',
-        admin_token         => $admin_token,
-        database_connection => "mysql+pymysql://keystone:${db_password}@${vip}/keystone",
-        token_provider      => 'fernet',
-        service_name        => 'httpd',
-        public_bind_host    => $listen_ip,
-        admin_bind_host     => $listen_ip,
-        public_endpoint     => "http://${vip}:5000",
-        admin_endpoint      => "http://${vip}:35357",
-        sync_db             => $sync_db,
-        enable_fernet_setup => true,
-        fernet_keys         => $fernet_keys,
-        cache_enabled       => true,
-        cache_backend       => 'oslo_cache.memcache_pool',
-        memcache_servers    => $controller_nodes_ip,
+        catalog_type            => 'sql',
+        admin_token             => $admin_token,
+        database_connection     => "mysql+pymysql://keystone:${db_password}@${vip}/keystone",
+        token_provider          => 'fernet',
+        service_name            => 'httpd',
+        public_bind_host        => $listen_ip,
+        admin_bind_host         => $listen_ip,
+        public_endpoint         => "http://${vip}:5000",
+        admin_endpoint          => "http://${vip}:35357",
+        sync_db                 => $sync_db,
+        enable_fernet_setup     => true,
+        fernet_keys             => $fernet_keys,
+        enable_credential_setup => true,
+        credential_keys         => $credential_keys,
+        cache_enabled           => true,
+        cache_backend           => 'oslo_cache.memcache_pool',
+        memcache_servers        => $controller_nodes_ip,
     }
 
     Anchor['easystack::openstack::install_1::begin']

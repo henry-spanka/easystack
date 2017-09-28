@@ -82,6 +82,7 @@ class easystack (
     String $database_cinder_password         = $easystack::params::database_cinder_password,
     String $keystone_cinder_password         = $easystack::params::keystone_cinder_password,
     String $glance_nfs_device                = $easystack::params::glance_nfs_device,
+    Hash $keystone_credential_keys           = $easystack::params::keystone_credential_keys,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -126,5 +127,6 @@ class easystack (
         database_cinder_password         => $database_cinder_password,
         keystone_cinder_password         => $keystone_cinder_password,
         glance_nfs_device                => $glance_nfs_device,
+        keystone_credential_keys         => $keystone_credential_keys,
     }
 }
