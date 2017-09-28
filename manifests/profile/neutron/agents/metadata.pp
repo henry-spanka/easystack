@@ -13,4 +13,11 @@ class easystack::profile::neutron::agents::metadata (
         shared_secret => $shared_secret,
     }
 
+    firewalld_service { 'Allow metadata requests to neutron metadata agent':
+        ensure  => present,
+        service => 'http',
+        zone    => 'public',
+        tag     => 'neutron-firewall',
+    }
+
 }
