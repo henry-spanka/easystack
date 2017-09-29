@@ -49,6 +49,7 @@ class easystack::profile::nova::compute::libvirt (
     # Virtlockd is socket activated and therefore auto booting does not work
     Service <| title == 'virtlockd' |> {
         enable => undef,
+        ensure => undef,
     }
 
 }
