@@ -6,6 +6,8 @@ class easystack::deps {
     -> anchor { 'easystack::base::install::end': }
     -> anchor { 'easystack::time::begin': }
     -> anchor { 'easystack::time::end': }
+    -> anchor { 'easystack::network::begin': }
+    -> anchor { 'easystack::network::end': }
     -> anchor { 'easystack::memcached::begin': }
     -> anchor { 'easystack::memcached::end': }
     -> anchor { 'easystack::database::install::begin': }
