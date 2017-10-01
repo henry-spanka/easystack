@@ -83,6 +83,7 @@ class easystack::profile::corosync (
     Anchor['easystack::corosync::setup::begin']
     -> Class['corosync']
     -> User['hacluster']
+    -> Cs_property <|tag == 'corosync-property'|>
     ~> Anchor['easystack::corosync::setup::end']
 
     Firewalld_service <|tag == 'corosync-firewall'|>
