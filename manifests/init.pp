@@ -85,6 +85,7 @@ class easystack (
     String $management_interface             = $easystack::params::management_interface,
     String $public_interface                 = $easystack::params::public_interface,
     Array $provider_interface_mappings       = $easystack::params::provider_interface_mappings,
+    Boolean $enable_stonith                  = $easystack::params::enable_stonith,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -132,5 +133,6 @@ class easystack (
         management_interface             => $management_interface,
         public_interface                 => $public_interface,
         provider_interface_mappings      => $provider_interface_mappings,
+        enable_stonith                   => $enable_stonith,
     }
 }

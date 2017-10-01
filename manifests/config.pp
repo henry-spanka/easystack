@@ -43,6 +43,7 @@ class easystack::config (
     $management_interface = undef,
     $public_interface = undef,
     $provider_interface_mappings = undef,
+    $enable_stonith = undef,
 ) {
 
 }

@@ -3,7 +3,7 @@ class easystack::profile::corosync (
     String $listen_ip               = ip_for_network($::easystack::config::management_network),
     Array $controller_nodes         = $::easystack::config::controller_nodes,
     String $user_hacluster_password = $::easystack::config::user_hacluster_password,
-    Boolean $stonith                = !($::is_virtual),
+    Boolean $enable_stonith         = $::easystack::config::enable_stonith,
     Boolean $master                 = false,
 ) {
     # make sure the parameters are initialized
@@ -54,7 +54,7 @@ class easystack::profile::corosync (
             tag   => 'corosync-property',
         }
 
-        if ($stonith) {
+        if ($enable_stonith) {
             # lint:ignore:quoted_booleans
             cs_property { 'stonith-enabled':
                 value => 'true',

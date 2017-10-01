@@ -42,4 +42,5 @@ class easystack::params {
     $management_interface = 'eth0'
     $public_interface = 'eth1'
     $provider_interface_mappings = ['provider:eth1']
+    $enable_stonith = false
 }
