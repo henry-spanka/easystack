@@ -59,7 +59,6 @@ class easystack (
     String $keystone_neutron_password        = $easystack::params::keystone_neutron_password,
     String $database_neutron_password        = $easystack::params::database_neutron_password,
     String $horizon_secret_key               = $easystack::params::horizon_secret_key,
-    String $neutron_provider_interface       = $easystack::params::neutron_provider_interface,
     String $neutron_metadata_shared_secret   = $easystack::params::neutron_metadata_shared_secret,
     Array $controller_nodes                  = $easystack::params::controller_nodes,
     String $database_sstuser_password        = $easystack::params::database_sstuser_password,
@@ -83,6 +82,9 @@ class easystack (
     String $keystone_cinder_password         = $easystack::params::keystone_cinder_password,
     String $glance_nfs_device                = $easystack::params::glance_nfs_device,
     Hash $keystone_credential_keys           = $easystack::params::keystone_credential_keys,
+    String $management_interface             = $easystack::params::management_interface,
+    String $public_interface                 = $easystack::params::public_interface,
+    Array $provider_interface_mappings       = $easystack::params::provider_interface_mappings,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -104,7 +106,6 @@ class easystack (
         keystone_neutron_password        => $keystone_neutron_password,
         database_neutron_password        => $database_neutron_password,
         horizon_secret_key               => $horizon_secret_key,
-        neutron_provider_interface       => $neutron_provider_interface,
         neutron_metadata_shared_secret   => $neutron_metadata_shared_secret,
         controller_nodes                 => $controller_nodes,
         database_sstuser_password        => $database_sstuser_password,
@@ -128,5 +129,8 @@ class easystack (
         keystone_cinder_password         => $keystone_cinder_password,
         glance_nfs_device                => $glance_nfs_device,
         keystone_credential_keys         => $keystone_credential_keys,
+        management_interface             => $management_interface,
+        public_interface                 => $public_interface,
+        provider_interface_mappings      => $provider_interface_mappings,
     }
 }

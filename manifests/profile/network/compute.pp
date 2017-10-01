@@ -1,8 +1,8 @@
 # Setup Network for Compute
 class easystack::profile::network::compute (
     String $management_network = $::easystack::config::management_network,
-    String $management_interface = 'eth0',
-    String $public_interface = 'eth1',
+    String $management_interface = $::easystack::config::management_interface,
+    String $public_interface = $::easystack::config::public_interface,
 ) {
     # make sure the parameters are initialized
     include easystack

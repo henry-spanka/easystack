@@ -17,7 +17,6 @@ class easystack::config (
     $keystone_neutron_password = undef,
     $database_neutron_password = undef,
     $horizon_secret_key = undef,
-    $neutron_provider_interface = undef,
     $neutron_metadata_shared_secret = undef,
     $controller_nodes = undef,
     $database_sstuser_password = undef,
@@ -41,6 +40,9 @@ class easystack::config (
     $keystone_cinder_password = undef,
     $glance_nfs_device = undef,
     $keystone_credential_keys = undef,
+    $management_interface = undef,
+    $public_interface = undef,
+    $provider_interface_mappings = undef,
 ) {
 
 }

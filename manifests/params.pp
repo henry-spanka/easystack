@@ -16,7 +16,6 @@ class easystack::params {
     $keystone_neutron_password = undef
     $database_neutron_password = undef
     $horizon_secret_key = undef
-    $neutron_provider_interface = undef
     $neutron_metadata_shared_secret = undef
     $controller_nodes = undef
     $database_sstuser_password = undef
@@ -40,4 +39,7 @@ class easystack::params {
     $keystone_cinder_password = undef
     $glance_nfs_device = undef
     $keystone_credential_keys = undef
+    $management_interface = 'eth0'
+    $public_interface = 'eth1'
+    $provider_interface_mappings = ['provider:eth1']
 }
