@@ -59,6 +59,14 @@ class easystack::profile::network::compute (
         require    => Service['NetworkManager'],
     }
 
+    # On physical servers spanning tree will block the port for a few seconds
+    exec { 'wait_for_network_ready':
+        command     => 'sleep 30',
+        path        => '/bin:/usr/bin',
+        refreshonly => true,
+        subscribe   => Service['network'],
+    }
+
     firewalld_zone { 'internal':
         ensure     => present,
         interfaces => [$management_interface],
