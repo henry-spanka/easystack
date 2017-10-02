@@ -64,7 +64,7 @@ class easystack::profile::horizon (
     }
 
     # Currently it's not possible to set this option via the puppet-horizon module
-    concat::fragment { 'local_settings.py':
+    concat::fragment { 'local_settings.py_horizon_images_allow_location':
         target  => $::horizon::params::config_file,
         content => 'horizon_images_allow_location = True',
         order   => '60',
