@@ -4,7 +4,7 @@ class easystack::profile::glance::api (
     String $vip           = $::easystack::config::controller_vip,
     String $db_password   = $::easystack::config::database_glance_password,
     String $default_store = 'file',
-    Array $store_backends = ['file'],
+    Array $store_backends = ['file', 'http'],
     Boolean $sync_db      = false,
 ) {
     # make sure the parameters are initialized
