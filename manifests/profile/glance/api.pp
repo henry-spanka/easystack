@@ -4,7 +4,7 @@ class easystack::profile::glance::api (
     String $vip           = $::easystack::config::controller_vip,
     String $db_password   = $::easystack::config::database_glance_password,
     String $default_store = 'file',
-    Array $store_backends = ['file', 'http'],
+    Array $store_backends = ['file'],
     Boolean $sync_db      = false,
 ) {
     # make sure the parameters are initialized
@@ -13,17 +13,19 @@ class easystack::profile::glance::api (
     include ::easystack::profile::glance
 
     class { '::glance::api':
-        database_connection   => "mysql+pymysql://glance:${db_password}@${vip}/glance",
-        auth_strategy         => 'keystone',
-        show_image_direct_url => true,
-        default_store         => $default_store,
-        bind_host             => $listen_ip,
-        enable_v1_api         => false,
-        enable_v2_api         => true,
-        sync_db               => $sync_db,
-        pipeline              => 'keystone',
-        stores                => $store_backends,
-        conversion_format     => 'raw',
+        database_connection     => "mysql+pymysql://glance:${db_password}@${vip}/glance",
+        auth_strategy           => 'keystone',
+        show_image_direct_url   => true,
+        default_store           => $default_store,
+        bind_host               => $listen_ip,
+        enable_v1_api           => false,
+        enable_v2_api           => true,
+        sync_db                 => $sync_db,
+        pipeline                => 'keystone',
+        stores                  => $store_backends,
+        conversion_format       => 'raw',
+        # Bug! See: https://bugs.launchpad.net/glance/+bug/1595335
+        show_multiple_locations => true,
     }
 
     include ::firewalld

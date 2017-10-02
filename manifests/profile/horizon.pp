@@ -62,6 +62,13 @@ class easystack::profile::horizon (
         default_theme                => 'material',
     }
 
+    # Currently it's not possible to set this option via the puppet-horizon module
+    concat::fragment { 'local_settings.py':
+        target  => $::horizon::params::config_file,
+        content => 'horizon_images_allow_location = True',
+        order   => '60',
+    }
+
     Anchor['easystack::openstack::install_1::begin']
     -> Package <|tag == 'horizon-package'|>
     -> Anchor['easystack::openstack::install_1::end']
