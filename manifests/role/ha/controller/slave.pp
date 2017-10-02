@@ -14,6 +14,8 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
         master => false,
     }
 
+    include ::easystack::profile::haproxy::galera
+
     include ::easystack::profile::mariadb::mysqlchk
 
     # Setup RabbitMQ
