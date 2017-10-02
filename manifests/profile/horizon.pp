@@ -60,6 +60,7 @@ class easystack::profile::horizon (
             'timezone'                  => 'UTC',
         },
         default_theme                => 'material',
+        password_retrieve            => true,
     }
 
     # Currently it's not possible to set this option via the puppet-horizon module
