@@ -62,6 +62,36 @@ class easystack::profile::mariadb (
         before  => Class['mysql::server::installdb'],
     }
 
+    file { '/etc/systemd/system/mariadb.service.d':
+        ensure  => 'directory',
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0751',
+        require => Class['mysql::server::install'],
+        before  => Class['mysql::server::installdb'],
+    }
+
+    file { '/etc/systemd/system/mariadb.service.d/limits.conf':
+        ensure  => 'file',
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        source  => 'puppet:///modules/easystack/mariadb-limits',
+        require => [
+            Class['mysql::server::install'],
+            File['/etc/systemd/system/mariadb.service.d'],
+        ],
+        before  => Class['mysql::server::installdb'],
+        notify  => Exec['mariadb-limits-systemd-reload'],
+    }
+
+    exec { 'mariadb-limits-systemd-reload':
+        command     => 'systemctl daemon-reload',
+        path        => ['/usr/bin', '/bin', '/usr/sbin'],
+        refreshonly => true,
+        before      => Class['mysql::server::installdb'],
+    }
+
     # See: https://jira.mariadb.org/browse/MDEV-10767
     selinux::module { 'mysql_wsrep-selinux':
         ensure    => 'present',
