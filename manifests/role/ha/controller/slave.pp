@@ -6,6 +6,9 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
     # Sync time
     include ::easystack::profile::chrony
 
+    # Install certificates
+    include ::easystack::profile::certificates
+
     # Install and configure Memcached
     include ::easystack::profile::memcached
 
@@ -103,5 +106,7 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
 
     # Setup Neutron Haproxy resources
     include ::easystack::profile::haproxy::neutron_api
+
+    include ::easystack::profile::filebeat
 
 }

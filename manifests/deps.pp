@@ -8,6 +8,8 @@ class easystack::deps {
     -> anchor { 'easystack::time::end': }
     -> anchor { 'easystack::network::begin': }
     -> anchor { 'easystack::network::end': }
+    -> anchor { 'easystack::certificates::begin': }
+    -> anchor { 'easystack::certificates::end': }
     -> anchor { 'easystack::memcached::begin': }
     -> anchor { 'easystack::memcached::end': }
     -> anchor { 'easystack::database::install::begin': }
@@ -40,6 +42,8 @@ class easystack::deps {
     -> anchor { 'easystack::openstack::dbsync_2::end': }
     -> anchor { 'easystack::openstack::service_2::begin': }
     -> anchor { 'easystack::openstack::service_2::end': }
+    -> anchor { 'easystack::filebeat::begin': }
+    -> anchor { 'easystack::filebeat::end': }
 
     Anchor['easystack::database::install::end']
     ~> Anchor['easystack::database::service::begin']

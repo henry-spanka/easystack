@@ -43,4 +43,5 @@ class easystack::params {
     $public_interface = 'eth1'
     $provider_interface_mappings = ['provider:eth1']
     $enable_stonith = false
+    $filebeat_host = undef
 }
