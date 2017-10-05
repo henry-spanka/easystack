@@ -87,6 +87,7 @@ class easystack (
     Array $provider_interface_mappings       = $easystack::params::provider_interface_mappings,
     Boolean $enable_stonith                  = $easystack::params::enable_stonith,
     String $filebeat_host                    = $easystack::params::filebeat_host,
+    Array $admin_networks                    = $easystack::params::admin_networks,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -136,5 +137,6 @@ class easystack (
         provider_interface_mappings      => $provider_interface_mappings,
         enable_stonith                   => $enable_stonith,
         filebeat_host                    => $filebeat_host,
+        admin_networks                   => $admin_networks,
     }
 }

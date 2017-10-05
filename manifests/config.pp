@@ -45,6 +45,7 @@ class easystack::config (
     $provider_interface_mappings = undef,
     $enable_stonith = undef,
     $filebeat_host = undef,
+    $admin_networks = undef,
 ) {
 
 }

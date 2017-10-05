@@ -1,6 +1,7 @@
 # Setup Network for Compute
 class easystack::profile::network::compute (
     String $management_network = $::easystack::config::management_network,
+    Array $admin_networks = $::easystack::config::admin_networks,
     String $management_interface = $::easystack::config::management_interface,
     String $public_interface = $::easystack::config::public_interface,
 ) {
@@ -82,8 +83,25 @@ class easystack::profile::network::compute (
     }
 
     firewalld_zone { 'internal':
-        ensure     => present,
-        sources    => [$management_network],
+        ensure  => present,
+        sources => [$management_network],
+    }
+
+    firewalld_zone { 'admin':
+        ensure           => present,
+        sources          => $admin_networks,
+        target           => 'default',
+        purge_rich_rules => true,
+        purge_services   => true,
+        purge_ports      => true,
+        require          => Service['network'],
+    }
+
+    firewalld_service { 'Allow admin ssh':
+        ensure  => present,
+        service => 'ssh',
+        zone    => 'admin',
+        tag     => 'admin-firewall',
     }
 
     firewalld_zone { 'drop':
