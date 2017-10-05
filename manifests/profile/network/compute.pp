@@ -23,6 +23,13 @@ class easystack::profile::network::compute (
         notify => Service['network'],
     }
 
+    file_line { "${management_interface} zone=drop":
+        ensure => 'present',
+        path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
+        line   => 'ZONE=drop',
+        notify => Service['network'],
+    }
+
     file_line { "${public_interface} disable NetworkManager":
         ensure => 'present',
         path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
@@ -44,6 +51,13 @@ class easystack::profile::network::compute (
         path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
         line   => 'ONBOOT=yes',
         match  => '^ONBOOT=*',
+        notify => Service['network'],
+    }
+
+    file_line { "${public_interface} zone=public":
+        ensure => 'present',
+        path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
+        line   => 'ZONE=public',
         notify => Service['network'],
     }
 
@@ -69,8 +83,12 @@ class easystack::profile::network::compute (
 
     firewalld_zone { 'internal':
         ensure     => present,
-        interfaces => [$management_interface],
         sources    => [$management_network],
+    }
+
+    firewalld_zone { 'drop':
+        ensure     => present,
+        interfaces => [$management_interface],
     }
 
     firewalld_zone { 'public':
