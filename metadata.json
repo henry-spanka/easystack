@@ -4,9 +4,9 @@
   "author": "Henry Spanka",
   "summary": "Configure OpenStack using Puppet with ease.",
   "license": "Apache-2.0",
-  "source": "https://git.rack.ffm.internal.myvirtualserver.de/puppet/easystack",
-  "project_page": "https://git.rack.ffm.internal.myvirtualserver.de/puppet/easystack",
-  "issues_url": "https://git.rack.ffm.internal.myvirtualserver.de/puppet/easystack/issues",
+  "source": "https://git.vnetso.com/puppet/easystack",
+  "project_page": "https://git.vnetso.com/puppet/easystack",
+  "issues_url": "https://git.vnetso.com/puppet/easystack/issues",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 4.20.0 < 5.0.0"},
     {"name":"drzewiec-chrony","version_requirement":">= 1.0.1 < 2.0.0"},
