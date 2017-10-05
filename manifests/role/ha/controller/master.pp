@@ -26,7 +26,9 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::mariadb::mysqlchk
 
     # Setup RabbitMQ
-    include ::easystack::profile::rabbitmq
+    class { '::easystack::profile::rabbitmq':
+        delete_guest_user => true,
+    }
 
     include ::easystack::profile::rabbitmq::openstack
 

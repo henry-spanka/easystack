@@ -1,8 +1,9 @@
 # Setup RabbitMQ Service
 class easystack::profile::rabbitmq (
-    String $listen_ip       = ip_for_network($::easystack::config::management_network),
-    Array $controller_nodes = $::easystack::config::controller_nodes,
-    String $erlang_cookie   = $::easystack::config::rabbitmq_erlang_cookie,
+    String $listen_ip          = ip_for_network($::easystack::config::management_network),
+    Array $controller_nodes    = $::easystack::config::controller_nodes,
+    String $erlang_cookie      = $::easystack::config::rabbitmq_erlang_cookie,
+    Boolean $delete_guest_user = false,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -17,7 +18,7 @@ class easystack::profile::rabbitmq (
     # Install and configure RabbitMQ
     class { '::rabbitmq':
         node_ip_address            => $listen_ip,
-        delete_guest_user          => true,
+        delete_guest_user          => $delete_guest_user,
         config_cluster             => true,
         cluster_nodes              => $controller_nodes_hostname,
         cluster_node_type          => 'disc',
