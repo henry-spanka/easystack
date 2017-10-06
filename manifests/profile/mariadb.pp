@@ -90,7 +90,6 @@ class easystack::profile::mariadb (
         path        => ['/usr/bin', '/bin', '/usr/sbin'],
         refreshonly => true,
         before      => Class['mysql::server::installdb'],
-        notify      => Service['mysqld'],
     }
 
     # See: https://jira.mariadb.org/browse/MDEV-10767
