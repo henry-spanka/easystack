@@ -49,19 +49,19 @@ class easystack::profile::corosync::public_vip (
     }
 
     cs_colocation { 'public_vip_with_route':
-      primitives => ['public_vip', 'public_vip_route'],
-      score      => 'INFINITY',
-      require    => [
-        Cs_primitive['public_vip'],
-        Cs_primitive['public_vip_route'],
-      ]
+        primitives => ['public_vip', 'public_vip_route'],
+        score      => 'INFINITY',
+        require    => [
+            Cs_primitive['public_vip'],
+            Cs_primitive['public_vip_route'],
+        ],
     }
 
     cs_order { 'vip_before_service':
-      first   => 'public_vip',
-      second  => 'public_vip_route',
-      kind    => 'Mandatory',
-      require => Cs_colocation['public_vip_with_route'],
+        first   => 'public_vip',
+        second  => 'public_vip_route',
+        kind    => 'Mandatory',
+        require => Cs_colocation['public_vip_with_route'],
     }
 
 }
