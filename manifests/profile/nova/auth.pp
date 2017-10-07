@@ -1,8 +1,8 @@
 # Setup Nova Keystone Endpoint
 class easystack::profile::nova::auth (
-    String $vip           = $::easystack::config::controller_vip,
-    String $nova_password = $::easystack::config::keystone_neutron_password,
-    String $region        = $::easystack::config::keystone_region,
+    String $public_endpoint = $::easystack::config::public_endpoint,
+    String $nova_password   = $::easystack::config::keystone_neutron_password,
+    String $region          = $::easystack::config::keystone_region,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -16,9 +16,9 @@ class easystack::profile::nova::auth (
         configure_user      => true,
         configure_user_role => true,
         service_name        => 'nova',
-        public_url          => "http://${vip}:8774/v2.1",
-        internal_url        => "http://${vip}:8774/v2.1",
-        admin_url           => "http://${vip}:8774/v2.1",
+        public_url          => "http://${public_endpoint}:8774/v2.1",
+        internal_url        => "http://${public_endpoint}:8774/v2.1",
+        admin_url           => "http://${public_endpoint}:8774/v2.1",
         region              => $region,
         tenant              => 'services',
     }

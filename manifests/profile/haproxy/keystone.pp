@@ -1,6 +1,7 @@
 # Setup Keystone HAProxy Resource
 class easystack::profile::haproxy::keystone (
     String $vip             = $::easystack::config::controller_vip,
+    String $public_vip      = $::easystack::config::public_vip,
     Array $controller_nodes = $::easystack::config::controller_nodes,
 ) {
     # make sure the parameters are initialized
@@ -25,7 +26,7 @@ class easystack::profile::haproxy::keystone (
 
     # keystone public internal
     haproxy::listen { 'keystone_public_internal_cluster':
-        ipaddress => $vip,
+        ipaddress => $public_vip,
         ports     => '5000',
         mode      => 'tcp',
         options   => {

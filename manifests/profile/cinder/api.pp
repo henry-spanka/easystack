@@ -1,9 +1,10 @@
 # Setup Cinder API
 class easystack::profile::cinder::api (
-    String $vip       = $::easystack::config::controller_vip,
-    String $listen_ip = ip_for_network($::easystack::config::management_network),
-    Boolean $sync_db  = false,
-    String $region    = $::easystack::config::keystone_region,
+    String $public_endpoint = $::easystack::config::public_endpoint,
+    String $admin_endpoint  = $::easystack::config::admin_endpoint,
+    String $listen_ip       = ip_for_network($::easystack::config::management_network),
+    Boolean $sync_db        = false,
+    String $region          = $::easystack::config::keystone_region,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -14,18 +15,26 @@ class easystack::profile::cinder::api (
         enabled                    => true,
         manage_service             => true,
         os_region_name             => $region,
-        keymgr_encryption_auth_url => "http://${vip}:5000/v3",
+        keymgr_encryption_auth_url => "http://${public_endpoint}:5000/v3",
         bind_host                  => $listen_ip,
         sync_db                    => $sync_db,
-        public_endpoint            => "http://${vip}:35357",
+        public_endpoint            => "http://${admin_endpoint}:35357",
         auth_strategy              => 'keystone',
     }
 
     include ::firewalld
 
-    firewalld_port { 'Allow cinder api on port 8776 tcp':
+    firewalld_port { 'Allow cinder api on port 8776 tcp - zone=internal':
         ensure   => present,
         zone     => 'internal',
+        port     => 8776,
+        protocol => 'tcp',
+        tag      => 'cinder-firewall',
+    }
+
+    firewalld_port { 'Allow cinder api on port 8776 tcp - zone=public_mgmt':
+        ensure   => present,
+        zone     => 'public_mgmt',
         port     => 8776,
         protocol => 'tcp',
         tag      => 'cinder-firewall',

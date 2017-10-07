@@ -90,9 +90,11 @@ class easystack (
     Array $admin_networks                    = $easystack::params::admin_networks,
     String $public_mgmt_vlan                 = $easystack::params::public_mgmt_vlan,
     String $public_vlan                      = $easystack::params::public_vlan,
-    String $public_vip                       = $::easystack::params::public_vip,
-    String $public_vip_cidr                  = $::easystack::params::public_vip_cidr,
-    String $public_vip_gw                    = $::easystack::params::public_vip_gw,
+    String $public_vip                       = $easystack::params::public_vip,
+    String $public_vip_cidr                  = $easystack::params::public_vip_cidr,
+    String $public_vip_gw                    = $easystack::params::public_vip_gw,
+    String $public_endpoint                  = $easystack::params::public_endpoint,
+    String $admin_endpoint                   = $easystack::params::admin_endpoint,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -148,5 +150,7 @@ class easystack (
         public_vip                       => $public_vip,
         public_vip_cidr                  => $public_vip_cidr,
         public_vip_gw                    => $public_vip_gw,
+        public_endpoint                  => $public_endpoint,
+        admin_endpoint                   => $admin_endpoint,
     }
 }

@@ -1,7 +1,8 @@
 # Setup Glance API Keystone Authtoken
 class easystack::profile::glance::api::authtoken (
     Array $controller_nodes = $::easystack::config::controller_nodes,
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_endpoint = $::easystack::config::public_endpoint,
+    String $admin_endpoint  = $::easystack::config::admin_endpoint,
     String $glance_password = $::easystack::config::keystone_glance_password,
 ) {
     # make sure the parameters are initialized
@@ -21,8 +22,8 @@ class easystack::profile::glance::api::authtoken (
         username            => 'glance',
         password            => $glance_password,
         notify              => Service['glance-api'],
-        auth_url            => "http://${vip}:35357",
-        auth_uri            => "http://${vip}:5000",
+        auth_url            => "http://${admin_endpoint}:35357",
+        auth_uri            => "http://${public_endpoint}:5000",
     }
 
     contain ::glance::api::authtoken

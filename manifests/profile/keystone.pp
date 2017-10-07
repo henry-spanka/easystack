@@ -2,6 +2,8 @@
 class easystack::profile::keystone (
     String $listen_ip       = ip_for_network($::easystack::config::management_network),
     String $vip             = $::easystack::config::controller_vip,
+    String $public_endpoint = $::easystack::config::public_endpoint,
+    String $admin_endpoint  = $::easystack::config::admin_endpoint,
     String $admin_token     = $::easystack::config::keystone_admin_token,
     String $db_password     = $::easystack::config::database_keystone_password,
     Boolean $sync_db        = false,
@@ -39,9 +41,17 @@ class easystack::profile::keystone (
 
     include ::firewalld
 
-    firewalld_port { 'Allow keystone public and internal endpoint on port 5000 tcp':
+    firewalld_port { 'Allow keystone public and internal endpoint on port 5000 tcp - zone=internal':
       ensure   => present,
       zone     => 'internal',
+      port     => 5000,
+      protocol => 'tcp',
+      tag      => 'keystone-firewall',
+    }
+
+    firewalld_port { 'Allow keystone public and internal endpoint on port 5000 tcp - zone=public_mgmt':
+      ensure   => present,
+      zone     => 'public_mgmt',
       port     => 5000,
       protocol => 'tcp',
       tag      => 'keystone-firewall',
@@ -67,8 +77,8 @@ class easystack::profile::keystone (
         service_name            => 'httpd',
         public_bind_host        => $listen_ip,
         admin_bind_host         => $listen_ip,
-        public_endpoint         => "http://${vip}:5000",
-        admin_endpoint          => "http://${vip}:35357",
+        public_endpoint         => "http://${public_endpoint}:5000",
+        admin_endpoint          => "http://${admin_endpoint}:35357",
         sync_db                 => $sync_db,
         enable_fernet_setup     => true,
         fernet_keys             => $fernet_keys,

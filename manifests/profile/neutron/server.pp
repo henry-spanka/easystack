@@ -1,6 +1,7 @@
 # Setup Neutron Server
 class easystack::profile::neutron::server (
     String $vip              = $::easystack::config::controller_vip,
+    String $admin_endpoint   = $::easystack::config::admin_endpoint,
     String $db_password      = $::easystack::config::database_neutron_password,
     String $neutron_password = $::easystack::config::keystone_neutron_password,
     String $nova_password    = $::easystack::config::keystone_nova_password,
@@ -14,9 +15,18 @@ class easystack::profile::neutron::server (
 
     include ::firewalld
 
-    firewalld_port { 'Allow neutron api on port 9696 tcp':
+    firewalld_port { 'Allow neutron api on port 9696 tcp - zone=internal':
         ensure   => present,
         zone     => 'internal',
+        port     => 9696,
+        protocol => 'tcp',
+        tag      => 'neutron-firewall',
+        before   => Service['neutron-server'],
+    }
+
+    firewalld_port { 'Allow neutron api on port 9696 tcp - zone=public_mgmt':
+        ensure   => present,
+        zone     => 'public_mgmt',
         port     => 9696,
         protocol => 'tcp',
         tag      => 'neutron-firewall',
@@ -41,7 +51,7 @@ class easystack::profile::neutron::server (
         project_domain_name                => 'default',
         user_domain_name                   => 'default',
         auth_type                          => 'password',
-        auth_url                           => "http://${vip}:35357",
+        auth_url                           => "http://${admin_endpoint}:35357",
         region_name                        => $region,
     }
 

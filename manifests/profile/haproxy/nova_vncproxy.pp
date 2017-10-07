@@ -1,6 +1,6 @@
 # Setup Nova VNCProxy HAProxy Resource
 class easystack::profile::haproxy::nova_vncproxy (
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_vip      = $::easystack::config::public_vip,
     Array $controller_nodes = $::easystack::config::controller_nodes,
 ) {
     # make sure the parameters are initialized
@@ -9,7 +9,7 @@ class easystack::profile::haproxy::nova_vncproxy (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'nova_vncproxy_cluster':
-        ipaddress => $::easystack::config::controller_vip,
+        ipaddress => $public_vip,
         ports     => '6080',
         mode      => 'tcp',
         options   => {

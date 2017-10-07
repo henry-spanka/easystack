@@ -1,6 +1,6 @@
 # Setup Glance Keystone Endpoint
 class easystack::profile::glance::auth (
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_endpoint = $::easystack::config::public_endpoint,
     String $glance_password = $::easystack::config::keystone_glance_password,
     String $region          = $::easystack::config::keystone_region,
 ) {
@@ -16,9 +16,9 @@ class easystack::profile::glance::auth (
         configure_user      => true,
         configure_user_role => true,
         service_name        => 'glance',
-        public_url          => "http://${vip}:9292",
-        internal_url        => "http://${vip}:9292",
-        admin_url           => "http://${vip}:9292",
+        public_url          => "http://${public_endpoint}:9292",
+        internal_url        => "http://${public_endpoint}:9292",
+        admin_url           => "http://${public_endpoint}:9292",
         region              => $region,
         tenant              => 'services',
     }

@@ -1,7 +1,8 @@
 # Setup Cinder Keystone Authtoken
 class easystack::profile::cinder::authtoken (
     Array $controller_nodes = $::easystack::config::controller_nodes,
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_endpoint = $::easystack::config::public_endpoint,
+    String $admin_endpoint  = $::easystack::config::admin_endpoint,
     String $cinder_password = $::easystack::config::keystone_cinder_password,
 ) {
     # make sure the parameters are initialized
@@ -21,7 +22,7 @@ class easystack::profile::cinder::authtoken (
         username            => 'cinder',
         password            => $cinder_password,
         notify              => Service['cinder-api'],
-        auth_url            => "http://${vip}:35357",
-        auth_uri            => "http://${vip}:5000",
+        auth_url            => "http://${admin_endpoint}:35357",
+        auth_uri            => "http://${public_endpoint}:5000",
     }
 }

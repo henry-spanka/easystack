@@ -1,6 +1,6 @@
 # Setup Nova Placement
 class easystack::profile::nova::placement (
-    String $vip                = $::easystack::config::controller_vip,
+    String $admin_endpoint     = $::easystack::config::admin_endpoint,
     String $placement_password = $::easystack::config::keystone_nova_placement_password,
     String $region             = $::easystack::config::keystone_region,
 ) {
@@ -14,7 +14,7 @@ class easystack::profile::nova::placement (
         project_domain_name => 'default',
         project_name        => 'services',
         auth_type           => 'password',
-        auth_url            => "http://${vip}:35357/v3",
+        auth_url            => "http://${admin_endpoint}:35357/v3",
         username            => 'placement',
         password            => $placement_password,
     }

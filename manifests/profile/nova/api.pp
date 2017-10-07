@@ -20,9 +20,18 @@ class easystack::profile::nova::api (
 
     include ::firewalld
 
-    firewalld_port { 'Allow nova compute api on port 8774 tcp':
+    firewalld_port { 'Allow nova compute api on port 8774 tcp - zone=internal':
         ensure   => present,
         zone     => 'internal',
+        port     => 8774,
+        protocol => 'tcp',
+        tag      => 'nova-firewall',
+        before   => Service['nova-api'],
+    }
+
+    firewalld_port { 'Allow nova compute api on port 8774 tcp - zone=public_mgmt':
+        ensure   => present,
+        zone     => 'public_mgmt',
         port     => 8774,
         protocol => 'tcp',
         tag      => 'nova-firewall',

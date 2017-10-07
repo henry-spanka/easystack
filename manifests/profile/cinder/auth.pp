@@ -1,6 +1,6 @@
 # Setup Cinder Keystone Endpoint
 class easystack::profile::cinder::auth (
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_endpoint = $::easystack::config::public_endpoint,
     String $cinder_password = $::easystack::config::keystone_cinder_password,
     String $region          = $::easystack::config::keystone_region,
 ) {
@@ -18,15 +18,15 @@ class easystack::profile::cinder::auth (
         configure_user        => true,
         configure_user_role   => true,
         service_name          => 'cinder',
-        public_url            => "http://${vip}:8776/v1/%(tenant_id)s",
-        internal_url          => "http://${vip}:8776/v1/%(tenant_id)s",
-        admin_url             => "http://${vip}:8776/v1/%(tenant_id)s",
-        public_url_v2         => "http://${vip}:8776/v2/%(tenant_id)s",
-        internal_url_v2       => "http://${vip}:8776/v2/%(tenant_id)s",
-        admin_url_v2          => "http://${vip}:8776/v2/%(tenant_id)s",
-        public_url_v3         => "http://${vip}:8776/v3/%(tenant_id)s",
-        internal_url_v3       => "http://${vip}:8776/v3/%(tenant_id)s",
-        admin_url_v3          => "http://${vip}:8776/v3/%(tenant_id)s",
+        public_url            => "http://${public_endpoint}:8776/v1/%(tenant_id)s",
+        internal_url          => "http://${public_endpoint}:8776/v1/%(tenant_id)s",
+        admin_url             => "http://${public_endpoint}:8776/v1/%(tenant_id)s",
+        public_url_v2         => "http://${public_endpoint}:8776/v2/%(tenant_id)s",
+        internal_url_v2       => "http://${public_endpoint}:8776/v2/%(tenant_id)s",
+        admin_url_v2          => "http://${public_endpoint}:8776/v2/%(tenant_id)s",
+        public_url_v3         => "http://${public_endpoint}:8776/v3/%(tenant_id)s",
+        internal_url_v3       => "http://${public_endpoint}:8776/v3/%(tenant_id)s",
+        admin_url_v3          => "http://${public_endpoint}:8776/v3/%(tenant_id)s",
         region                => $region,
         tenant                => 'services',
     }

@@ -1,7 +1,7 @@
 # Setup Nova VNCProxy
 class easystack::profile::nova::vncproxy (
-    String $listen_ip = ip_for_network($::easystack::config::management_network),
-    String $vip       = $::easystack::config::controller_vip,
+    String $listen_ip       = ip_for_network($::easystack::config::management_network),
+    String $public_endpoint = $::easystack::config::public_endpoint,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -10,9 +10,18 @@ class easystack::profile::nova::vncproxy (
 
     include ::firewalld
 
-    firewalld_port { 'Allow nova vncproxy on port 6080 tcp':
+    firewalld_port { 'Allow nova vncproxy on port 6080 tcp - zone=internal':
         ensure   => present,
         zone     => 'internal',
+        port     => 6080,
+        protocol => 'tcp',
+        tag      => 'nova-firewall',
+        before   => Service['nova-vncproxy'],
+    }
+
+    firewalld_port { 'Allow nova vncproxy on port 6080 tcp - zone=public_mgmt':
+        ensure   => present,
+        zone     => 'public_mgmt',
         port     => 6080,
         protocol => 'tcp',
         tag      => 'nova-firewall',
@@ -41,8 +50,8 @@ class easystack::profile::nova::vncproxy (
     nova_config {
         'vnc/enabled':                       value => true;
         'vnc/vncserver_listen':              value => $listen_ip;
-        'vnc/vncserver_proxyclient_address': value => $vip;
-        'vnc/novncproxy_base_url':           value => "http://${vip}:6080/vnc_auto.html";
+        'vnc/vncserver_proxyclient_address': value => $public_endpoint;
+        'vnc/novncproxy_base_url':           value => "http://${public_endpoint}:6080/vnc_auto.html";
     }
     # lint:endignore
 

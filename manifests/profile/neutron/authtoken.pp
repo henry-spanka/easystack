@@ -1,7 +1,8 @@
 # Setup Neutron Keystone Authtoken
 class easystack::profile::neutron::authtoken (
     Array $controller_nodes  = $::easystack::config::controller_nodes,
-    String $vip              = $::easystack::config::controller_vip,
+    String $public_endpoint  = $::easystack::config::public_endpoint,
+    String $admin_endpoint   = $::easystack::config::admin_endpoint,
     String $neutron_password = $::easystack::config::keystone_neutron_password,
 ) {
     # make sure the parameters are initialized
@@ -20,8 +21,8 @@ class easystack::profile::neutron::authtoken (
         memcached_servers   => $controller_nodes_ip,
         username            => 'neutron',
         password            => $neutron_password,
-        auth_uri            => "http://${vip}:5000",
-        auth_url            => "http://${vip}:35357",
+        auth_uri            => "http://${public_endpoint}:5000",
+        auth_url            => "http://${admin_endpoint}:35357",
     }
 
     contain ::neutron::keystone::authtoken

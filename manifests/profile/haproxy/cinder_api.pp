@@ -1,6 +1,6 @@
 # Setup Cinder API HAProxy Resource
 class easystack::profile::haproxy::cinder_api (
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_vip      = $::easystack::config::public_vip,
     Array $controller_nodes = $::easystack::config::controller_nodes,
 ) {
     # make sure the parameters are initialized
@@ -9,7 +9,7 @@ class easystack::profile::haproxy::cinder_api (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'cinder_api_cluster':
-        ipaddress => $::easystack::config::controller_vip,
+        ipaddress => $public_vip,
         ports     => '8776',
         mode      => 'tcp',
         options   => {

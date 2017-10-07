@@ -1,6 +1,6 @@
 # Setup Neutron API HAProxy Resource
 class easystack::profile::haproxy::neutron_api (
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_vip      = $::easystack::config::public_vip,
     Array $controller_nodes = $::easystack::config::controller_nodes,
 ) {
     # make sure the parameters are initialized
@@ -9,7 +9,7 @@ class easystack::profile::haproxy::neutron_api (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'neutron_api_cluster':
-        ipaddress => $::easystack::config::controller_vip,
+        ipaddress => $public_vip,
         ports     => '9696',
         mode      => 'tcp',
         options   => {

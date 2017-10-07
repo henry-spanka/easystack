@@ -1,6 +1,6 @@
 # Setup Horizon HAProxy Resource
 class easystack::profile::haproxy::horizon (
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_vip      = $::easystack::config::public_vip,
     Array $controller_nodes = $::easystack::config::controller_nodes,
 ) {
     # make sure the parameters are initialized
@@ -9,7 +9,7 @@ class easystack::profile::haproxy::horizon (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'horizon_cluster':
-        ipaddress => $vip,
+        ipaddress => $public_vip,
         ports     => '80',
         mode      => 'tcp',
         options   => {

@@ -1,7 +1,7 @@
 # Setup Nova Compute
 class easystack::profile::nova::compute (
     String $listen_ip       = ip_for_network($::easystack::config::management_network),
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_endpoint = $::easystack::config::public_endpoint,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -19,7 +19,7 @@ class easystack::profile::nova::compute (
     # lint:ignore:duplicate_params
     nova_config {
     'DEFAULT/enabled_apis':    value => ['osapi_compute', 'metadata'];
-    'vnc/novncproxy_base_url': value => "http://${vip}:6080/vnc_auto.html";
+    'vnc/novncproxy_base_url': value => "http://${public_endpoint}:6080/vnc_auto.html";
     }
     # lint:endignore
 

@@ -50,4 +50,6 @@ class easystack::params {
     $public_vip = undef
     $public_vip_cidr = undef
     $public_vip_gw = undef
+    $public_endpoint = undef
+    $admin_endpoint = undef
 }

@@ -1,6 +1,6 @@
 # Disable Keystone Admin Token Authentication
 class easystack::profile::keystone::disable_admin_token_auth (
-    String $vip            = $::easystack::config::controller_vip,
+    String $admin_endpoint = $::easystack::config::admin_endpoint,
     String $admin_password = $::easystack::config::keystone_admin_password,
 ) {
     # make sure the parameters are initialized
@@ -13,7 +13,7 @@ class easystack::profile::keystone::disable_admin_token_auth (
         content   => epp(
             'easystack/keystone/openrc.epp',
             {
-                'auth_url'      => "http://${vip}:35357/v3",
+                'auth_url'      => "http://${admin_endpoint}:35357/v3",
                 'auth_password' => $admin_password,
             }
         ),

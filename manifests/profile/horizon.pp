@@ -2,7 +2,7 @@
 class easystack::profile::horizon (
     String $listen_ip       = ip_for_network($::easystack::config::management_network),
     Array $controller_nodes = $::easystack::config::controller_nodes,
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_endpoint = $::easystack::config::public_endpoint,
     String $secret_key      = $::easystack::config::horizon_secret_key,
 ) {
     # make sure the parameters are initialized
@@ -17,10 +17,17 @@ class easystack::profile::horizon (
         before   => Anchor['easystack::openstack::service_1::begin'],
     }
 
-    firewalld_service { 'Allow horizon dashboard http':
+    firewalld_service { 'Allow horizon dashboard http - zone=internal':
         ensure  => present,
         service => 'http',
         zone    => 'internal',
+        tag     => 'horizon-firewall',
+    }
+
+    firewalld_service { 'Allow horizon dashboard http - zone=public_mgmt':
+        ensure  => present,
+        service => 'http',
+        zone    => 'public_mgmt',
         tag     => 'horizon-firewall',
     }
 
@@ -36,10 +43,10 @@ class easystack::profile::horizon (
         secret_key                   => $secret_key,
         django_debug                 => false,
         api_result_limit             => '1000',
-        allowed_hosts                => [$vip],
+        allowed_hosts                => [$public_endpoint],
         servername                   => $::fqdn,
         django_session_engine        => 'django.contrib.sessions.backends.cache',
-        keystone_url                 => "http://${vip}:5000/v3",
+        keystone_url                 => "http://${public_endpoint}:5000/v3",
         keystone_multidomain_support => true,
         keystone_default_domain      => 'Default',
         keystone_default_role        => 'user',

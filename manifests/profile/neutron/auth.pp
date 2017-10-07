@@ -1,6 +1,6 @@
 # Setup Neutron Keystone Endpoint
 class easystack::profile::neutron::auth (
-    String $vip              = $::easystack::config::controller_vip,
+    String $public_endpoint  = $::easystack::config::public_endpoint,
     String $neutron_password = $::easystack::config::keystone_neutron_password,
     String $region           = $::easystack::config::keystone_region,
 ) {
@@ -16,9 +16,9 @@ class easystack::profile::neutron::auth (
         configure_user      => true,
         configure_user_role => true,
         service_name        => 'neutron',
-        public_url          => "http://${vip}:9696",
-        internal_url        => "http://${vip}:9696",
-        admin_url           => "http://${vip}:9696",
+        public_url          => "http://${public_endpoint}:9696",
+        internal_url        => "http://${public_endpoint}:9696",
+        admin_url           => "http://${public_endpoint}:9696",
         region              => $region,
         tenant              => 'services',
     }

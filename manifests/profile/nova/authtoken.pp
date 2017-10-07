@@ -1,7 +1,8 @@
 # Setup Nova Keystone Authtoken
 class easystack::profile::nova::authtoken (
     Array $controller_nodes = $::easystack::config::controller_nodes,
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_endpoint = $::easystack::config::public_endpoint,
+    String $admin_endpoint  = $::easystack::config::admin_endpoint,
     String $nova_password   = $::easystack::config::keystone_nova_password,
 ) {
     # make sure the parameters are initialized
@@ -20,8 +21,8 @@ class easystack::profile::nova::authtoken (
         memcached_servers   => $controller_nodes_ip,
         username            => 'nova',
         password            => $nova_password,
-        auth_url            => "http://${vip}:35357",
-        auth_uri            => "http://${vip}:5000",
+        auth_url            => "http://${admin_endpoint}:35357",
+        auth_uri            => "http://${public_endpoint}:5000",
     }
 
     contain ::nova::keystone::authtoken

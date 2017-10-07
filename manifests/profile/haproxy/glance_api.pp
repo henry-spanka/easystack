@@ -1,6 +1,6 @@
 # Setup Glance API HAProxy Resource
 class easystack::profile::haproxy::glance_api (
-    String $vip             = $::easystack::config::controller_vip,
+    String $public_vip      = $::easystack::config::public_vip,
     Array $controller_nodes = $::easystack::config::controller_nodes,
 ) {
     # make sure the parameters are initialized
@@ -9,7 +9,7 @@ class easystack::profile::haproxy::glance_api (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'glance_api_cluster':
-        ipaddress => $vip,
+        ipaddress => $public_vip,
         ports     => '9292',
         mode      => 'tcp',
         options   => {
