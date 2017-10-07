@@ -42,35 +42,35 @@ class easystack::profile::keystone (
     include ::firewalld
 
     firewalld_port { 'Allow keystone public and internal endpoint on port 5000 tcp - zone=internal':
-      ensure   => present,
-      zone     => 'internal',
-      port     => 5000,
-      protocol => 'tcp',
-      tag      => 'keystone-firewall',
+        ensure   => present,
+        zone     => 'internal',
+        port     => 5000,
+        protocol => 'tcp',
+        tag      => 'keystone-firewall',
     }
 
     firewalld_port { 'Allow keystone public and internal endpoint on port 5000 tcp - zone=public_mgmt':
-      ensure   => present,
-      zone     => 'public_mgmt',
-      port     => 5000,
-      protocol => 'tcp',
-      tag      => 'keystone-firewall',
+        ensure   => present,
+        zone     => 'public_mgmt',
+        port     => 5000,
+        protocol => 'tcp',
+        tag      => 'keystone-firewall',
     }
 
     firewalld_port { 'Allow keystone admin endpoint on port 35357 tcp - zone=internal':
-      ensure   => present,
-      zone     => 'internal',
-      port     => 35357,
-      protocol => 'tcp',
-      tag      => 'keystone-firewall',
+        ensure   => present,
+        zone     => 'internal',
+        port     => 35357,
+        protocol => 'tcp',
+        tag      => 'keystone-firewall',
     }
 
     firewalld_port { 'Allow keystone admin endpoint on port 35357 tcp - zone=admin':
-      ensure   => present,
-      zone     => 'admin',
-      port     => 35357,
-      protocol => 'tcp',
-      tag      => 'keystone-firewall',
+        ensure   => present,
+        zone     => 'admin',
+        port     => 35357,
+        protocol => 'tcp',
+        tag      => 'keystone-firewall',
     }
 
     $controller_nodes_ip = $controller_nodes.map |Hash $params| {
