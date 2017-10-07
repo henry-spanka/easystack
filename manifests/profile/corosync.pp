@@ -80,9 +80,14 @@ class easystack::profile::corosync (
         tag     => 'corosync-firewall',
     }
 
+    package { 'fence-agents-ipmilan':
+        ensure => 'installed',
+    }
+
     Anchor['easystack::corosync::setup::begin']
     -> Class['corosync']
     -> User['hacluster']
+    -> Package['fence-agents-ipmilan']
     -> Cs_property <|tag == 'corosync-property'|>
     ~> Anchor['easystack::corosync::setup::end']
 
