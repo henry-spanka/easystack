@@ -40,6 +40,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::corosync::authenticate_nodes
 
     include ::easystack::profile::corosync::vip
+    include ::easystack::profile::corosync::public_vip
 
     # Setup haproxy
     include ::easystack::profile::haproxy

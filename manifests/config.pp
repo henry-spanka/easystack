@@ -46,6 +46,11 @@ class easystack::config (
     $enable_stonith = undef,
     $filebeat_host = undef,
     $admin_networks = undef,
+    $public_mgmt_vlan = undef,
+    $public_vlan = undef,
+    $public_vip = undef,
+    $public_vip_cidr = undef,
+    $public_vip_gw = undef,
 ) {
 
 }

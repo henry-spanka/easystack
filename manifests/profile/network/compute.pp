@@ -13,7 +13,7 @@ class easystack::profile::network::compute (
         path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
         line   => 'NM_CONTROLLED=no',
         match  => '^NM_CONTROLLED=*',
-        notify => Service['network'],
+        notify => Exec['network_restart'],
     }
 
     file_line { "${management_interface} set onboot":
@@ -21,14 +21,14 @@ class easystack::profile::network::compute (
         path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
         line   => 'ONBOOT=yes',
         match  => '^ONBOOT=*',
-        notify => Service['network'],
+        notify => Exec['network_restart'],
     }
 
     file_line { "${management_interface} zone=drop":
         ensure => 'present',
         path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
         line   => 'ZONE=drop',
-        notify => Service['network'],
+        notify => Exec['network_restart'],
     }
 
     file_line { "${public_interface} disable NetworkManager":
@@ -36,7 +36,7 @@ class easystack::profile::network::compute (
         path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
         line   => 'NM_CONTROLLED=no',
         match  => '^NM_CONTROLLED=*',
-        notify => Service['network'],
+        notify => Exec['network_restart'],
     }
 
     file_line { "${public_interface} set bootproto":
@@ -44,7 +44,7 @@ class easystack::profile::network::compute (
         path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
         line   => 'BOOTPROTO=none',
         match  => '^BOOTPROTO=*',
-        notify => Service['network'],
+        notify => Exec['network_restart'],
     }
 
     file_line { "${public_interface} set onboot":
@@ -52,26 +52,20 @@ class easystack::profile::network::compute (
         path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
         line   => 'ONBOOT=yes',
         match  => '^ONBOOT=*',
-        notify => Service['network'],
+        notify => Exec['network_restart'],
     }
 
     file_line { "${public_interface} zone=public":
         ensure => 'present',
         path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
         line   => 'ZONE=public',
-        notify => Service['network'],
+        notify => Exec['network_restart'],
     }
 
     service { 'NetworkManager':
         ensure => 'stopped',
         enable => false,
-    }
-
-    service { 'network':
-        ensure     => 'running',
-        enable     => true,
-        hasrestart => true,
-        require    => Service['NetworkManager'],
+        before => Exec['network_restart'],
     }
 
     # On physical servers spanning tree will block the port for a few seconds
@@ -79,7 +73,7 @@ class easystack::profile::network::compute (
         command     => 'sleep 30',
         path        => '/bin:/usr/bin',
         refreshonly => true,
-        subscribe   => Service['network'],
+        subscribe   => Exec['network_restart'],
     }
 
     firewalld_zone { 'internal':
@@ -94,7 +88,7 @@ class easystack::profile::network::compute (
         purge_rich_rules => true,
         purge_services   => true,
         purge_ports      => true,
-        require          => Service['network'],
+        require          => Exec['network_restart'],
     }
 
     firewalld_service { 'Allow admin ssh':

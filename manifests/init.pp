@@ -88,6 +88,11 @@ class easystack (
     Boolean $enable_stonith                  = $easystack::params::enable_stonith,
     String $filebeat_host                    = $easystack::params::filebeat_host,
     Array $admin_networks                    = $easystack::params::admin_networks,
+    String $public_mgmt_vlan                 = $easystack::params::public_mgmt_vlan,
+    String $public_vlan                      = $easystack::params::public_vlan,
+    String $public_vip                       = $::easystack::params::public_vip,
+    String $public_vip_cidr                  = $::easystack::params::public_vip_cidr,
+    String $public_vip_gw                    = $::easystack::params::public_vip_gw,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -138,5 +143,10 @@ class easystack (
         enable_stonith                   => $enable_stonith,
         filebeat_host                    => $filebeat_host,
         admin_networks                   => $admin_networks,
+        public_mgmt_vlan                 => $public_mgmt_vlan,
+        public_vlan                      => $public_vlan,
+        public_vip                       => $public_vip,
+        public_vip_cidr                  => $public_vip_cidr,
+        public_vip_gw                    => $public_vip_gw,
     }
 }
