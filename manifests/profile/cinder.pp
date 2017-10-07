@@ -28,7 +28,29 @@ class easystack::profile::cinder (
         amqp_durable_queues   => true,
     }
 
-    Mysql_database <| |> -> Anchor['cinder::dbsync::begin']
-    Mysql_user <| |> -> Anchor['cinder::dbsync::begin']
-    Mysql_grant <| |> -> Anchor['cinder::dbsync::begin']
+    Anchor['easystack::openstack::install_1::begin']
+    -> Anchor['cinder::install::begin']
+    -> Anchor['cinder::install::end']
+    -> Anchor['easystack::openstack::install_1::end']
+
+    Anchor['easystack::openstack::config_1::begin']
+    -> Anchor['cinder::config::begin']
+    -> Anchor['cinder::config::end']
+    -> Anchor['easystack::openstack::config_1::end']
+
+    Anchor['easystack::openstack::dbsync_2::begin']
+    -> Anchor['cinder::db::begin']
+    -> Anchor['cinder::db::end']
+    -> Anchor['cinder::dbsync::begin']
+    -> Anchor['cinder::dbsync::end']
+    -> Anchor['easystack::openstack::dbsync_2::end']
+
+    Anchor['easystack::openstack::service_2::begin']
+    -> Anchor['cinder::service::begin']
+    -> Anchor['cinder::service::end']
+    -> Anchor['easystack::openstack::service_2::end']
+
+    Firewalld_port <|tag == 'cinder-firewall'|>
+    -> Anchor['easystack::openstack::service_2::begin']
+
 }

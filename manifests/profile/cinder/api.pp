@@ -29,7 +29,6 @@ class easystack::profile::cinder::api (
         port     => 8776,
         protocol => 'tcp',
         tag      => 'cinder-firewall',
-        before   => Service['cinder-api'],
     }
 
 }

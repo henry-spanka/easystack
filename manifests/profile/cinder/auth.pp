@@ -29,6 +29,5 @@ class easystack::profile::cinder::auth (
         admin_url_v3          => "http://${vip}:8776/v3/%(tenant_id)s",
         region                => $region,
         tenant                => 'services',
-        require               => Class['::easystack::profile::keystone'],
     }
 }

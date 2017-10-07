@@ -136,6 +136,25 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     # Setup Neutron Haproxy resources
     include ::easystack::profile::haproxy::neutron_api
 
+    # Setup Cinder
+    include ::easystack::profile::cinder
+    include ::easystack::profile::cinder::authtoken
+
+    class { '::easystack::profile::cinder::api':
+        sync_db => true,
+    }
+
+    include ::easystack::profile::cinder::auth
+
+    include ::easystack::profile::cinder::scheduler
+    include ::easystack::profile::cinder::volume
+
+    class { '::easystack::profile::cinder::backends':
+        enabled_backends => [],
+    }
+
+    include ::easystack::profile::haproxy::cinder_api
+
     include ::easystack::profile::filebeat
 
 }
