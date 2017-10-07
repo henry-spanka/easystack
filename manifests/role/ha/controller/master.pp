@@ -138,6 +138,8 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::haproxy::neutron_api
 
     # Setup Cinder
+    include ::easystack::profile::cinder::database
+
     include ::easystack::profile::cinder
     include ::easystack::profile::cinder::authtoken
 
