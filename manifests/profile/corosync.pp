@@ -59,6 +59,11 @@ class easystack::profile::corosync (
             tag   => 'corosync-property',
         }
 
+        # Fencing example for IPMI
+        # pcs stonith create fence_$HOSTNAME_ipmi fence_ipmilan \
+        # pcmk_host_list="$FQDN" ipaddr="$IPMI_IP" \
+        # lanplus=1 login="$USERNAME" passwd="$PASSWORD" delay=60 \
+        # op monitor interval=60s
         if ($enable_stonith) {
             # lint:ignore:quoted_booleans
             cs_property { 'stonith-enabled':
