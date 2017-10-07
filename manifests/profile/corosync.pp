@@ -59,9 +59,9 @@ class easystack::profile::corosync (
             tag   => 'corosync-property',
         }
 
-        # Fencing example for IPMI
+        # Fencing example for IPMI (HP iLO)
         # pcs stonith create fence_$HOSTNAME_ipmi fence_ipmilan \
-        # pcmk_host_list="$FQDN" ipaddr="$IPMI_IP" \
+        # pcmk_host_list="$FQDN" ipaddr="$IPMI_IP" action="off" \
         # lanplus=1 login="$USERNAME" passwd="$PASSWORD" delay=60 \
         # op monitor interval=60s
         if ($enable_stonith) {
