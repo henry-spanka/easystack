@@ -20,4 +20,22 @@ class easystack::profile::neutron::agents::metadata (
         tag     => 'neutron-firewall',
     }
 
+    firewalld_direct_rule {'Allow metadata requests forwarding ipv4':
+        ensure        => 'present',
+        inet_protocol => 'ipv4',
+        table         => 'filter',
+        chain         => 'FORWARD',
+        priority      => 1,
+        args          => '-p tcp --dport=80 -j ACCEPT',
+    }
+
+    firewalld_direct_rule {'Allow metadata requests forwarding ipv6':
+        ensure        => 'present',
+        inet_protocol => 'ipv6',
+        table         => 'filter',
+        chain         => 'FORWARD',
+        priority      => 1,
+        args          => '-p tcp --dport=80 -j ACCEPT',
+    }
+
 }
