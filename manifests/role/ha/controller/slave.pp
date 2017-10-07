@@ -116,7 +116,6 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
     }
 
     include ::easystack::profile::cinder::scheduler
-    include ::easystack::profile::cinder::volume
 
     class { '::easystack::profile::cinder::backends':
         enabled_backends => [],

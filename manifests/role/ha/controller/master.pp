@@ -147,7 +147,6 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::cinder::auth
 
     include ::easystack::profile::cinder::scheduler
-    include ::easystack::profile::cinder::volume
 
     class { '::easystack::profile::cinder::backends':
         enabled_backends => [],
