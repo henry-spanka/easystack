@@ -68,6 +68,8 @@ class easystack::profile::network::compute (
         before => Exec['network_restart'],
     }
 
+    contain network
+
     # On physical servers spanning tree will block the port for a few seconds
     exec { 'wait_for_network_ready':
         command     => 'sleep 30',
