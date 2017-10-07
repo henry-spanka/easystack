@@ -33,6 +33,7 @@ class easystack::profile::nova::compute::libvirt (
         libvirt_hw_disk_discard => $hw_disk_discard,
         vncserver_listen        => '0.0.0.0',
         libvirt_virt_type       => $libvirt_virt_type,
+        libvirt_inject_password => true,
     }
 
     include ::firewalld

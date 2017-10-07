@@ -68,6 +68,10 @@ class easystack::profile::horizon (
         },
         default_theme                => 'material',
         password_retrieve            => true,
+        hypervisor_options           => {
+            'can_set_mount_point' => true,
+            'can_set_password'    => true,
+        },
     }
 
     # Currently it's not possible to set this option via the puppet-horizon module
