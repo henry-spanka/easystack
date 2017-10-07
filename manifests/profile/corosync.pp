@@ -54,6 +54,11 @@ class easystack::profile::corosync (
             tag   => 'corosync-property',
         }
 
+        cs_property { 'stonith-action':
+            value => 'poweroff',
+            tag   => 'corosync-property',
+        }
+
         if ($enable_stonith) {
             # lint:ignore:quoted_booleans
             cs_property { 'stonith-enabled':
