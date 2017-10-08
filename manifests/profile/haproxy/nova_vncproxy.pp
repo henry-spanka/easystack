@@ -14,15 +14,18 @@ class easystack::profile::haproxy::nova_vncproxy (
         },
         mode    => 'http',
         options => {
-            'option'       => [
+            'option'        => [
                 'httpchk GET /',
                 'httplog',
                 'forwardfor',
             ],
-            'balance'      => 'source',
-            'http-request' => [
+            'balance'       => 'source',
+            'http-request'  => [
                 'set-header X-Forwarded-Port %[dst_port]',
-                'add-header X-Forwarded-Proto https if { ssl_fc }'
+                'add-header X-Forwarded-Proto https if { ssl_fc }',
+            ],
+            'http-response' => [
+                'set-header Server haproxy',
             ],
         },
     }
