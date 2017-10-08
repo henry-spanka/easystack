@@ -31,31 +31,38 @@ class easystack::profile::horizon (
         tag     => 'horizon-firewall',
     }
 
+    firewalld_service { 'Allow horizon dashboard https - zone=public_mgmt':
+        ensure  => present,
+        service => 'https',
+        zone    => 'public_mgmt',
+        tag     => 'horizon-firewall',
+    }
+
     $controller_nodes_ip = $controller_nodes.map |Hash $params| {
         $params[ip]
     }
 
     class { '::horizon':
-        bind_address                 => $listen_ip,
-        cache_backend                => 'django.core.cache.backends.memcached.MemcachedCache',
-        cache_server_ip              => $controller_nodes_ip,
-        cache_server_port            => '11211',
-        secret_key                   => $secret_key,
-        django_debug                 => false,
-        api_result_limit             => '1000',
-        allowed_hosts                => [$public_endpoint],
-        servername                   => $::fqdn,
-        django_session_engine        => 'django.contrib.sessions.backends.cache',
-        keystone_url                 => "http://${public_endpoint}:5000/v3",
-        keystone_multidomain_support => true,
-        keystone_default_domain      => 'Default',
-        keystone_default_role        => 'user',
-        api_versions                 => {
+        bind_address                   => $listen_ip,
+        cache_backend                  => 'django.core.cache.backends.memcached.MemcachedCache',
+        cache_server_ip                => $controller_nodes_ip,
+        cache_server_port              => '11211',
+        secret_key                     => $secret_key,
+        django_debug                   => false,
+        api_result_limit               => '1000',
+        allowed_hosts                  => [$public_endpoint],
+        servername                     => $::fqdn,
+        django_session_engine          => 'django.contrib.sessions.backends.cache',
+        keystone_url                   => "http://${public_endpoint}:5000/v3",
+        keystone_multidomain_support   => true,
+        keystone_default_domain        => 'Default',
+        keystone_default_role          => 'user',
+        api_versions                   => {
             'identity' => 3,
             'image'    => 2,
             'volume'   => 2,
         },
-        neutron_options              => {
+        neutron_options                => {
             'enable_router'             => false,
             'enable_quotas'             => false,
             'enable_distributed_router' => false,
@@ -66,12 +73,14 @@ class easystack::profile::horizon (
             'enable_fip_topology_check' => false,
             'timezone'                  => 'UTC',
         },
-        default_theme                => 'material',
-        password_retrieve            => true,
-        hypervisor_options           => {
+        default_theme                  => 'material',
+        password_retrieve              => true,
+        hypervisor_options             => {
             'can_set_mount_point' => true,
             'can_set_password'    => true,
         },
+        enable_secure_proxy_ssl_header => true,
+        secure_cookies                 => true,
     }
 
     # Currently it's not possible to set this option via the puppet-horizon module

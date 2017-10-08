@@ -95,6 +95,8 @@ class easystack (
     String $public_vip_gw                    = $easystack::params::public_vip_gw,
     String $public_endpoint                  = $easystack::params::public_endpoint,
     String $admin_endpoint                   = $easystack::params::admin_endpoint,
+    String $public_endpoint_ssl_cert         = $easystack::params::public_endpoint_ssl_cert,
+    String $admin_endpoint_ssl_cert          = $easystack::params::admin_endpoint_ssl_cert,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -152,5 +154,7 @@ class easystack (
         public_vip_gw                    => $public_vip_gw,
         public_endpoint                  => $public_endpoint,
         admin_endpoint                   => $admin_endpoint,
+        public_endpoint_ssl_cert         => $public_endpoint_ssl_cert,
+        admin_endpoint_ssl_cert          => $admin_endpoint_ssl_cert,
     }
 }

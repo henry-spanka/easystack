@@ -52,4 +52,6 @@ class easystack::params {
     $public_vip_gw = undef
     $public_endpoint = undef
     $admin_endpoint = undef
+    $public_endpoint_ssl_cert = undef
+    $admin_endpoint_ssl_cert = undef
 }

@@ -9,16 +9,23 @@ class easystack::profile::haproxy::horizon (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'horizon_cluster':
-        ipaddress => $public_vip,
-        ports     => '80',
-        mode      => 'tcp',
-        options   => {
-            'option'  => [
-                'tcpka',
+        bind    => {
+            "${public_vip}:80"  => [],
+            "${public_vip}:443" => ['ssl', 'crt', '/etc/pki/tls/private/public_endpoint.pem'],
+        },
+        mode    => 'http',
+        options => {
+            'option'       => [
                 'httpchk',
-                'tcplog',
+                'httplog',
+                'forwardfor',
             ],
-            'balance' => 'source',
+            'balance'      => 'source',
+            'http-request' => [
+                'set-header X-Forwarded-Port %[dst_port]',
+                'add-header X-Forwarded-Proto https if { ssl_fc }'
+            ],
+            'redirect'     => 'scheme https if !{ ssl_fc }',
         },
     }
 
