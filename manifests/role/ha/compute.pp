@@ -7,6 +7,9 @@ class easystack::role::ha::compute inherits ::easystack::role {
     # TODO: Sync time with controller(s) instead
     include ::easystack::profile::chrony
 
+    # Install certificates
+    include ::easystack::profile::certificates
+
     include ::easystack::profile::nova
     include ::easystack::profile::nova::cache
 
