@@ -55,13 +55,27 @@ class easystack::profile::corosync::public_vip (
             Cs_primitive['public_vip'],
             Cs_primitive['public_vip_route'],
         ],
+        before     => Anchor['easystack::corosync::setup::end'],
     }
 
-    cs_order { 'vip_before_service':
+    cs_order { 'public_vip_before_route':
         first   => 'public_vip',
         second  => 'public_vip_route',
         kind    => 'Mandatory',
         require => Cs_colocation['public_vip_with_route'],
+        before  => Anchor['easystack::corosync::setup::end'],
+    }
+
+    exec { 'wait_and_cleanup_after_setup_public_vip':
+        command     => 'pcs resource cleanup',
+        refreshonly => true,
+        subscribe   => [
+            Cs_colocation['public_vip_with_route'],
+            Cs_order['public_vip_before_route'],
+        ],
+        before      => Anchor['easystack::corosync::setup::end'],
+        provider    => shell,
+        path        => '/usr/bin:/bin:/usr/sbin:/sbin'
     }
 
 }
