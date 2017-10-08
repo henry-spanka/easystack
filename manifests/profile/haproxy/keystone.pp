@@ -39,13 +39,13 @@ class easystack::profile::haproxy::keystone (
         },
         mode    => 'http',
         options => {
-            'option'       => [
+            'option'        => [
                 'httpchk',
                 'httplog',
                 'forwardfor',
             ],
-            'balance'      => 'source',
-            'http-request' => [
+            'balance'       => 'source',
+            'http-request'  => [
                 'set-header X-Forwarded-Port %[dst_port]',
                 'add-header X-Forwarded-Proto https if { ssl_fc }'
             ],
