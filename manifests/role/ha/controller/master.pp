@@ -46,6 +46,7 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
     include ::easystack::profile::haproxy
     include ::easystack::profile::corosync::haproxy
     include ::easystack::profile::haproxy::ssl
+    include ::easystack::profile::haproxy::stats
 
     # Configure haproxy resources
     include ::easystack::profile::haproxy::keystone

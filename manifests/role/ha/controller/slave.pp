@@ -34,6 +34,7 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
     # Setup haproxy
     include ::easystack::profile::haproxy
     include ::easystack::profile::haproxy::ssl
+    include ::easystack::profile::haproxy::stats
 
     # Configure haproxy resources
     include ::easystack::profile::haproxy::keystone

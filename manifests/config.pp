@@ -55,6 +55,7 @@ class easystack::config (
     $admin_endpoint = undef,
     $public_endpoint_ssl_cert = undef,
     $admin_endpoint_ssl_cert = undef,
+    $haproxy_stats_password = undef,
 ) {
 
 }

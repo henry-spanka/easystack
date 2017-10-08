@@ -97,6 +97,7 @@ class easystack (
     String $admin_endpoint                   = $easystack::params::admin_endpoint,
     String $public_endpoint_ssl_cert         = $easystack::params::public_endpoint_ssl_cert,
     String $admin_endpoint_ssl_cert          = $easystack::params::admin_endpoint_ssl_cert,
+    String $haproxy_stats_password           = $easystack::params::haproxy_stats_password,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -156,5 +157,6 @@ class easystack (
         admin_endpoint                   => $admin_endpoint,
         public_endpoint_ssl_cert         => $public_endpoint_ssl_cert,
         admin_endpoint_ssl_cert          => $admin_endpoint_ssl_cert,
+        haproxy_stats_password           => $haproxy_stats_password,
     }
 }
