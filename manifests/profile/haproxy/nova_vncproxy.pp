@@ -15,9 +15,9 @@ class easystack::profile::haproxy::nova_vncproxy (
         mode    => 'http',
         options => {
             'option'        => [
-                'httpchk GET /',
                 'httplog',
                 'forwardfor',
+                'tcpka',
             ],
             'balance'       => 'source',
             'http-request'  => [
