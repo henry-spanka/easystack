@@ -16,9 +16,9 @@ class easystack::profile::nova::auth_placement (
         configure_user      => true,
         configure_user_role => true,
         service_name        => 'placement',
-        public_url          => "http://${public_endpoint}:8778/placement",
-        internal_url        => "http://${public_endpoint}:8778/placement",
-        admin_url           => "http://${public_endpoint}:8778/placement",
+        public_url          => "https://${public_endpoint}:8778/placement",
+        internal_url        => "https://${public_endpoint}:8778/placement",
+        admin_url           => "https://${public_endpoint}:8778/placement",
         region              => $region,
         tenant              => 'services',
     }

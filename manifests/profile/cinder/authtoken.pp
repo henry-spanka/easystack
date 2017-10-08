@@ -22,7 +22,7 @@ class easystack::profile::cinder::authtoken (
         username            => 'cinder',
         password            => $cinder_password,
         notify              => Service['cinder-api'],
-        auth_url            => "http://${admin_endpoint}:35357",
-        auth_uri            => "http://${public_endpoint}:5000",
+        auth_url            => "https://${admin_endpoint}:35357",
+        auth_uri            => "https://${public_endpoint}:5000",
     }
 }

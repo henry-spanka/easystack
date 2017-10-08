@@ -13,7 +13,7 @@ class easystack::profile::keystone::disable_admin_token_auth (
         content   => epp(
             'easystack/keystone/openrc.epp',
             {
-                'auth_url'      => "http://${admin_endpoint}:35357/v3",
+                'auth_url'      => "https://${admin_endpoint}:35357/v3",
                 'auth_password' => $admin_password,
             }
         ),

@@ -16,9 +16,9 @@ class easystack::profile::nova::auth (
         configure_user      => true,
         configure_user_role => true,
         service_name        => 'nova',
-        public_url          => "http://${public_endpoint}:8774/v2.1",
-        internal_url        => "http://${public_endpoint}:8774/v2.1",
-        admin_url           => "http://${public_endpoint}:8774/v2.1",
+        public_url          => "https://${public_endpoint}:8774/v2.1",
+        internal_url        => "https://${public_endpoint}:8774/v2.1",
+        admin_url           => "https://${public_endpoint}:8774/v2.1",
         region              => $region,
         tenant              => 'services',
     }

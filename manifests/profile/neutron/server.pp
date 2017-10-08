@@ -40,6 +40,7 @@ class easystack::profile::neutron::server (
         allow_automatic_l3agent_failover => true,
         max_l3_agents_per_router         => '2',
         sync_db                          => $sync_db,
+        enable_proxy_headers_parsing     => true,
     }
 
     class { '::neutron::server::notifications':
@@ -51,7 +52,7 @@ class easystack::profile::neutron::server (
         project_domain_name                => 'default',
         user_domain_name                   => 'default',
         auth_type                          => 'password',
-        auth_url                           => "http://${admin_endpoint}:35357",
+        auth_url                           => "https://${admin_endpoint}:35357",
         region_name                        => $region,
     }
 

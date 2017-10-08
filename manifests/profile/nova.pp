@@ -27,7 +27,7 @@ class easystack::profile::nova (
         api_database_connection => "mysql+pymysql://nova:${db_password}@${vip}/nova_api?charset=utf8",
         default_transport_url   => "rabbit://${controller_nodes_hostname_auth_list}",
         image_service           => 'nova.image.glance.GlanceImageService',
-        glance_api_servers      => "http://${public_endpoint}:9292",
+        glance_api_servers      => "https://${public_endpoint}:9292",
         auth_strategy           => 'keystone',
         lock_path               => '/var/lib/nova/tmp',
         rabbit_ha_queues        => true,

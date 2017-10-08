@@ -14,7 +14,7 @@ class easystack::profile::nova::placement (
         project_domain_name => 'default',
         project_name        => 'services',
         auth_type           => 'password',
-        auth_url            => "http://${admin_endpoint}:35357/v3",
+        auth_url            => "https://${admin_endpoint}:35357/v3",
         username            => 'placement',
         password            => $placement_password,
     }

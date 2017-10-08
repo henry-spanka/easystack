@@ -11,9 +11,9 @@ class easystack::profile::keystone::endpoint (
 
     # Installs the service user endpoint.
     class { 'keystone::endpoint':
-        public_url   => "http://${public_endpoint}:5000",
-        admin_url    => "http://${admin_endpoint}:35357",
-        internal_url => "http://${public_endpoint}:5000",
+        public_url   => "https://${public_endpoint}:5000",
+        admin_url    => "https://${admin_endpoint}:35357",
+        internal_url => "https://${public_endpoint}:5000",
         region       => $region,
         #   If the version is set to the empty string (''), then it won't be
         #   used. This is the expected behaviour since Keystone V3 handles API versions

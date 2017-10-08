@@ -19,7 +19,7 @@ class easystack::profile::nova::compute (
     # lint:ignore:duplicate_params
     nova_config {
     'DEFAULT/enabled_apis':    value => ['osapi_compute', 'metadata'];
-    'vnc/novncproxy_base_url': value => "http://${public_endpoint}:6080/vnc_auto.html";
+    'vnc/novncproxy_base_url': value => "https://${public_endpoint}:6080/vnc_auto.html";
     }
     # lint:endignore
 

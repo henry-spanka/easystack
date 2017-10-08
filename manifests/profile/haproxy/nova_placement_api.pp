@@ -9,15 +9,21 @@ class easystack::profile::haproxy::nova_placement_api (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'nova_placement_api_cluster':
-        ipaddress => $public_vip,
-        ports     => '8778',
-        mode      => 'tcp',
-        options   => {
-            'option'  => [
-                'tcpka',
-                'tcplog',
+        bind    => {
+            "${public_vip}:8778" => ['ssl', 'crt', '/etc/pki/tls/private/public_endpoint.pem'],
+        },
+        mode    => 'http',
+        options => {
+            'option'       => [
+                'httpchk',
+                'httplog',
+                'forwardfor',
             ],
-            'balance' => 'source',
+            'balance'      => 'source',
+            'http-request' => [
+                'set-header X-Forwarded-Port %[dst_port]',
+                'add-header X-Forwarded-Proto https if { ssl_fc }'
+            ],
         },
     }
 

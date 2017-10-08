@@ -9,15 +9,21 @@ class easystack::profile::haproxy::nova_metadata_api (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'nova_metadata_api_cluster':
-        ipaddress => $::easystack::config::controller_vip,
-        ports     => '8775',
-        mode      => 'tcp',
-        options   => {
-            'option'  => [
-                'tcpka',
-                'tcplog',
+        bind    => {
+            "${vip}:8775" => ['ssl', 'crt', '/etc/pki/tls/private/admin_endpoint.pem'],
+        },
+        mode    => 'http',
+        options => {
+            'option'       => [
+                'httpchk',
+                'httplog',
+                'forwardfor',
             ],
-            'balance' => 'source',
+            'balance'      => 'source',
+            'http-request' => [
+                'set-header X-Forwarded-Port %[dst_port]',
+                'add-header X-Forwarded-Proto https if { ssl_fc }'
+            ],
         },
     }
 

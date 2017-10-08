@@ -1,7 +1,6 @@
 # Setup Cinder API
 class easystack::profile::cinder::api (
     String $public_endpoint = $::easystack::config::public_endpoint,
-    String $admin_endpoint  = $::easystack::config::admin_endpoint,
     String $listen_ip       = ip_for_network($::easystack::config::management_network),
     Boolean $sync_db        = false,
     String $region          = $::easystack::config::keystone_region,
@@ -15,10 +14,10 @@ class easystack::profile::cinder::api (
         enabled                    => true,
         manage_service             => true,
         os_region_name             => $region,
-        keymgr_encryption_auth_url => "http://${public_endpoint}:5000/v3",
+        keymgr_encryption_auth_url => "https://${public_endpoint}:5000/v3",
         bind_host                  => $listen_ip,
         sync_db                    => $sync_db,
-        public_endpoint            => "http://${admin_endpoint}:35357",
+        public_endpoint            => "https://${public_endpoint}:8776",
         auth_strategy              => 'keystone',
     }
 

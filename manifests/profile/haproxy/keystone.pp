@@ -11,31 +11,41 @@ class easystack::profile::haproxy::keystone (
 
     # Keystone admin
     haproxy::listen { 'keystone_admin_cluster':
-        ipaddress => $vip,
-        ports     => '35357',
-        mode      => 'tcp',
-        options   => {
-            'option'  => [
-                'tcpka',
+        bind    => {
+            "${vip}:35357" => ['ssl', 'crt', '/etc/pki/tls/private/admin_endpoint.pem'],
+        },
+        mode    => 'http',
+        options => {
+            'option'       => [
                 'httpchk',
-                'tcplog',
+                'httplog',
+                'forwardfor',
             ],
-            'balance' => 'source',
+            'balance'      => 'source',
+            'http-request' => [
+                'set-header X-Forwarded-Port %[dst_port]',
+                'add-header X-Forwarded-Proto https if { ssl_fc }'
+            ],
         },
     }
 
     # keystone public internal
     haproxy::listen { 'keystone_public_internal_cluster':
-        ipaddress => $public_vip,
-        ports     => '5000',
-        mode      => 'tcp',
-        options   => {
-            'option'  => [
-                'tcpka',
+        bind    => {
+            "${public_vip}:5000" => ['ssl', 'crt', '/etc/pki/tls/private/public_endpoint.pem'],
+        },
+        mode    => 'http',
+        options => {
+            'option'       => [
                 'httpchk',
-                'tcplog',
+                'httplog',
+                'forwardfor',
             ],
-            'balance' => 'source',
+            'balance'      => 'source',
+            'http-request' => [
+                'set-header X-Forwarded-Port %[dst_port]',
+                'add-header X-Forwarded-Proto https if { ssl_fc }'
+            ],
         },
     }
 

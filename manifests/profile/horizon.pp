@@ -53,7 +53,7 @@ class easystack::profile::horizon (
         allowed_hosts                  => [$public_endpoint],
         servername                     => $::fqdn,
         django_session_engine          => 'django.contrib.sessions.backends.cache',
-        keystone_url                   => "http://${public_endpoint}:5000/v3",
+        keystone_url                   => "https://${public_endpoint}:5000/v3",
         keystone_multidomain_support   => true,
         keystone_default_domain        => 'Default',
         keystone_default_role          => 'user',

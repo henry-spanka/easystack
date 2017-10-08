@@ -9,16 +9,21 @@ class easystack::profile::haproxy::nova_compute_api (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'nova_compute_api_cluster':
-        ipaddress => $public_vip,
-        ports     => '8774',
-        mode      => 'tcp',
-        options   => {
-            'option'  => [
-                'tcpka',
+        bind    => {
+            "${public_vip}:8774" => ['ssl', 'crt', '/etc/pki/tls/private/public_endpoint.pem'],
+        },
+        mode    => 'http',
+        options => {
+            'option'       => [
                 'httpchk',
-                'tcplog',
+                'httplog',
+                'forwardfor',
             ],
-            'balance' => 'source',
+            'balance'      => 'source',
+            'http-request' => [
+                'set-header X-Forwarded-Port %[dst_port]',
+                'add-header X-Forwarded-Proto https if { ssl_fc }'
+            ],
         },
     }
 

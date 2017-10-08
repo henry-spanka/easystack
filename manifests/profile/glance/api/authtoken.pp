@@ -22,8 +22,8 @@ class easystack::profile::glance::api::authtoken (
         username            => 'glance',
         password            => $glance_password,
         notify              => Service['glance-api'],
-        auth_url            => "http://${admin_endpoint}:35357",
-        auth_uri            => "http://${public_endpoint}:5000",
+        auth_url            => "https://${admin_endpoint}:35357",
+        auth_uri            => "https://${public_endpoint}:5000",
     }
 
     contain ::glance::api::authtoken

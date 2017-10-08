@@ -9,15 +9,21 @@ class easystack::profile::haproxy::nova_vncproxy (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'nova_vncproxy_cluster':
-        ipaddress => $public_vip,
-        ports     => '6080',
-        mode      => 'tcp',
-        options   => {
-            'option'  => [
-                'tcpka',
-                'tcplog',
+        bind    => {
+            "${public_vip}:6080" => ['ssl', 'crt', '/etc/pki/tls/private/public_endpoint.pem'],
+        },
+        mode    => 'http',
+        options => {
+            'option'       => [
+                'httpchk GET /',
+                'httplog',
+                'forwardfor',
             ],
-            'balance' => 'source',
+            'balance'      => 'source',
+            'http-request' => [
+                'set-header X-Forwarded-Port %[dst_port]',
+                'add-header X-Forwarded-Proto https if { ssl_fc }'
+            ],
         },
     }
 

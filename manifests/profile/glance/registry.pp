@@ -1,8 +1,8 @@
 # Setup Glance Registry
 class easystack::profile::glance::registry (
-    String $listen_ip     = ip_for_network($::easystack::config::management_network),
-    String $vip           = $::easystack::config::controller_vip,
-    String $db_password   = $::easystack::config::database_glance_password,
+    String $listen_ip   = ip_for_network($::easystack::config::management_network),
+    String $vip         = $::easystack::config::controller_vip,
+    String $db_password = $::easystack::config::database_glance_password,
 ) {
     # make sure the parameters are initialized
     include ::easystack

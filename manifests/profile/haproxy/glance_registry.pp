@@ -9,15 +9,24 @@ class easystack::profile::haproxy::glance_registry (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'glance_registry_cluster':
-        ipaddress => $vip,
-        ports     => '9191',
-        mode      => 'tcp',
-        options   => {
-            'option'  => [
-                'tcpka',
-                'tcplog',
+        bind    => {
+            "${vip}:9191" => ['ssl', 'crt', '/etc/pki/tls/private/admin_endpoint.pem'],
+        },
+        mode    => 'http',
+        options => {
+            'option'       => [
+                'httpchk',
+                'httplog',
+                'forwardfor',
             ],
-            'balance' => 'source',
+            'balance'      => 'source',
+            'http-request' => [
+                'set-header X-Forwarded-Port %[dst_port]',
+                'add-header X-Forwarded-Proto https if { ssl_fc }'
+            ],
+            'http-check'   => [
+                'expect rstatus ((2|3)[0-9][0-9]|401)',
+            ],
         },
     }
 

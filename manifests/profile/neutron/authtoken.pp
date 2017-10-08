@@ -21,8 +21,8 @@ class easystack::profile::neutron::authtoken (
         memcached_servers   => $controller_nodes_ip,
         username            => 'neutron',
         password            => $neutron_password,
-        auth_uri            => "http://${public_endpoint}:5000",
-        auth_url            => "http://${admin_endpoint}:35357",
+        auth_uri            => "https://${public_endpoint}:5000",
+        auth_url            => "https://${admin_endpoint}:35357",
     }
 
     contain ::neutron::keystone::authtoken

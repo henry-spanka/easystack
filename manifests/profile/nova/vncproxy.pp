@@ -51,7 +51,7 @@ class easystack::profile::nova::vncproxy (
         'vnc/enabled':                       value => true;
         'vnc/vncserver_listen':              value => $listen_ip;
         'vnc/vncserver_proxyclient_address': value => $public_endpoint;
-        'vnc/novncproxy_base_url':           value => "http://${public_endpoint}:6080/vnc_auto.html";
+        'vnc/novncproxy_base_url':           value => "https://${public_endpoint}:6080/vnc_auto.html";
     }
     # lint:endignore
 

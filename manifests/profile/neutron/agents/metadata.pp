@@ -1,7 +1,7 @@
 # Setup Neutron Metadata Agent
 class easystack::profile::neutron::agents::metadata (
-    String $vip     = $::easystack::config::controller_vip,
-    String $shared_secret = $::easystack::config::neutron_metadata_shared_secret,
+    String $admin_endpoint = $::easystack::config::admin_endpoint,
+    String $shared_secret  = $::easystack::config::neutron_metadata_shared_secret,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -9,8 +9,11 @@ class easystack::profile::neutron::agents::metadata (
     include ::easystack::profile::neutron
 
     class { '::neutron::agents::metadata':
-        metadata_ip   => $vip,
-        shared_secret => $shared_secret,
+        metadata_ip       => $admin_endpoint,
+        metadata_host     => $admin_endpoint,
+        metadata_port     => '8775',
+        metadata_protocol => 'https',
+        shared_secret     => $shared_secret,
     }
 
     firewalld_service { 'Allow metadata requests to neutron metadata agent':

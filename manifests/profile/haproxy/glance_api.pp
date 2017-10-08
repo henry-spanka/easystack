@@ -9,16 +9,21 @@ class easystack::profile::haproxy::glance_api (
     include ::easystack::profile::haproxy
 
     haproxy::listen { 'glance_api_cluster':
-        ipaddress => $public_vip,
-        ports     => '9292',
-        mode      => 'tcp',
-        options   => {
-            'option'  => [
-                'tcpka',
+        bind    => {
+            "${public_vip}:9292" => ['ssl', 'crt', '/etc/pki/tls/private/public_endpoint.pem'],
+        },
+        mode    => 'http',
+        options => {
+            'option'       => [
                 'httpchk',
-                'tcplog',
+                'httplog',
+                'forwardfor',
             ],
-            'balance' => 'source',
+            'balance'      => 'source',
+            'http-request' => [
+                'set-header X-Forwarded-Port %[dst_port]',
+                'add-header X-Forwarded-Proto https if { ssl_fc }'
+            ],
         },
     }
 

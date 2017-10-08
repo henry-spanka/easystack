@@ -16,9 +16,9 @@ class easystack::profile::neutron::auth (
         configure_user      => true,
         configure_user_role => true,
         service_name        => 'neutron',
-        public_url          => "http://${public_endpoint}:9696",
-        internal_url        => "http://${public_endpoint}:9696",
-        admin_url           => "http://${public_endpoint}:9696",
+        public_url          => "https://${public_endpoint}:9696",
+        internal_url        => "https://${public_endpoint}:9696",
+        admin_url           => "https://${public_endpoint}:9696",
         region              => $region,
         tenant              => 'services',
     }
