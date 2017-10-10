@@ -98,6 +98,8 @@ class easystack (
     String $public_endpoint_ssl_cert         = $easystack::params::public_endpoint_ssl_cert,
     String $admin_endpoint_ssl_cert          = $easystack::params::admin_endpoint_ssl_cert,
     String $haproxy_stats_password           = $easystack::params::haproxy_stats_password,
+    String $nova_compute_ssh_private         = $easystack::params::nova_compute_ssh_private,
+    String $nova_compute_ssh_public          = $easystack::params::nova_compute_ssh_public,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -158,5 +160,7 @@ class easystack (
         public_endpoint_ssl_cert         => $public_endpoint_ssl_cert,
         admin_endpoint_ssl_cert          => $admin_endpoint_ssl_cert,
         haproxy_stats_password           => $haproxy_stats_password,
+        nova_compute_ssh_private         => $nova_compute_ssh_private,
+        nova_compute_ssh_public          => $nova_compute_ssh_public,
     }
 }

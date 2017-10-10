@@ -56,6 +56,8 @@ class easystack::config (
     $public_endpoint_ssl_cert = undef,
     $admin_endpoint_ssl_cert = undef,
     $haproxy_stats_password = undef,
+    $nova_compute_ssh_private = undef,
+    $nova_compute_ssh_public = undef,
 ) {
 
 }
