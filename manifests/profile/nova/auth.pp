@@ -1,7 +1,7 @@
 # Setup Nova Keystone Endpoint
 class easystack::profile::nova::auth (
     String $public_endpoint = $::easystack::config::public_endpoint,
-    String $nova_password   = $::easystack::config::keystone_neutron_password,
+    String $nova_password   = $::easystack::config::keystone_nova_password,
     String $region          = $::easystack::config::keystone_region,
 ) {
     # make sure the parameters are initialized
