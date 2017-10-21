@@ -113,6 +113,15 @@ class easystack::profile::network::compute (
         purge_ports      => true,
     }
 
+    # RP Filter drops DHCPv6 requests from VMs
+    file_line { 'disable ipv6_rpfilter':
+        ensure => 'present',
+        path   => '/etc/firewalld/firewalld.conf',
+        line   => 'IPv6_rpfilter=no',
+        match  => '^IPv6_rpfilter=*',
+        notify => Service['firewalld'],
+    }
+
     Anchor['easystack::network::begin']
     -> Class['easystack::profile::network::compute']
     -> Anchor['easystack::network::end']

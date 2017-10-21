@@ -18,6 +18,13 @@ class easystack::profile::neutron::agents::dhcp {
         tag     => 'neutron-firewall',
     }
 
+    firewalld_service { 'Allow dhcpv6 requests to neutron dhcp agent':
+        ensure  => present,
+        service => 'dhcpv6',
+        zone    => 'public',
+        tag     => 'neutron-firewall',
+    }
+
     firewalld_direct_rule {'Allow dhcp requests forwarding ipv4':
         ensure        => 'present',
         inet_protocol => 'ipv4',
@@ -33,7 +40,7 @@ class easystack::profile::neutron::agents::dhcp {
         table         => 'filter',
         chain         => 'FORWARD',
         priority      => 1,
-        args          => '-p udp --sport 68 --dport=67 -j ACCEPT',
+        args          => '-p udp --sport 546 --dport=547 -j ACCEPT',
     }
 
     firewalld_direct_rule {'Allow dhcp offers forwarding ipv4':
@@ -51,7 +58,7 @@ class easystack::profile::neutron::agents::dhcp {
         table         => 'filter',
         chain         => 'FORWARD',
         priority      => 1,
-        args          => '-p udp --sport 67 --dport=68 -j ACCEPT',
+        args          => '-p udp --sport 547 --dport=546 -j ACCEPT',
     }
 
 }
