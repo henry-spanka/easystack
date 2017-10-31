@@ -52,4 +52,8 @@ class easystack::profile::nova::compute::libvirt (
         ensure => undef,
     }
 
+    nova_config {
+        'libvirt/disable_libvirt_livesnapshot': value => false;
+    }
+
 }
