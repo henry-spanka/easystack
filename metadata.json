@@ -30,7 +30,8 @@
     {"name":"openstack-cinder","version_requirement":">= 11.3.0 < 12.0.0"},
     {"name":"pcfens-filebeat","version_requirement":">= 2.1.0 < 3.0.0"},
     {"name":"pcfens-ca_cert","version_requirement":">= 1.6.1 < 2.0.0"},
-    {"name":"example42-network","version_requirement":">= 3.3.9 < 4.0.0"}
+    {"name":"example42-network","version_requirement":">= 3.3.9 < 4.0.0"},
+    {"name":"henryspanka-netdata","version_requirement":">= 0.1.0 < 1.0.0"}
   ],
   "data_provider": null,
   "operatingsystem_support": [

@@ -162,4 +162,6 @@ class easystack::role::ha::controller::master inherits ::easystack::role {
 
     include ::easystack::profile::filebeat
 
+    include ::easystack::profile::netdata
+
 }

@@ -44,6 +44,8 @@ class easystack::deps {
     -> anchor { 'easystack::openstack::service_2::end': }
     -> anchor { 'easystack::filebeat::begin': }
     -> anchor { 'easystack::filebeat::end': }
+    -> anchor { 'easystack::netdata::begin': }
+    -> anchor { 'easystack::netdata::end': }
 
     Anchor['easystack::database::install::end']
     ~> Anchor['easystack::database::service::begin']
