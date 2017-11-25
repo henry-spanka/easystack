@@ -1,7 +1,7 @@
 # Setup Neutron Server
 class easystack::profile::neutron::plugins::ml2 (
         $flat_networks       = [],
-        $network_vlan_ranges = ['provider:42:42'],
+        $network_vlan_ranges = ['provider:41:42'],
 ) {
     # make sure the parameters are initialized
     include ::easystack
