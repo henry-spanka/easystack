@@ -6,6 +6,7 @@ class easystack::profile::ksm {
         hasrestart => true,
         hasstatus  => true,
         enable     => true,
+        tag        => 'ksm-service'
     }
 
     service { 'ksmtuned':
@@ -13,9 +14,10 @@ class easystack::profile::ksm {
         hasrestart => true,
         hasstatus  => true,
         enable     => true,
+        tag        => 'ksm-service'
     }
 
-    Class['easystack::profile::nova::compute::libvirt']
-    -> Class['easystack::profile::ksm']
+
+    Package['qemu-kvm-ev'] -> Service <|tag == 'ksm-service'|>
 
 }
