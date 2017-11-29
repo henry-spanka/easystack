@@ -15,7 +15,7 @@ class easystack::profile::ksm {
         enable     => true,
     }
 
-    Class ['easystack::profile::nova::compute::libvirt']
+    Class['easystack::profile::nova::compute::libvirt']
     -> Class['easystack::profile::ksm']
 
 }
