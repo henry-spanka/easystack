@@ -17,6 +17,8 @@ class easystack::role::ha::compute inherits ::easystack::role {
     include ::easystack::profile::nova::compute::libvirt
     include ::easystack::profile::nova::compute::ssh
 
+    include ::easystack::profile::ksm
+
     include ::easystack::profile::nova::migration::libvirt
 
     include ::easystack::profile::nova::neutron
