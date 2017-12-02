@@ -100,6 +100,7 @@ class easystack (
     String $haproxy_stats_password           = $easystack::params::haproxy_stats_password,
     String $nova_compute_ssh_private         = $easystack::params::nova_compute_ssh_private,
     String $nova_compute_ssh_public          = $easystack::params::nova_compute_ssh_public,
+    String $rescue_image_id                  = $easystack::params::rescue_image_id,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -162,5 +163,6 @@ class easystack (
         haproxy_stats_password           => $haproxy_stats_password,
         nova_compute_ssh_private         => $nova_compute_ssh_private,
         nova_compute_ssh_public          => $nova_compute_ssh_public,
+        rescue_image_id                  => $rescue_image_id,
     }
 }

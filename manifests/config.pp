@@ -58,6 +58,7 @@ class easystack::config (
     $haproxy_stats_password = undef,
     $nova_compute_ssh_private = undef,
     $nova_compute_ssh_public = undef,
+    $rescue_image_id = undef,
 ) {
 
 }

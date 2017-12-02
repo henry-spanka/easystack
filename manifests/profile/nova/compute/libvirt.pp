@@ -2,6 +2,7 @@
 class easystack::profile::nova::compute::libvirt (
     String $listen_ip       = ip_for_network($::easystack::config::management_network),
     String $vip             = $::easystack::config::controller_vip,
+    String $rescue_image_id = $::easystack::config::rescue_image_id,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -54,6 +55,7 @@ class easystack::profile::nova::compute::libvirt (
 
     nova_config {
         'libvirt/disable_libvirt_livesnapshot': value => false;
+        'libvirt/rescue_image_id':              value => $rescue_image_id,
     }
 
 }
