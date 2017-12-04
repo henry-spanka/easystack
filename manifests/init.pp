@@ -101,6 +101,9 @@ class easystack (
     String $nova_compute_ssh_private         = $easystack::params::nova_compute_ssh_private,
     String $nova_compute_ssh_public          = $easystack::params::nova_compute_ssh_public,
     String $rescue_image_id                  = $easystack::params::rescue_image_id,
+    String $cpu_allocation_ratio             = $easystack::params::cpu_allocation_ratio,
+    String $ram_allocation_ratio             = $easystack::params::ram_allocation_ratio,
+    String $disk_allocation_ratio            = $easystack::params::disk_allocation_ratio,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -164,5 +167,8 @@ class easystack (
         nova_compute_ssh_private         => $nova_compute_ssh_private,
         nova_compute_ssh_public          => $nova_compute_ssh_public,
         rescue_image_id                  => $rescue_image_id,
+        cpu_allocation_ratio             => $cpu_allocation_ratio,
+        ram_allocation_ratio             => $ram_allocation_ratio,
+        disk_allocation_ratio            => $disk_allocation_ratio,
     }
 }

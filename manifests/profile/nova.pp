@@ -1,11 +1,14 @@
 # Setup Nova Service
 class easystack::profile::nova (
-    String $listen_ip       = ip_for_network($::easystack::config::management_network),
-    Array $controller_nodes = $::easystack::config::controller_nodes,
-    String $vip             = $::easystack::config::controller_vip,
-    String $public_endpoint = $::easystack::config::public_endpoint,
-    String $db_password     = $::easystack::config::database_nova_password,
-    String $rabbit_password = $::easystack::config::rabbitmq_user_openstack_password,
+    String $listen_ip             = ip_for_network($::easystack::config::management_network),
+    Array $controller_nodes       = $::easystack::config::controller_nodes,
+    String $vip                   = $::easystack::config::controller_vip,
+    String $public_endpoint       = $::easystack::config::public_endpoint,
+    String $db_password           = $::easystack::config::database_nova_password,
+    String $rabbit_password       = $::easystack::config::rabbitmq_user_openstack_password,
+    String $cpu_allocation_ratio  = $::easystack::config::cpu_allocation_ratio,
+    String $ram_allocation_ratio  = $::easystack::config::ram_allocation_ratio,
+    String $disk_allocation_ratio = $::easystack::config::disk_allocation_ratio,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -32,6 +35,9 @@ class easystack::profile::nova (
         lock_path               => '/var/lib/nova/tmp',
         rabbit_ha_queues        => true,
         amqp_durable_queues     => true,
+        cpu_allocation_ratio    => $cpu_allocation_ratio,
+        ram_allocation_ratio    => $ram_allocation_ratio,
+        disk_allocation_ratio   => $disk_allocation_ratio,
     }
 
     # lint:ignore:duplicate_params

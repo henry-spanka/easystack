@@ -59,6 +59,9 @@ class easystack::config (
     $nova_compute_ssh_private = undef,
     $nova_compute_ssh_public = undef,
     $rescue_image_id = undef,
+    $cpu_allocation_ratio = undef,
+    $ram_allocation_ratio = undef,
+    $disk_allocation_ratio = undef,
 ) {
 
 }
