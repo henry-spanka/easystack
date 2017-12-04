@@ -58,7 +58,7 @@ class easystack::params {
     $nova_compute_ssh_private = undef
     $nova_compute_ssh_public = undef
     $rescue_image_id = undef
-    $cpu_allocation_ratio = '16',
-    $ram_allocation_ratio = '1.5',
-    $disk_allocation_ratio = '1.0',
+    $cpu_allocation_ratio = '16'
+    $ram_allocation_ratio = '1.5'
+    $disk_allocation_ratio = '1.0'
 }
