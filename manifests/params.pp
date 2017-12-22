@@ -64,6 +64,6 @@ class easystack::params {
     $netdata_enable_backend = false
     $netdata_destination = 'tcp:localhost:2003'
     $netdata_data_source = 'average'
-    $netdata_update_every = '60',
+    $netdata_update_every = '60'
     $netdata_prefix = 'openstack'
 }
