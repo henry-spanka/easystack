@@ -104,6 +104,11 @@ class easystack (
     String $cpu_allocation_ratio             = $easystack::params::cpu_allocation_ratio,
     String $ram_allocation_ratio             = $easystack::params::ram_allocation_ratio,
     String $disk_allocation_ratio            = $easystack::params::disk_allocation_ratio,
+    Boolean $netdata_enable_backend          = $easystack::params::netdata_enable_backend,
+    String $netdata_destination              = $easystack::params::netdata_destination,
+    String $netdata_data_source              = $easystack::params::netdata_data_source,
+    String $netdata_update_every             = $easystack::params::netdata_update_every,
+    String $netdata_prefix                   = $easystack::params::netdata_prefix,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -170,5 +175,10 @@ class easystack (
         cpu_allocation_ratio             => $cpu_allocation_ratio,
         ram_allocation_ratio             => $ram_allocation_ratio,
         disk_allocation_ratio            => $disk_allocation_ratio,
+        netdata_enable_backend           => $netdata_enable_backend,
+        netdata_destination              => $netdata_destination,
+        netdata_data_source              => $netdata_data_source,
+        netdata_update_every             => $netdata_update_every,
+        netdata_prefix                   => $netdata_prefix,
     }
 }

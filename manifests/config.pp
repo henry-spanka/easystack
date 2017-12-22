@@ -62,6 +62,11 @@ class easystack::config (
     $cpu_allocation_ratio = undef,
     $ram_allocation_ratio = undef,
     $disk_allocation_ratio = undef,
+    $netdata_enable_backend = undef,
+    $netdata_destination = undef,
+    $netdata_data_source = undef,
+    $netdata_update_every = undef,
+    $netdata_prefix = undef,
 ) {
 
 }

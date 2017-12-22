@@ -61,4 +61,9 @@ class easystack::params {
     $cpu_allocation_ratio = '16'
     $ram_allocation_ratio = '1.5'
     $disk_allocation_ratio = '1.0'
+    $netdata_enable_backend = false
+    $netdata_destination = 'tcp:localhost:2003'
+    $netdata_data_source = 'average'
+    $netdata_update_every = '60',
+    $netdata_prefix = 'openstack'
 }
