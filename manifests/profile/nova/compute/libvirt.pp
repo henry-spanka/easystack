@@ -54,8 +54,10 @@ class easystack::profile::nova::compute::libvirt (
     }
 
     nova_config {
-        'libvirt/disable_libvirt_livesnapshot': value => false;
-        'libvirt/rescue_image_id':              value => $rescue_image_id,
+        'workarounds/disable_libvirt_livesnapshot': value => false;
+        # Incorrectly set so we need to remove this option if set
+        'libvirt/disable_libvirt_livesnapshot':     ensure => absent;
+        'libvirt/rescue_image_id':                  value => $rescue_image_id;
     }
 
 }
