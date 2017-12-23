@@ -27,6 +27,9 @@ class easystack::profile::haproxy::glance_api (
             'http-response' => [
                 'set-header Server haproxy',
             ],
+            'timeout'       => [
+                'server 1h',
+            ],
         },
     }
 
