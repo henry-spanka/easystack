@@ -19,7 +19,7 @@ class easystack::profile::nova::scheduler {
             'ComputeCapabilitiesFilter',
             'ImagePropertiesFilter',
             'ServerGroupAntiAffinityFilter',
-            'ServerGroupAffinityFilter'
+            'ServerGroupAffinityFilter',
             'AggregateInstanceExtraSpecsFilter',
         ],
     }
