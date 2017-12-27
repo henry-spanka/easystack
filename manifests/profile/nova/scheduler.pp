@@ -12,7 +12,7 @@ class easystack::profile::nova::scheduler {
     contain ::nova::scheduler
 
     class { '::nova::scheduler::filter':
-        schedler_default_filters => [
+        scheduler_default_filters => [
             'RetryFilter',
             'AvailabilityZoneFilter',
             'ComputeFilter',
