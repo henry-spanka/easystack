@@ -11,4 +11,19 @@ class easystack::profile::nova::scheduler {
 
     contain ::nova::scheduler
 
+    class { '::nova::scheduler::filter':
+        schedler_default_filters => [
+            'RetryFilter',
+            'AvailabilityZoneFilter',
+            'ComputeFilter',
+            'ComputeCapabilitiesFilter',
+            'ImagePropertiesFilter',
+            'ServerGroupAntiAffinityFilter',
+            'ServerGroupAffinityFilter'
+            'AggregateInstanceExtraSpecsFilter',
+        ],
+    }
+
+    contain ::nova::scheduler::filter
+
 }
