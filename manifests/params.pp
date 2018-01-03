@@ -66,4 +66,6 @@ class easystack::params {
     $netdata_data_source = 'average'
     $netdata_update_every = '60'
     $netdata_prefix = 'openstack'
+    $netdata_version = 'latest'
+    $netdata_base = 'https://raw.githubusercontent.com/firehol/binary-packages/master'
 }

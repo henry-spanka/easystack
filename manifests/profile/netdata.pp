@@ -6,6 +6,8 @@ class easystack::profile::netdata (
     String $data_source     = $::easystack::config::netdata_data_source,
     String $update_every    = $::easystack::config::netdata_update_every,
     String $prefix          = $::easystack::config::netdata_prefix,
+    String $version         = $::easystack::config::netdata_version,
+    String $base            = $::easystack::config::netdata_base,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -17,6 +19,8 @@ class easystack::profile::netdata (
         data_source    => $data_source,
         update_every   => $update_every,
         prefix         => $prefix,
+        version        => $version,
+        base           => $base,
     }
 
     firewalld_port { 'Allow netdata web access for admin - zone=admin':

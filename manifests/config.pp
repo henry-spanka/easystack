@@ -67,6 +67,8 @@ class easystack::config (
     $netdata_data_source = undef,
     $netdata_update_every = undef,
     $netdata_prefix = undef,
+    $netdata_version = undef,
+    $netdata_base = undef,
 ) {
 
 }

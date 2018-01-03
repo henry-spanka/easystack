@@ -109,6 +109,8 @@ class easystack (
     String $netdata_data_source              = $easystack::params::netdata_data_source,
     String $netdata_update_every             = $easystack::params::netdata_update_every,
     String $netdata_prefix                   = $easystack::params::netdata_prefix,
+    String $netdata_version                  = $easystack::params::netdata_version,
+    String $netdata_base                     = $easystack::params::netdata_base,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -180,5 +182,7 @@ class easystack (
         netdata_data_source              => $netdata_data_source,
         netdata_update_every             => $netdata_update_every,
         netdata_prefix                   => $netdata_prefix,
+        netdata_version                  => $netdata_version,
+        netdata_base                     => $netdata_base,
     }
 }
