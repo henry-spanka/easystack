@@ -35,6 +35,8 @@ class easystack::profile::nova::compute::libvirt (
         vncserver_listen        => '0.0.0.0',
         libvirt_virt_type       => $libvirt_virt_type,
         libvirt_inject_password => true,
+        libvirt_cpu_mode        => 'custom',
+        libvirt_cpu_model       => 'kvm64',
     }
 
     include ::firewalld
