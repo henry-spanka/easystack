@@ -13,6 +13,7 @@ class easystack::profile::nova::compute (
         vncserver_proxyclient_address    => $listen_ip,
         neutron_enabled                  => true,
         resume_guests_state_on_host_boot => true,
+        resize_confirm_window            => '43200', # 12 hours
     }
 
     contain nova::compute
