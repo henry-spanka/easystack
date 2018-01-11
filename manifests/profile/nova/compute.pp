@@ -9,9 +9,10 @@ class easystack::profile::nova::compute (
     include ::easystack::profile::nova
 
     class { 'nova::compute':
-        vnc_enabled                   => true,
-        vncserver_proxyclient_address => $listen_ip,
-        neutron_enabled               => true,
+        vnc_enabled                      => true,
+        vncserver_proxyclient_address    => $listen_ip,
+        neutron_enabled                  => true,
+        resume_guests_state_on_host_boot => true,
     }
 
     contain nova::compute
