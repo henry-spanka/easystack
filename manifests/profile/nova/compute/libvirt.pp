@@ -1,8 +1,8 @@
 # Setup Nova Compute Libvirt Driver
 class easystack::profile::nova::compute::libvirt (
-    String $listen_ip       = ip_for_network($::easystack::config::management_network),
-    String $vip             = $::easystack::config::controller_vip,
-    String $rescue_image_id = $::easystack::config::rescue_image_id,
+    String $listen_ip                 = ip_for_network($::easystack::config::management_network),
+    String $vip                       = $::easystack::config::controller_vip,
+    Optional[String] $rescue_image_id = $::easystack::config::rescue_image_id,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -57,7 +57,16 @@ class easystack::profile::nova::compute::libvirt (
         'workarounds/disable_libvirt_livesnapshot': value => false;
         # Incorrectly set so we need to remove this option if set
         'libvirt/disable_libvirt_livesnapshot':     ensure => absent;
-        'libvirt/rescue_image_id':                  value => $rescue_image_id;
+    }
+
+    if ($rescue_image_id) {
+        nova_config {
+            'libvirt/rescue_image_id': value => $rescue_image_id;
+        }
+    } else {
+        nova_config {
+            'libvirt/rescue_image_id': ensure => absent;
+        }
     }
 
 }

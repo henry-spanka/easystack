@@ -100,7 +100,7 @@ class easystack (
     String $haproxy_stats_password           = $easystack::params::haproxy_stats_password,
     String $nova_compute_ssh_private         = $easystack::params::nova_compute_ssh_private,
     String $nova_compute_ssh_public          = $easystack::params::nova_compute_ssh_public,
-    String $rescue_image_id                  = $easystack::params::rescue_image_id,
+    Optional[String] $rescue_image_id        = $easystack::params::rescue_image_id,
     String $cpu_allocation_ratio             = $easystack::params::cpu_allocation_ratio,
     String $ram_allocation_ratio             = $easystack::params::ram_allocation_ratio,
     String $disk_allocation_ratio            = $easystack::params::disk_allocation_ratio,
