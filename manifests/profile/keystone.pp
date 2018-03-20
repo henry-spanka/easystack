@@ -98,6 +98,19 @@ class easystack::profile::keystone (
         token_expiration        => 3600*3, # 3 hours
     }
 
+    Exec <| title == 'keystone-manage bootstrap' |> {
+        unless => 'test -f /root/keystone_bootstrapped',
+    }
+
+    file { '/root/keystone_bootstrapped':
+        ensure  => file,
+        source  => 'puppet:///modules/easystack/keystone_bootstrapped',
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        require => Anchor['keystone::service::begin'],
+    }
+
     Anchor['easystack::openstack::install_1::begin']
     -> Anchor['keystone::install::begin']
     -> Anchor['keystone::install::end']
