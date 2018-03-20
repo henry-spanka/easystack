@@ -13,7 +13,8 @@ class easystack::profile::nova::compute::ssh (
         purge_ssh_keys => true,
         home           => '/var/lib/nova',
         shell          => '/bin/bash',
-        require        => Anchor['easystack::openstack::config_1::end'],
+        require        => Anchor['easystack::openstack::install_1::end'],
+        before         => Anchor['easystack::openstack::config_1::begin'],
     }
 
     file { '/var/lib/nova/.ssh':
