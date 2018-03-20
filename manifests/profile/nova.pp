@@ -38,6 +38,7 @@ class easystack::profile::nova (
         cpu_allocation_ratio    => $cpu_allocation_ratio,
         ram_allocation_ratio    => $ram_allocation_ratio,
         disk_allocation_ratio   => $disk_allocation_ratio,
+        upgrade_level_compute   => 'auto',
     }
 
     # lint:ignore:duplicate_params
