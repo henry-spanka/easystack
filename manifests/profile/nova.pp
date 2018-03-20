@@ -39,13 +39,8 @@ class easystack::profile::nova (
         ram_allocation_ratio    => $ram_allocation_ratio,
         disk_allocation_ratio   => $disk_allocation_ratio,
         upgrade_level_compute   => 'auto',
+        my_ip                   => $listen_ip,
     }
-
-    # lint:ignore:duplicate_params
-    nova_config {
-        'DEFAULT/my_ip': value => $listen_ip;
-    }
-    # lint:endignore
 
     Anchor['easystack::openstack::install_1::begin']
     -> Anchor['nova::install::begin']
