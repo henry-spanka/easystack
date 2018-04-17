@@ -3,6 +3,8 @@ class easystack::profile::nova::compute::libvirt (
     String $listen_ip                 = ip_for_network($::easystack::config::management_network),
     String $vip                       = $::easystack::config::controller_vip,
     Optional[String] $rescue_image_id = $::easystack::config::rescue_image_id,
+    String $cpu_mode                  = $::easystack::config::libvirt_cpu_mode,
+    Optional[String] $cpu_model       = $::easystack::config::libvirt_cpu_model,
 ) {
     # make sure the parameters are initialized
     include ::easystack
@@ -35,6 +37,8 @@ class easystack::profile::nova::compute::libvirt (
         vncserver_listen        => '0.0.0.0',
         libvirt_virt_type       => $libvirt_virt_type,
         libvirt_inject_password => true,
+        libvirt_cpu_mode        => $cpu_mode,
+        libvirt_cpu_model       => $cpu_model,
     }
 
     include ::firewalld

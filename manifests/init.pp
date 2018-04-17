@@ -111,6 +111,8 @@ class easystack (
     String $netdata_prefix                   = $easystack::params::netdata_prefix,
     String $netdata_version                  = $easystack::params::netdata_version,
     String $netdata_base                     = $easystack::params::netdata_base,
+    String $libvirt_cpu_mode                 = $easystack::params::libvirt_cpu_mode,
+    Optional[String] $libvirt_cpu_model      = $easystack::params::libvirt_cpu_model,
 ) inherits easystack::params {
     include easystack::deps
 
@@ -184,5 +186,7 @@ class easystack (
         netdata_prefix                   => $netdata_prefix,
         netdata_version                  => $netdata_version,
         netdata_base                     => $netdata_base,
+        libvirt_cpu_mode                 => $libvirt_cpu_mode,
+        libvirt_cpu_model                => $libvirt_cpu_model,
     }
 }

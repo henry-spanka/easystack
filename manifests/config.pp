@@ -69,6 +69,8 @@ class easystack::config (
     $netdata_prefix = undef,
     $netdata_version = undef,
     $netdata_base = undef,
+    $libvirt_cpu_mode = undef,
+    $libvirt_cpu_model = undef,
 ) {
 
 }

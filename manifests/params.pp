@@ -68,4 +68,6 @@ class easystack::params {
     $netdata_prefix = 'openstack'
     $netdata_version = 'latest'
     $netdata_base = 'https://raw.githubusercontent.com/firehol/binary-packages/master'
+    $libvirt_cpu_mode = 'host-model'
+    $libvirt_cpu_model = undef
 }
