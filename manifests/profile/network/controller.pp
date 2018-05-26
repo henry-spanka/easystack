@@ -33,7 +33,7 @@ class easystack::profile::network::controller (
         ensure => 'present',
         path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
         line   => 'ZONE=drop',
-        match  => 'ZONE=*',
+        match  => '^ZONE=*',
         notify => Exec['network_restart'],
     }
 
