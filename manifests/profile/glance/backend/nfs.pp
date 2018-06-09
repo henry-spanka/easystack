@@ -38,7 +38,7 @@ class easystack::profile::glance::backend::nfs (
         ],
     }
 
-    class { 'glance::backend::file':
+    class { 'easystack::profile::glance::backend::file':
         require => Mount['/var/lib/glance/images'],
     }
 

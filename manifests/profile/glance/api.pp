@@ -18,6 +18,7 @@ class easystack::profile::glance::api (
         auth_strategy                => 'keystone',
         show_image_direct_url        => true,
         default_store                => $default_store,
+        multi_store                  => true,
         bind_host                    => $listen_ip,
         enable_v1_api                => false,
         enable_v2_api                => true,

@@ -1,14 +1,19 @@
 # Setup Ceph
 class easystack::profile::ceph (
-    String $fsid            = $::easystack::config::ceph_fsid,
-    Array $monitors         = $::easystack::config::ceph_monitors,
-    String $cluster_network = $::easystack::config::ceph_cluster_network,
-    String $public_network  = $::easystack::config::ceph_public_network,
+    String $fsid                       = $::easystack::config::ceph_fsid,
+    Array $monitors                    = $::easystack::config::ceph_monitors,
+    String $cluster_network            = $::easystack::config::ceph_cluster_network,
+    String $public_network             = $::easystack::config::ceph_public_network,
+    Integer $osd_crush_chooseleaf_type = $::easystack::config::ceph_osd_crush_chooseleaf_type,
+    String $mon_key                    = $::easystack::config::ceph_mon_key,
+    Hash $keys                         = {},
+    Hash $disks                        = {},
+    Boolean $mon                       = false,
+    Boolean $osd                       = false,
+    Hash $client_conf                  = {},
 ) {
     # make sure the parameters are initialized
     include ::easystack
-
-    include ::easystack::profile::ceph::repo
 
     $monitors_ip = $monitors.map |Hash $params| {
         $params[ip]
@@ -23,11 +28,40 @@ class easystack::profile::ceph (
     $monitors_hostname_list = join($monitors_hostname, ',')
 
     class { 'ceph':
-        fsid                => $fsid,
-        mon_initial_members => $monitors_hostname_list,
-        mon_host            => $monitors_ip_list,
-        cluster_network     => $cluster_network,
-        public_network      => $public_network,
+        mon           => $mon,
+        osd           => $osd,
+        rgw           => false,
+        mds           => false,
+        manage_repo   => true,
+        repo_version  => 'luminous',
+        mon_id        => $::hostname,
+        mon_key       => $mon_key,
+        conf          => {
+            'global' => {
+                'fsid'                      => $fsid,
+                'mon_initial_members'       => $monitors_hostname_list,
+                'mon_host'                  => $monitors_ip_list,
+                'public_network'            => $public_network,
+                'cluster_network'           => $cluster_network,
+                'auth_supported'            =>'cephx',
+                'filestore_xattr_use_omap'  => true,
+                'osd_crush_chooseleaf_type' => $osd_crush_chooseleaf_type,
+            },
+            'client' => $client_conf,
+        },
+        keys          => $keys,
+        disks         => $disks,
+        prerequisites => ['redhat-lsb-core', 'python2-setuptools.noarch'],
     }
 
+    contain ceph
+
+    Anchor['easystack::ceph::install::begin']
+    -> Class['easystack::profile::ceph']
+
+    Class['easystack::profile::ceph']
+    -> Anchor['easystack::ceph::install::end']
+
+    Firewalld_port <|tag == 'ceph-firewall'|>
+    -> Class['ceph']
 }

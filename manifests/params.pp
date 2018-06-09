@@ -28,13 +28,16 @@ class easystack::params {
     $ceph_fsid = undef
     $ceph_mon_key = undef
     $ceph_admin_key = undef
+    $ceph_bootstrap_mgr_key = undef
     $ceph_bootstrap_osd_key = undef
     $ceph_glance_key = undef
     $ceph_cinder_key = undef
-    $ceph_nova_key = undef
     $ceph_cinder_secret_uuid = undef
     $ceph_cluster_network = undef
     $ceph_public_network = undef
+    $ceph_osd_crush_chooseleaf_type = 1
+    $ceph_public_vlan = undef
+    $ceph_cluster_vlan = undef
     $database_cinder_password = undef
     $keystone_cinder_password = undef
     $glance_nfs_device = undef

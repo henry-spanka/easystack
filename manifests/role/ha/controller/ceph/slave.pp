@@ -1,0 +1,135 @@
+# The role for the OpenStack slave controller(s) with Ceph
+class easystack::role::ha::controller::ceph::slave inherits ::easystack::role {
+
+    require ::easystack::profile::network::controller_ceph
+
+    # Sync time
+    include ::easystack::profile::chrony
+
+    # Install certificates
+    include ::easystack::profile::certificates
+
+    # Install and configure Memcached
+    include ::easystack::profile::memcached
+
+    # Install and configure MariaDB
+    class { '::easystack::profile::mariadb':
+        master => false,
+    }
+
+    include ::easystack::profile::haproxy::galera
+
+    include ::easystack::profile::mariadb::mysqlchk
+
+    # Setup RabbitMQ
+    include ::easystack::profile::rabbitmq
+
+    # Setup corosync
+    class { '::easystack::profile::corosync':
+        master => false,
+    }
+
+    include easystack::profile::corosync::authenticate_nodes
+
+    # Setup haproxy
+    include ::easystack::profile::haproxy
+    include ::easystack::profile::haproxy::ssl
+    include ::easystack::profile::haproxy::stats
+
+    # Configure haproxy resources
+    include ::easystack::profile::haproxy::keystone
+
+    include ::easystack::profile::apache
+
+    class { '::easystack::profile::keystone':
+        sync_db => false,
+    }
+
+    include ::easystack::profile::keystone::disable_admin_token_auth
+
+    # Configure glance
+    include ::easystack::profile::glance
+
+    include ::easystack::profile::glance::api::authtoken
+    class { '::easystack::profile::glance::api':
+        default_store  => 'rbd',
+        store_backends => ['rbd', 'http'],
+    }
+
+    include ::easystack::profile::glance::registry::authtoken
+    include ::easystack::profile::glance::registry
+
+    include ::easystack::profile::glance::backend::rbd
+
+    # Setup Glance Haproxy resources
+    include ::easystack::profile::haproxy::glance_api
+    include ::easystack::profile::haproxy::glance_registry
+
+    # Configure Compute service Nova on controller node
+    include ::easystack::profile::nova
+    include ::easystack::profile::nova::cache
+
+    include ::easystack::profile::nova::authtoken
+
+    include ::easystack::profile::nova::api
+    include ::easystack::profile::nova::placement_api
+
+    include ::easystack::profile::nova::conductor
+    include ::easystack::profile::nova::consoleauth
+    include ::easystack::profile::nova::vncproxy
+    include ::easystack::profile::nova::scheduler
+
+    include ::easystack::profile::nova::neutron
+
+    # Setup Glance Haproxy resources
+    include ::easystack::profile::haproxy::nova_compute_api
+    include ::easystack::profile::haproxy::nova_metadata_api
+    include ::easystack::profile::haproxy::nova_placement_api
+    include ::easystack::profile::haproxy::nova_vncproxy
+
+    # Setup Horizon
+    include ::easystack::profile::horizon
+
+    # Setup Horizon Haproxy resource
+    include ::easystack::profile::haproxy::horizon
+
+    include ::easystack::profile::neutron
+
+    include ::easystack::profile::neutron::authtoken
+
+    class { '::easystack::profile::neutron::server':
+        sync_db => false,
+    }
+
+    include ::easystack::profile::neutron::plugins::ml2
+
+    include ::easystack::profile::neutron::agents::dhcp
+
+    include ::easystack::profile::neutron::agents::ml2::linuxbridge
+
+    include ::easystack::profile::neutron::agents::metadata
+
+    # Setup Neutron Haproxy resources
+    include ::easystack::profile::haproxy::neutron_api
+
+    # Setup Cinder
+    include ::easystack::profile::cinder
+    include ::easystack::profile::cinder::authtoken
+
+    class { '::easystack::profile::cinder::api':
+        sync_db => false,
+    }
+
+    include ::easystack::profile::cinder::scheduler
+
+    class { '::easystack::profile::cinder::backends':
+        enabled_backends => [],
+    }
+
+    include ::easystack::profile::haproxy::cinder_api
+
+    include ::easystack::profile::filebeat
+
+    include ::easystack::profile::netdata
+
+}

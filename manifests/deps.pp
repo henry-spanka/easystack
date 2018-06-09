@@ -24,6 +24,7 @@ class easystack::deps {
     -> anchor { 'easystack::haproxy::install::end': }
     ~> anchor { 'easystack::haproxy::service::begin': }
     -> anchor { 'easystack::haproxy::service::end': }
+    -> anchor { 'easystack::ceph::install::begin': }
     -> anchor { 'easystack::openstack::install_1::begin': }
     -> anchor { 'easystack::openstack::install_1::end': }
     -> anchor { 'easystack::openstack::config_1::begin': }
@@ -42,6 +43,7 @@ class easystack::deps {
     -> anchor { 'easystack::openstack::dbsync_2::end': }
     -> anchor { 'easystack::openstack::service_2::begin': }
     -> anchor { 'easystack::openstack::service_2::end': }
+    -> anchor { 'easystack::ceph::install::end': }
     -> anchor { 'easystack::filebeat::begin': }
     -> anchor { 'easystack::filebeat::end': }
     -> anchor { 'easystack::netdata::begin': }

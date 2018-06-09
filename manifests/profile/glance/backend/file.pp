@@ -5,7 +5,9 @@ class easystack::profile::glance::backend::file {
 
     include ::easystack::profile::glance
 
-    class { 'glance::backend::file': }
+    class { 'glance::backend::file':
+        multi_store => true,
+    }
 
     contain glance::backend::file
 

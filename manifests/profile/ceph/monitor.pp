@@ -1,45 +1,77 @@
 # Setup Ceph Monitor
 class easystack::profile::ceph::monitor (
-    String $mon_key           = $::easystack::config::ceph_mon_key,
     String $admin_key         = $::easystack::config::ceph_admin_key,
     String $bootstrap_osd_key = $::easystack::config::ceph_bootstrap_osd_key,
-    Array $monitors           = $::easystack::config::ceph_monitors,
+    String $bootstrap_mgr_key = $::easystack::config::ceph_bootstrap_mgr_key,
+    String $glance_key            = $::easystack::config::ceph_glance_key,
+    String $cinder_key            = $::easystack::config::ceph_cinder_key,
 ) {
     # make sure the parameters are initialized
     include ::easystack
-
-    include ::easystack::profile::ceph
 
     include ::firewalld
 
     firewalld_port { 'Allow ceph monitor on port 6789 tcp':
         ensure   => present,
-        zone     => 'internal',
+        zone     => 'ceph_public',
         port     => 6789,
         protocol => 'tcp',
         tag      => 'ceph-firewall',
     }
 
-    ceph::mon { $::hostname:
-        key => $mon_key,
+    firewalld_port { 'Allow ceph manager from port 6800 to 7300 tcp on zone=ceph_public':
+        ensure   => present,
+        zone     => 'ceph_public',
+        port     => '6800-7300',
+        protocol => 'tcp',
+        tag      => 'ceph-firewall',
     }
 
-    Ceph::Key {
-        inject         => true,
-        inject_as_id   => 'mon.',
-        inject_keyring => "/var/lib/ceph/mon/ceph-${::hostname}/keyring",
-    }
-
-    ceph::key { 'client.admin':
-        secret  => $admin_key,
-        cap_mon => 'allow *',
-        cap_osd => 'allow *',
-        cap_mds => 'allow',
-    }
-
-    ceph::key { 'client.bootstrap-osd':
-        secret  => $bootstrap_osd_key,
-        cap_mon => 'allow profile bootstrap-osd',
+    class { 'easystack::profile::ceph':
+        mon  => true,
+        osd  => false,
+        keys => {
+            'client.admin'         => {
+                'key'  => $admin_key,
+                'caps' => {
+                    'mon' => 'allow *',
+                    'osd' => 'allow *',
+                    'mds' => 'allow',
+                    'mgr' => 'allow *',
+                },
+                'path' => '/etc/ceph/ceph.client.admin.keyring',
+            },
+            'client.bootstrap-mgr' => {
+                'key'  => $bootstrap_mgr_key,
+                'caps' => {
+                    'mon'  => 'allow profile bootstrap-mgr',
+                },
+                'path' => '/var/lib/ceph/bootstrap-mgr/ceph.keyring',
+            },
+            'client.bootstrap-osd' => {
+                'key'  => $bootstrap_osd_key,
+                'caps' => {
+                    'mon' => 'allow profile bootstrap-osd',
+                },
+                'path' => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+            },
+            'client.glance'        => {
+                'key'  => $glance_key,
+                'caps' => {
+                    'mon' => 'profile rbd',
+                    'osd' => 'profile rbd pool=images',
+                },
+                'path' => '/etc/ceph/ceph.client.glance.keyring',
+            },
+            'client.cinder'        => {
+                'key'  => $cinder_key,
+                'caps' => {
+                    'mon' => 'profile rbd',
+                    'osd' => 'profile rbd pool=volumes, profile rbd pool=vms, profile rbd pool=images',
+                },
+                'path' => '/etc/ceph/ceph.client.cinder.keyring',
+            }
+        }
     }
 
 }
