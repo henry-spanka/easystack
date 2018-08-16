@@ -10,6 +10,7 @@ class easystack::profile::nova::compute::libvirt (
     include ::easystack
 
     include ::easystack::profile::nova
+    include ::easystack::profile::base::qemu
 
     # We need to use QEMU for virtual servers and the old QEMU version
     # on CentOS 7 does not support disk discarding.
@@ -21,16 +22,6 @@ class easystack::profile::nova::compute::libvirt (
         $libvirt_virt_type = 'kvm'
     }
 
-    # Install qemu-kvm-ev as Qemu Version is too old otherwise
-    package { 'centos-release-qemu-ev':
-        ensure => 'installed',
-    }
-
-    package { 'qemu-kvm-ev':
-        ensure  => 'installed',
-        require => Package['centos-release-qemu-ev'],
-        before  => Class['nova::compute::libvirt'],
-    }
 
     class { 'nova::compute::libvirt':
         libvirt_hw_disk_discard => $hw_disk_discard,
@@ -72,5 +63,8 @@ class easystack::profile::nova::compute::libvirt (
             'libvirt/rescue_image_id': ensure => absent;
         }
     }
+
+    Class['easystack::profile::base::qemu']
+    -> Class['nova::compute::libvirt']
 
 }

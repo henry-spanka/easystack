@@ -3,6 +3,9 @@ class easystack::role::ha::controller::slave inherits ::easystack::role {
 
     require ::easystack::profile::network::controller
 
+    # Install Qemu from EV repository
+    include ::easystack::profile::base::qemu
+
     # Sync time
     include ::easystack::profile::chrony
 
