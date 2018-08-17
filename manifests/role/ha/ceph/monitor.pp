@@ -8,4 +8,6 @@ class easystack::role::ha::ceph::monitor inherits ::easystack::role {
 
     include ::easystack::profile::ceph::monitor
 
+    include ::easystack::profile::netdata
+
 }

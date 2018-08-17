@@ -8,4 +8,6 @@ class easystack::role::ha::ceph::storage inherits ::easystack::role {
 
     include ::easystack::profile::ceph::storage
 
+    include ::easystack::profile::netdata
+
 }
