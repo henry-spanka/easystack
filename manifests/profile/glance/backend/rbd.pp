@@ -5,7 +5,7 @@ class easystack::profile::glance::backend::rbd {
 
     include ::easystack::profile::glance
 
-    require ::easystack::profile::ceph::client
+    require ::easystack::profile::ceph::controller_client
 
     class { 'glance::backend::rbd':
         rbd_store_user      => 'glance',
