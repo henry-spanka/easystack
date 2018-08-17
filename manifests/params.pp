@@ -35,6 +35,7 @@ class easystack::params {
     $ceph_cinder_secret_uuid = undef
     $ceph_cluster_network = undef
     $ceph_public_network = undef
+    $ceph_management_network = undef
     $ceph_osd_crush_chooseleaf_type = 1
     $ceph_public_vlan = undef
     $ceph_cluster_vlan = undef

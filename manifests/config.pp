@@ -36,6 +36,7 @@ class easystack::config (
     $ceph_bootstrap_osd_key = undef,
     $ceph_cluster_network = undef,
     $ceph_public_network = undef,
+    $ceph_management_network = undef,
     $ceph_osd_crush_chooseleaf_type = undef,
     $ceph_public_vlan = undef,
     $ceph_cluster_vlan = undef,

@@ -8,6 +8,8 @@ class easystack::role::ha::ceph::monitor inherits ::easystack::role {
 
     include ::easystack::profile::ceph::monitor
 
-    include ::easystack::profile::netdata
+    class { '::easystack::profile::netdata':
+        listen_ip => ip_for_network($::easystack::config::ceph_management_network)
+    }
 
 }
