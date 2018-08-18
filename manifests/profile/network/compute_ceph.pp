@@ -49,6 +49,14 @@ class easystack::profile::network::compute_ceph (
         notify => Exec['network_restart'],
     }
 
+    file_line { "${bond_iface} set MTU=9000":
+        ensure => 'present',
+        path   => "/etc/sysconfig/network-scripts/ifcfg-${bond_iface}",
+        line   => 'MTU=9000',
+        match  => '^MTU=*',
+        notify => Exec['network_restart'],
+    }
+
     ## Ceph Interface
 
     $ceph_public_iface = "vlan${ceph_public_vlan}";
@@ -73,6 +81,14 @@ class easystack::profile::network::compute_ceph (
         ensure => 'present',
         path   => "/etc/sysconfig/network-scripts/ifcfg-${ceph_public_iface}",
         line   => 'ZONE=ceph_public',
+        notify => Exec['network_restart'],
+    }
+
+    file_line { "${$ceph_public_iface} set MTU=9000":
+        ensure => 'present',
+        path   => "/etc/sysconfig/network-scripts/ifcfg-${ceph_public_iface}",
+        line   => 'MTU=9000',
+        match  => '^MTU=*',
         notify => Exec['network_restart'],
     }
 
