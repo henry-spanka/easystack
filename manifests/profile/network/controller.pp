@@ -37,6 +37,14 @@ class easystack::profile::network::controller (
         notify => Exec['network_restart'],
     }
 
+    file_line { "${management_interface} set MTU=9000":
+        ensure => 'present',
+        path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
+        line   => 'MTU=9000',
+        match  => '^MTU=*',
+        notify => Exec['network_restart'],
+    }
+
     file_line { "${public_interface} disable NetworkManager":
         ensure => 'present',
         path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
