@@ -76,6 +76,14 @@ class easystack::profile::network::mon_ceph (
         notify => Exec['network_restart'],
     }
 
+    file_line { "${$ceph_public_iface} set MTU=9000":
+        ensure => 'present',
+        path   => "/etc/sysconfig/network-scripts/ifcfg-${ceph_public_iface}",
+        line   => 'MTU=9000',
+        match  => '^MTU=*',
+        notify => Exec['network_restart'],
+    }
+
     service { 'NetworkManager':
         ensure => 'stopped',
         enable => false,
