@@ -783,15 +783,12 @@
       <feature name='tsc'/>
     </model>
 
-    <model name='qemu64,+arat,+pat,+popcnt,+rdtscp,+ss,+sse4.1,+sse4.2,+ssse3,+tsc,+tsc_adjust,+tsc-deadline,+vme'>
+    <model name='qemu64,+rdtscp,+ss,+sse4.1,+sse4.2,+tsc_adjust,+tsc-deadline,+vme'>
       <model name='qemu64'/>
-      <feature name='arat'/>
-      <feature name='popcnt'/>
       <feature name='rdtscp'/>
       <feature name='ss'/>
       <feature name='sse4.1'/>
       <feature name='sse4.2'/>
-      <feature name='ssse3'/>
       <feature name='tsc_adjust'/>
       <feature name='tsc-deadline'/>
       <feature name='vme'/>
