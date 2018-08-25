@@ -35,14 +35,14 @@ class easystack::profile::nova::compute::libvirt (
     # Let's install custom CPU map
     if ($cpu_mode == 'custom') {
         file { '/usr/share/libvirt/cpu_map.xml':
-            ensure      => 'file',
-            owner       => 'root',
-            group       => 'root',
-            mode        => '0644',
-            source      => 'puppet:///modules/easystack/libvirt/cpu_map.xml',
-            require     => Package['libvirt'],
-            before      => Service['libvirt'],
-            notify      => Service['libvirt'],
+            ensure  => 'file',
+            owner   => 'root',
+            group   => 'root',
+            mode    => '0644',
+            source  => 'puppet:///modules/easystack/libvirt/cpu_map.xml',
+            require => Package['libvirt'],
+            before  => Service['libvirt'],
+            notify  => Service['libvirt'],
         }
     }
 
