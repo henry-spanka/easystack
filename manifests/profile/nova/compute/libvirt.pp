@@ -43,7 +43,6 @@ class easystack::profile::nova::compute::libvirt (
             require     => Package['libvirt'],
             before      => Service['libvirt'],
             notify      => Service['libvirt'],
-            refreshonly => true,
         }
     }
 
