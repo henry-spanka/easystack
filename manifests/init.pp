@@ -35,12 +35,12 @@
 # Authors
 # -------
 #
-# Henry Spanka <henry@myvirtualserver.de>
+# Henry Spanka <henry@spanka.eu>
 #
 # Copyright
 # ---------
 #
-# Copyright 2017 Henry Spanka, unless otherwise noted.
+# Copyright 2018 Henry Spanka, unless otherwise noted.
 #
 class easystack (
     String $database_root_password           = $easystack::params::database_root_password,
