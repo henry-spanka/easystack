@@ -15,4 +15,15 @@ class easystack::profile::glance::backend::rbd {
         require             => Ceph::Keyring['client.glance'],
     }
 
+    include patch
+
+    # If we use RBD as backend we need to patch the rbd glance driver to allow
+    # the creation of sparse images when an image is uploaded to glance
+    # See: https://review.openstack.org/#/c/430641/
+    patch::file { '/usr/lib/python2.7/site-packages/glance_store/_drivers/rbd.py':
+        diff_source => 'puppet:///modules/easystack/glance_store/785fb07.diff',
+        require     => Anchor['easystack::openstack::install_1::end'],
+        notify      => Anchor['glance::service::begin'],
+    }
+
 }

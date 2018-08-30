@@ -24,12 +24,13 @@ class easystack::profile::nova::compute::libvirt (
 
 
     class { 'nova::compute::libvirt':
-        libvirt_hw_disk_discard => $hw_disk_discard,
-        vncserver_listen        => '0.0.0.0',
-        libvirt_virt_type       => $libvirt_virt_type,
-        libvirt_inject_password => true,
-        libvirt_cpu_mode        => $cpu_mode,
-        libvirt_cpu_model       => $cpu_model,
+        libvirt_hw_disk_discard       => $hw_disk_discard,
+        vncserver_listen              => '0.0.0.0',
+        libvirt_virt_type             => $libvirt_virt_type,
+        libvirt_inject_password       => true,
+        libvirt_cpu_mode              => $cpu_mode,
+        libvirt_cpu_model             => $cpu_model,
+        libvirt_snapshot_image_format => 'raw',
     }
 
     # Let's install custom CPU map

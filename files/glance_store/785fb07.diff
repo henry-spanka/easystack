@@ -1,0 +1,93 @@
+From 785fb07ff0abe6d22061406da9f928422b92fa85 Mon Sep 17 00:00:00 2001
+From: tianqing <tianqing@unitedstack.com>
+Date: Wed, 08 Feb 2017 16:21:28 +0800
+Subject: [PATCH] Support sparse uploads to RBD images
+
+Currently, glance_store will not support sparse uploads
+to RBD images. So add the check logic.
+
+Change-Id: Icd313ec86399563d8addea7fc219a60a5d1b653c
+---
+
+diff --git a/glance_store/_drivers/rbd.py b/glance_store/_drivers/rbd.py
+index d384705..d436134 100644
+--- a/glance_store/_drivers/rbd.py
++++ b/glance_store/_drivers/rbd.py
+@@ -47,6 +47,7 @@
+ DEFAULT_USER = None    # let librados decide based on the Ceph conf file
+ DEFAULT_CHUNKSIZE = 8  # in MiB
+ DEFAULT_SNAPNAME = 'snap'
++DEFAULT_SPARSE_SIZE = 1024  # in KB
+ 
+ LOG = logging.getLogger(__name__)
+ 
+@@ -70,6 +71,22 @@
+ 
+ Related options:
+     * None
++
++""")),
++    cfg.IntOpt('rbd_store_sparse_size',
++               default=DEFAULT_SPARSE_SIZE,
++               min=1,
++               help=_("""
++Size in kilobytes that determines if this is a sparse image.
++The specified size indicates the consecutive number of
++zero bytes that will cause the Ceph/RBD driver to create
++the image as a "sparse" image.
++
++Possible Values:
++     * Any positive integer value
++
++Related options:
++     * rbd_store_chunk_size
+ 
+ """)),
+     cfg.StrOpt('rbd_store_pool', default=DEFAULT_POOL,
+@@ -291,6 +308,8 @@
+             self.chunk_size = chunk * units.Mi
+             self.READ_CHUNKSIZE = self.chunk_size
+             self.WRITE_CHUNKSIZE = self.READ_CHUNKSIZE
++            self.SPARSE_SIZE = \
++                self.conf.glance_store.rbd_store_sparse_size * units.Ki
+ 
+             # these must not be unicode since they will be passed to a
+             # non-unicode-aware C library
+@@ -474,16 +493,33 @@
+                             # a resize for the amount we are writing. This will
+                             # be slower so setting a higher chunk size may
+                             # speed things up a bit.
++                            chunk_length = len(chunk)
+                             if image_size == 0:
+-                                chunk_length = len(chunk)
+                                 length = offset + chunk_length
+                                 bytes_written += chunk_length
+                                 LOG.debug(_("resizing image to %s KiB") %
+                                           (length / units.Ki))
+                                 image.resize(length)
+-                            LOG.debug(_("writing chunk at offset %s") %
+-                                      (offset))
+-                            offset += image.write(chunk, offset)
++                            start = 0
++                            while start < chunk_length:
++                                end = min(start + self.SPARSE_SIZE,
++                                          chunk_length)
++                                length = end - start
++                                if chunk[start:end] != b'\x00' * length:
++                                    LOG.debug(
++                                        _("write to %(off)s: %(len)s bytes") %
++                                        {"off": offset,
++                                         "len": length})
++                                    image.write(chunk[start:end], offset)
++                                else:
++                                    LOG.debug(
++                                        _("ignore writing sparse \
++                                          data %(off)s: %(len)s bytes") %
++                                        {"off": offset, "len": length})
++
++                                offset += length
++                                start = end
++
+                             checksum.update(chunk)
+                             if verifier:
+                                 verifier.update(chunk)
