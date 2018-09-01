@@ -31,6 +31,7 @@ class easystack::profile::nova::compute::libvirt (
         libvirt_cpu_mode              => $cpu_mode,
         libvirt_cpu_model             => $cpu_model,
         libvirt_snapshot_image_format => 'raw',
+        libvirt_disk_cachemodes       => 'network=writeback',
     }
 
     # Let's install custom CPU map
