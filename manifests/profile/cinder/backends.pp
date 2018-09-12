@@ -1,6 +1,6 @@
 # Setup Cinder Backends
 class easystack::profile::cinder::backends (
-    Array $enabled_backends = ['ceph'],
+    Array $enabled_backends = ['rbd_volumes'],
 ) {
     # make sure the parameters are initialized
     include ::easystack

@@ -26,7 +26,6 @@ class easystack::profile::glance::api (
         pipeline                     => 'keystone',
         stores                       => $store_backends,
         conversion_format            => 'raw',
-        # Bug! See: https://bugs.launchpad.net/glance/+bug/1595335
         show_multiple_locations      => true,
         registry_host                => $admin_endpoint,
         registry_port                => '9191',

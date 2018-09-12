@@ -123,9 +123,10 @@ class easystack::role::ha::controller::ceph::slave_nfs inherits ::easystack::rol
 
     include ::easystack::profile::cinder::scheduler
 
-    class { '::easystack::profile::cinder::backends':
-        enabled_backends => [],
-    }
+    include ::easystack::profile::cinder::backends
+    include ::easystack::profile::cinder::backends::rbd
+
+    include ::easystack::profile::cinder::volume
 
     include ::easystack::profile::haproxy::cinder_api
 

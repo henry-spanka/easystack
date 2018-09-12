@@ -28,6 +28,11 @@ class easystack::profile::cinder (
         amqp_durable_queues   => true,
     }
 
+    cinder_config {
+        'DEFAULT/allowed_direct_url_schemes': value => 'cinder';
+        'DEFAULT/image_upload_use_cinder_backend': value => true;
+    }
+
     Anchor['easystack::openstack::install_1::begin']
     -> Anchor['cinder::install::begin']
     -> Anchor['cinder::install::end']
