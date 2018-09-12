@@ -7,6 +7,5 @@ class easystack::profile::cinder::glance (
 
     class { 'cinder::glance':
         glance_api_servers => ["https://${public_endpoint}:9292"],
-
     }
 }
