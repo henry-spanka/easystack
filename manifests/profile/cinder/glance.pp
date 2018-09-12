@@ -9,7 +9,4 @@ class easystack::profile::cinder::glance (
         glance_api_servers => ["https://${public_endpoint}:9292"],
 
     }
-
-    Class['easystack::profile::cinder::database']
-    -> Anchor['easystack::openstack::dbsync_2::begin']
 }
