@@ -15,6 +15,7 @@ class easystack::profile::haproxy::galera (
         options   => {
             'option'  => [
                 'mysql-check',
+                'tcpka',
             ],
             'balance' => 'source',
         },
