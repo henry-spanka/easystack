@@ -783,6 +783,15 @@
       <feature name='tsc'/>
     </model>
 
+    <model name='qemu64,+rdtscp,+ss,+sse4.1,+sse4.2,+vme'>
+      <model name='qemu64'/>
+      <feature name='rdtscp'/>
+      <feature name='ss'/>
+      <feature name='sse4.1'/>
+      <feature name='sse4.2'/>
+      <feature name='vme'/>
+    </model>
+
     <model name='qemu64,+rdtscp,+ss,+sse4.1,+sse4.2,+tsc_adjust,+tsc-deadline,+vme'>
       <model name='qemu64'/>
       <feature name='rdtscp'/>
