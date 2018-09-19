@@ -95,7 +95,7 @@ class easystack::profile::keystone (
         cache_enabled           => true,
         cache_backend           => 'oslo_cache.memcache_pool',
         memcache_servers        => $controller_nodes_ip,
-        token_expiration        => 3600*3, # 3 hours
+        token_expiration        => 3600*12, # 12 hours
     }
 
     Exec <| title == 'keystone-manage bootstrap' |> {
