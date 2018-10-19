@@ -36,6 +36,8 @@ class easystack::profile::ceph::compute_client (
             'admin socket'                       => '/var/run/ceph/guests/$cluster-$type.$id.$pid.$cctid.asok',
             'log file'                           => '/var/log/qemu/qemu-guest-$pid.log',
             'rbd concurrent management ops'      => 20,
+            'rbd default stripe_count'           => '16',
+            'rbd default stripe_unit'            => '65536',
         },
     }
 }
