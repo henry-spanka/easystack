@@ -33,6 +33,9 @@ class easystack::profile::ceph::compute_client (
         client_conf => {
             'rbd cache'                          => true,
             'rbd cache writethrough until flush' => true,
+            'rbd cache size'                     => '134217700',
+            'rbd cache max dirty'                => '100663275',
+            'rbd cache target dirty'             => '33554430',
             'admin socket'                       => '/var/run/ceph/guests/$cluster-$type.$id.$pid.$cctid.asok',
             'log file'                           => '/var/log/qemu/qemu-guest-$pid.log',
             'rbd concurrent management ops'      => 20,
