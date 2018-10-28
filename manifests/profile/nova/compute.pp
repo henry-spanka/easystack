@@ -14,6 +14,7 @@ class easystack::profile::nova::compute (
         neutron_enabled                  => true,
         resume_guests_state_on_host_boot => true,
         resize_confirm_window            => '43200', # 12 hours
+        vnc_keymap                       => '',
     }
 
     contain nova::compute
