@@ -32,7 +32,7 @@ class easystack::profile::ceph (
         osd           => $osd,
         rgw           => false,
         mds           => false,
-        manage_repo   => true,
+        manage_repo   => false,
         repo_version  => 'luminous',
         mon_id        => $::hostname,
         mon_key       => $mon_key,
@@ -52,6 +52,16 @@ class easystack::profile::ceph (
         keys          => $keys,
         disks         => $disks,
         prerequisites => ['redhat-lsb-core', 'python2-setuptools.noarch'],
+    }
+
+    file { '/etc/yum.repos.d/ceph.repo':
+        ensure => absent
+    }
+
+    package { 'centos-release-ceph-luminous':
+        ensure => installed,
+        require => File['/etc/yum.repos.d/ceph.repo'],
+        before => Class['::ceph::install'],
     }
 
     contain ceph

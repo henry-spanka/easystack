@@ -23,8 +23,42 @@ class easystack::profile::mariadb::galera (
         ensure => installed,
     }
 
+    package { 'percona-release':
+        ensure => absent,
+        before => File['/etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY']
+    }
+
+    file { '/etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY':
+        ensure => file,
+        source => 'puppet:///modules/easystack/PERCONA-PACKAGING-KEY',
+    }
+
+    yumrepo { 'percona-basearch':
+        baseurl     => 'http://repo.percona.com/percona/yum/release/$releasever/RPMS/$basearch',
+        descr       => 'Percona Original release/$basearch YUM repository',
+        includepkgs => 'percona-xtrabackup',
+        enabled     => 1,
+        gpgcheck    => 1,
+        gpgkey      => 'file:///etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY',
+        require     => File['/etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY'],
+    }
+
+    yumrepo { 'percona-noarch':
+        baseurl     => 'http://repo.percona.com/percona/yum/release/$releasever/RPMS/noarch',
+        descr       => 'Percona Original release/noarch YUM repository',
+        includepkgs => 'percona-xtrabackup',
+        enabled     => 1,
+        gpgcheck    => 1,
+        gpgkey      => 'file:///etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY',
+        require     => File['/etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY'],
+    }
+
     package { 'percona-xtrabackup':
-        ensure => installed,
+        ensure  => installed,
+        require => [
+            Yumrepo['percona-basearch'],
+            Yumrepo['percona-noarch']
+        ]
     }
 
     selinux::port { 'allow-galera-tcp-4567':

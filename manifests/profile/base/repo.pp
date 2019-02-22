@@ -24,31 +24,12 @@ class easystack::profile::base::repo {
         enabled  => 1,
         gpgcheck => 1,
         gpgkey   => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Cloud',
-        priority => 20,
+        priority => absent,
         require  => File['/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Cloud'],
     }
 
     package { 'epel-release':
-        ensure => 'installed',
-    }
-
-    yumrepo { 'epel':
-        enabled  => 1,
-        priority => 99,
-        require  => Package['epel-release'],
-    }
-
-    # We do have packages that require epel and dependency resolution fails
-    # if epel is enabled because Yum tries to install python2-pyngus instead.
-    # Message: Package python-pyngus is obsoleted by python2-pyngus, trying to install python2-pyngus-2.2.2-1.el7.noarch instead
-    # Therefore we will install python-pyngus explicitely.
-    package { 'python-pyngus':
-        ensure          => 'installed',
-        install_options => ['--disablerepo', 'epel'],
-        require         => [
-            Yumrepo['CentOS-OpenStack-Queens'],
-            Yumrepo['epel'],
-        ],
+        ensure => 'absent',
     }
 
     Anchor['easystack::repo::begin']
