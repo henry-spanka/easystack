@@ -67,7 +67,7 @@ class easystack::profile::ceph::monitor (
                 'key'  => $cinder_key,
                 'caps' => {
                     'mon' => 'profile rbd',
-                    'osd' => 'profile rbd pool=volumes, profile rbd pool=vms, profile rbd pool=images, profile rbd pool=cache_storage',
+                    'osd' => 'profile rbd pool=volumes, profile rbd pool=vms, profile rbd pool=images, profile rbd pool=cache_storage, profile rbd pool=vms_ssd',
                 },
                 'path' => '/etc/ceph/ceph.client.cinder.keyring',
             }

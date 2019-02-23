@@ -40,6 +40,7 @@ class easystack::config (
     $ceph_osd_crush_chooseleaf_type = undef,
     $ceph_public_vlan = undef,
     $ceph_cluster_vlan = undef,
+    $nova_rbd_pool = undef,
     $database_cinder_password = undef,
     $keystone_cinder_password = undef,
     $glance_nfs_device = undef,

@@ -39,6 +39,7 @@ class easystack::params {
     $ceph_osd_crush_chooseleaf_type = 1
     $ceph_public_vlan = undef
     $ceph_cluster_vlan = undef
+    $nova_rbd_pool = 'vms'
     $database_cinder_password = undef
     $keystone_cinder_password = undef
     $glance_nfs_device = undef
