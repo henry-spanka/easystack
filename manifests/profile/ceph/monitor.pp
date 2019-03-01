@@ -27,6 +27,14 @@ class easystack::profile::ceph::monitor (
         tag      => 'ceph-firewall',
     }
 
+    firewalld_port { 'Allow ceph dashboard on port 7000/tcp on zone=admin':
+        ensure   => present,
+        zone     => 'admin',
+        port     => '7000',
+        protocol => 'tcp',
+        tag      => 'ceph-firewall',
+    }
+
     class { 'easystack::profile::ceph':
         mon  => true,
         osd  => false,
