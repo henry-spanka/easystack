@@ -46,6 +46,8 @@ class easystack::profile::ceph (
                 'auth_supported'            =>'cephx',
                 'filestore_xattr_use_omap'  => true,
                 'osd_crush_chooseleaf_type' => $osd_crush_chooseleaf_type,
+                # Set Memory Target to 2 GB to avoid OOM issues.
+                'osd_memory_target'         => 2147483648
             },
             'client' => $client_conf,
         },
