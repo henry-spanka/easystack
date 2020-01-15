@@ -80,6 +80,19 @@ class easystack::profile::nova::compute::libvirt (
         }
     }
 
+    include patch
+
+    # Currently if a nova image doesn't have a parent
+    # image nova will fail because the parent pool cannot
+    # be found. This patch sets the parent pool to
+    # 'images' by default in the case that the original
+    # nova image is flattened.
+    patch::file { '/usr/lib/python2.7/site-packages/nova/virt/libvirt/imagebackend.py':
+        diff_source => 'puppet:///modules/easystack/nova/default_snapshot_pool.diff',
+        require     => Anchor['easystack::openstack::install_1::end'],
+        notify      => Anchor['nova::service::begin'],
+    }
+
     Class['easystack::profile::base::qemu']
     -> Class['nova::compute::libvirt']
 

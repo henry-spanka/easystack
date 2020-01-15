@@ -1,0 +1,30 @@
+From: Henry Spanka <henry@spanka.eu>
+Date: Wed, 15 Jan 2020 19:57:00 +0100
+Subject: Add default storage pool for snapshot
+
+Currently if a nova image doesn't have a parent
+image nova will fail because the parent pool cannot
+be found. This patch sets the parent pool to
+'images' by default in the case that the original
+nova image is flattened.
+---
+
+--- a/virt/libvirt/imagebackend.py
++++ b/virt/libvirt/imagebackend.py
+@@ -1017,10 +1017,12 @@
+                     continue
+ 
+         if not parent_pool:
+-            raise exception.ImageUnacceptable(
+-                    _('Cannot determine the parent storage pool for %s; '
+-                      'cannot determine where to store images') %
+-                    base_image_id)
++            LOG.warning('Cannot determine the parent pool for %s; using images pool instead', base_image_id) 
++            parent_pool = 'images'
++            # raise exception.ImageUnacceptable(
++            #        _('Cannot determine the parent storage pool for %s; '
++            #          'cannot determine where to store images') %
++            #        base_image_id)
+ 
+         return parent_pool
+ 
