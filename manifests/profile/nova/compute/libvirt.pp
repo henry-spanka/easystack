@@ -93,6 +93,17 @@ class easystack::profile::nova::compute::libvirt (
         notify      => Anchor['nova::service::begin'],
     }
 
+    # If we are restoring from a snapshot that was created
+    # earlier for this instance, we want to flatten the image because otherwise
+    # the backing image (snapshot) cannot be deleted because the instance
+    # is currently using it.
+    # Requires nova 17.0.12 or higher (see: https://bugs.launchpad.net/nova/rocky/+bug/1653953)
+    patch::file { '/usr/lib/python2.7/site-packages/nova/virt/libvirt/driver.py':
+        diff_source => 'puppet:///modules/easystack/nova/snapshot_rebuild_flatten.diff',
+        require     => Anchor['easystack::openstack::install_1::end'],
+        notify      => Anchor['nova::service::begin'],
+    }
+
     Class['easystack::profile::base::qemu']
     -> Class['nova::compute::libvirt']
 

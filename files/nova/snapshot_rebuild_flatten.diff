@@ -1,0 +1,38 @@
+From: Henry Spanka <henry@spanka.eu>
+Date: Sun, 26 Jan 2020 18:02:00 +0100
+Subject: Flatten root image when restored from snapshot
+
+If we are restoring from a snapshot that was created
+earlier for this instance, we want to flatten the image because otherwise
+the backing image (snapshot) cannot be deleted because the instance
+is currently using it.
+Requires nova 17.0.12 or higher (see: https://bugs.launchpad.net/nova/rocky/+bug/1653953)
+---
+
+--- a/virt/libvirt/driver.py
++++ b/virt/libvirt/driver.py
+@@ -3558,7 +3558,24 @@
+             if backend.SUPPORTS_CLONE:
+                 def clone_fallback_to_fetch(*args, **kwargs):
+                     try:
++                        image = self._image_api.get(context, disk_images['image_id'])
++
+                         backend.clone(context, disk_images['image_id'])
++
++                        # NOTE(henryspanka): If we are restoring from a snapshot that was created
++                        # earlier for this instance, we want to flatten the image because otherwise
++                        # the backing image (snapshot) cannot be deleted because the instance
++                        # is currently using it.
++                        if ('properties' in image and 'instance_uuid' in image['properties']
++                            and 'image_type' in image['properties']
++                            and image['properties']['type'] == 'snapshot'
++                            and instance.uuid == image['properties']['instance_uuid')]:
++                            LOG.info("Flattening root image because we are creating from an existing snapshot for this instance", instance=instance)
++
++                            try:
++                                backend.flatten()
++                            except NotImplementedError:
++                                LOG.warning("Flattening not implemented but clone supported. Is this expected?", instance=instance)
+                     except exception.ImageUnacceptable:
+                         libvirt_utils.fetch_image(*args, **kwargs)
+                 fetch_func = clone_fallback_to_fetch
