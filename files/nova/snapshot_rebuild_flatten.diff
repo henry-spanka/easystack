@@ -26,7 +26,7 @@ Requires nova 17.0.12 or higher (see: https://bugs.launchpad.net/nova/rocky/+bug
 +                        if ('properties' in image and 'instance_uuid' in image['properties']
 +                            and 'image_type' in image['properties']
 +                            and image['properties']['image_type'] == 'snapshot'
-+                            and instance.uuid == image['properties']['instance_uuid')]:
++                            and instance.uuid == image['properties']['instance_uuid']):
 +                            LOG.info("Flattening root image because we are creating from an existing snapshot for this instance", instance=instance)
 +
 +                            try:
