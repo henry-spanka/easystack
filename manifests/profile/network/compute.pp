@@ -8,87 +8,94 @@ class easystack::profile::network::compute (
     # make sure the parameters are initialized
     include easystack
 
-    file_line { "${management_interface} disable NetworkManager":
-        ensure => 'present',
-        path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
-        line   => 'NM_CONTROLLED=no',
-        match  => '^NM_CONTROLLED=*',
-        notify => Exec['network_restart'],
-    }
+    if $::osfamily == "RedHat" {
+        file_line { "${management_interface} disable NetworkManager":
+            ensure => 'present',
+            path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
+            line   => 'NM_CONTROLLED=no',
+            match  => '^NM_CONTROLLED=*',
+            notify => Exec['network_restart'],
+        }
 
-    file_line { "${management_interface} set onboot":
-        ensure => 'present',
-        path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
-        line   => 'ONBOOT=yes',
-        match  => '^ONBOOT=*',
-        notify => Exec['network_restart'],
-    }
+        file_line { "${management_interface} set onboot":
+            ensure => 'present',
+            path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
+            line   => 'ONBOOT=yes',
+            match  => '^ONBOOT=*',
+            notify => Exec['network_restart'],
+        }
 
-    file_line { "${management_interface} zone=drop":
-        ensure => 'present',
-        path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
-        line   => 'ZONE=drop',
-        notify => Exec['network_restart'],
-    }
+        file_line { "${management_interface} zone=drop":
+            ensure => 'present',
+            path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
+            line   => 'ZONE=drop',
+            notify => Exec['network_restart'],
+        }
 
-    file_line { "${management_interface} set MTU=9000":
-        ensure => 'present',
-        path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
-        line   => 'MTU=9000',
-        match  => '^MTU=*',
-        notify => Exec['network_restart'],
-    }
+        file_line { "${management_interface} set MTU=9000":
+            ensure => 'present',
+            path   => "/etc/sysconfig/network-scripts/ifcfg-${management_interface}",
+            line   => 'MTU=9000',
+            match  => '^MTU=*',
+            notify => Exec['network_restart'],
+        }
 
-    file_line { "${public_interface} disable NetworkManager":
-        ensure => 'present',
-        path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
-        line   => 'NM_CONTROLLED=no',
-        match  => '^NM_CONTROLLED=*',
-        notify => Exec['network_restart'],
-    }
+        file_line { "${public_interface} disable NetworkManager":
+            ensure => 'present',
+            path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
+            line   => 'NM_CONTROLLED=no',
+            match  => '^NM_CONTROLLED=*',
+            notify => Exec['network_restart'],
+        }
 
-    file_line { "${public_interface} set bootproto":
-        ensure => 'present',
-        path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
-        line   => 'BOOTPROTO=none',
-        match  => '^BOOTPROTO=*',
-        notify => Exec['network_restart'],
-    }
+        file_line { "${public_interface} set bootproto":
+            ensure => 'present',
+            path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
+            line   => 'BOOTPROTO=none',
+            match  => '^BOOTPROTO=*',
+            notify => Exec['network_restart'],
+        }
 
-    file_line { "${public_interface} set onboot":
-        ensure => 'present',
-        path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
-        line   => 'ONBOOT=yes',
-        match  => '^ONBOOT=*',
-        notify => Exec['network_restart'],
-    }
+        file_line { "${public_interface} set onboot":
+            ensure => 'present',
+            path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
+            line   => 'ONBOOT=yes',
+            match  => '^ONBOOT=*',
+            notify => Exec['network_restart'],
+        }
 
-    file_line { "${public_interface} zone=public":
-        ensure => 'present',
-        path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
-        line   => 'ZONE=public',
-        notify => Exec['network_restart'],
-    }
+        file_line { "${public_interface} zone=public":
+            ensure => 'present',
+            path   => "/etc/sysconfig/network-scripts/ifcfg-${public_interface}",
+            line   => 'ZONE=public',
+            notify => Exec['network_restart'],
+        }
 
-    service { 'NetworkManager':
-        ensure => 'stopped',
-        enable => false,
-        before => Exec['network_restart'],
-    }
+        service { 'NetworkManager':
+            ensure => 'stopped',
+            enable => false,
+            before => Exec['network_restart'],
+        }
 
-    contain network
+        contain network
 
-    # On physical servers spanning tree will block the port for a few seconds
-    exec { 'wait_for_network_ready':
-        command     => 'sleep 30',
-        path        => '/bin:/usr/bin',
-        refreshonly => true,
-        subscribe   => Exec['network_restart'],
+        # On physical servers spanning tree will block the port for a few seconds
+        exec { 'wait_for_network_ready':
+            command     => 'sleep 30',
+            path        => '/bin:/usr/bin',
+            refreshonly => true,
+            subscribe   => Exec['network_restart'],
+        }
     }
 
     firewalld_zone { 'internal':
         ensure  => present,
         sources => [$management_network],
+    }
+
+    $adminZoneRequire = $::osfamily ? {
+        'RedHat' => [Exec['network_restart']],
+        default => []
     }
 
     firewalld_zone { 'admin':
@@ -98,7 +105,7 @@ class easystack::profile::network::compute (
         purge_rich_rules => true,
         purge_services   => true,
         purge_ports      => true,
-        require          => Exec['network_restart'],
+        require          => $adminZoneRequire,
     }
 
     firewalld_service { 'Allow admin ssh':

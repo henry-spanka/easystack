@@ -10,7 +10,10 @@ class easystack::profile::nova::compute::libvirt (
     include ::easystack
 
     include ::easystack::profile::nova
-    include ::easystack::profile::base::qemu
+
+    if $::osfamily == "RedHat" {
+        include ::easystack::profile::base::qemu
+    }
 
     # We need to use QEMU for virtual servers and the old QEMU version
     # on CentOS 7 does not support disk discarding.
@@ -82,12 +85,17 @@ class easystack::profile::nova::compute::libvirt (
 
     include patch
 
+    $novapypath = $::osfamily ? {
+        'RedHat' => '/usr/lib/python2.7/site-packages',
+        default => '/usr/lib/python2.7/dist-packages'
+    }
+
     # Currently if a nova image doesn't have a parent
     # image nova will fail because the parent pool cannot
     # be found. This patch sets the parent pool to
     # 'images' by default in the case that the original
     # nova image is flattened.
-    patch::file { '/usr/lib/python2.7/site-packages/nova/virt/libvirt/imagebackend.py':
+    patch::file { "${novapypath}/nova/virt/libvirt/imagebackend.py":
         diff_source => 'puppet:///modules/easystack/nova/default_snapshot_pool.diff',
         require     => Anchor['easystack::openstack::install_1::end'],
         notify      => Anchor['nova::service::begin'],
@@ -98,13 +106,15 @@ class easystack::profile::nova::compute::libvirt (
     # the backing image (snapshot) cannot be deleted because the instance
     # is currently using it.
     # Requires nova 17.0.12 or higher (see: https://bugs.launchpad.net/nova/rocky/+bug/1653953)
-    patch::file { '/usr/lib/python2.7/site-packages/nova/virt/libvirt/driver.py':
+    patch::file { "${novapypath}/nova/virt/libvirt/driver.py":
         diff_source => 'puppet:///modules/easystack/nova/snapshot_rebuild_flatten.diff',
         require     => Anchor['easystack::openstack::install_1::end'],
         notify      => Anchor['nova::service::begin'],
     }
 
-    Class['easystack::profile::base::qemu']
-    -> Class['nova::compute::libvirt']
+    if $::osfamily == "RedHat" {
+        Class['easystack::profile::base::qemu']
+        -> Class['nova::compute::libvirt']
+    }
 
 }

@@ -17,7 +17,8 @@ class easystack::profile::ksm {
         tag        => 'ksm-service'
     }
 
-
-    Package['qemu-kvm-ev'] -> Service <|tag == 'ksm-service'|>
+    if $::osfamily == "RedHat" {
+        Package['qemu-kvm-ev'] -> Service <|tag == 'ksm-service'|>
+    }
 
 }

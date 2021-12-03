@@ -2,28 +2,31 @@
 class easystack::profile::base {
     # make sure the parameters are initialized
     include easystack
-    require easystack::profile::base::repo
+
+    if $::osfamily == "RedHat" {
+        require easystack::profile::base::repo
+
+        package { 'openstack-selinux':
+            ensure => installed,
+            name   => 'openstack-selinux'
+        }
+
+        # Set Selinux to enforcing modules
+        class { 'selinux':
+            mode => 'enforcing',
+            type => 'targeted',
+        }
+
+        # Install MySQL python library
+        package { 'python2-PyMySQL':
+            ensure => installed,
+            name   => 'python2-PyMySQL'
+        }
+    }
 
     package { 'python-openstackclient':
         ensure => installed,
         name   => 'python-openstackclient'
-    }
-
-    package { 'openstack-selinux':
-        ensure => installed,
-        name   => 'openstack-selinux'
-    }
-
-    # Set Selinux to enforcing modules
-    class { 'selinux':
-        mode => 'enforcing',
-        type => 'targeted',
-    }
-
-    # Install MySQL python library
-    package { 'python2-PyMySQL':
-        ensure => installed,
-        name   => 'python2-PyMySQL'
     }
 
     Anchor['easystack::base::install::begin']

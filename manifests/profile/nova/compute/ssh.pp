@@ -63,15 +63,17 @@ class easystack::profile::nova::compute::ssh (
         ],
     }
 
-    # See: https://www.centos.org/forums/viewtopic.php?t=9193
-    selinux::module { 'nova_compute_ssh-selinux':
-        ensure    => 'present',
-        source_te => 'puppet:///modules/easystack/selinux/nova_compute_ssh-selinux.te',
-        require   => File['/var/lib/nova/.ssh'],
-        notify    => [
-            Service['libvirtd'],
-            Service['nova-compute'],
-        ],
+    if $::osfamily == "RedHat" {
+        # See: https://www.centos.org/forums/viewtopic.php?t=9193
+        selinux::module { 'nova_compute_ssh-selinux':
+            ensure    => 'present',
+            source_te => 'puppet:///modules/easystack/selinux/nova_compute_ssh-selinux.te',
+            require   => File['/var/lib/nova/.ssh'],
+            notify    => [
+                Service['libvirtd'],
+                Service['nova-compute'],
+            ],
+        }
     }
 
 }

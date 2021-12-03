@@ -30,6 +30,8 @@ class easystack::role::ha::compute inherits ::easystack::role {
 
     include ::easystack::profile::neutron::agents::ml2::linuxbridge
 
-    include ::easystack::profile::netdata
+    if $::osfamily == "RedHat" {
+        include ::easystack::profile::netdata
+    }
 
 }
