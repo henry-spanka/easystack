@@ -18,6 +18,7 @@ class easystack::profile::nova::api (
         neutron_metadata_proxy_shared_secret => $shared_secret,
         use_forwarded_for                    => true,
         enable_proxy_headers_parsing         => true,
+        allow_resize_to_same_host            => true,
     }
 
     include ::firewalld
